@@ -1,0 +1,5 @@
+{
+  "name": "Belegt?",
+  "description": "Ein umfassendes Ressourcen-Buchungssystem mit öffentlicher Buchungsoberfläche, Kiosk-Modus für Displays und einem Admin-Dashboard zur Ressourcenverwaltung. Diese React-Implementierung nutzt LocalStorage zur Simulation des Backends.",
+  "requestFramePermissions": []
+}
