@@ -36,7 +36,7 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 
 1. Repository klonen:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/FlyingT/belegt.git
    cd belegt
    ```
 
@@ -53,7 +53,7 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 
 ### Deployment mit Docker (Direkt aus Git)
 
-Du kannst die Anwendung direkt aus dem Git-Repository starten, ohne es vorher zu klonen. Erstelle dazu einfach eine `docker-compose.yml` mit folgendem Inhalt und passe die Repository-URL an:
+Du kannst die Anwendung direkt aus dem Git-Repository starten, ohne es vorher zu klonen. Erstelle dazu einfach eine `docker-compose.yml` mit folgendem Inhalt:
 
 ```yaml
 version: '3.8'
@@ -62,8 +62,7 @@ services:
   # Backend (Python Flask API)
   backend:
     build:
-      # Ersetze <REPO-URL> mit deiner Git-URL (z.B. https://github.com/User/repo.git)
-      context: <REPO-URL>#main:backend
+      context: https://github.com/FlyingT/belegt.git#main:backend
       dockerfile: Dockerfile
     container_name: belegt-backend
     expose:
@@ -77,8 +76,7 @@ services:
   # Frontend (React + Nginx)
   app:
     build:
-      # Ersetze <REPO-URL> mit deiner Git-URL
-      context: <REPO-URL>#main
+      context: https://github.com/FlyingT/belegt.git#main
       dockerfile: Dockerfile
     container_name: belegt-frontend
     ports:
