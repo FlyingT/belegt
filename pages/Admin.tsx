@@ -24,9 +24,11 @@ export const Admin: React.FC = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check environment variables safely (with fallbacks)
-    const envUser = (typeof process !== 'undefined' && process.env?.ADMIN_USER) || 'admin';
-    const envPass = (typeof process !== 'undefined' && process.env?.ADMIN_PASSWORD) || 'belegt';
+    // Check environment variables from window._env_ (injected by Docker) or fallback
+    // @ts-ignore
+    const envUser = (window._env_ && window._env_.ADMIN_USER) || 'admin';
+    // @ts-ignore
+    const envPass = (window._env_ && window._env_.ADMIN_PASSWORD) || 'belegt';
 
     if (username === envUser && password === envPass) {
       setIsAuthenticated(true);
