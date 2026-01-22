@@ -25,9 +25,8 @@ export const Admin: React.FC = () => {
     e.preventDefault();
     
     // Check environment variables from window._env_ (injected by Docker) or fallback
-    // @ts-ignore
+    // Note: window types are defined in vite-env.d.ts
     const envUser = (window._env_ && window._env_.ADMIN_USER) || 'admin';
-    // @ts-ignore
     const envPass = (window._env_ && window._env_.ADMIN_PASSWORD) || 'belegt';
 
     if (username === envUser && password === envPass) {
