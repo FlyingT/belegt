@@ -30,8 +30,6 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 - **Routing:** React Router DOM
 - **Deployment:** Docker, Nginx
 
-*Hinweis: In dieser Version wird `localStorage` verwendet, um ein Backend zu simulieren. Die Daten bleiben im Browser des Nutzers oder im Kiosk-Browser persistent, solange der Cache nicht geleert wird.*
-
 ## Installation & Entwicklung
 
 ### Lokale Entwicklung
@@ -53,32 +51,79 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
    ```
    Die App ist nun unter `http://localhost:3000` erreichbar.
 
-### Deployment mit Docker
+### Deployment mit Docker (Direkt aus Git)
 
-Das Projekt enthält eine vollständige Docker-Konfiguration für den produktiven Einsatz mittels Nginx.
+Du kannst die Anwendung direkt aus dem Git-Repository starten, ohne es vorher zu klonen. Erstelle dazu einfach eine `docker-compose.yml` mit folgendem Inhalt und passe die Repository-URL an:
 
-1. Container bauen und starten:
-   ```bash
-   docker-compose up --build -d
-   ```
+```yaml
+version: '3.8'
 
-2. Zugriff:
-   Die Anwendung ist unter `http://localhost:8080` erreichbar.
+services:
+  # Backend (Python Flask API)
+  backend:
+    build:
+      # Ersetze <REPO-URL> mit deiner Git-URL (z.B. https://github.com/User/repo.git)
+      context: <REPO-URL>#main:backend
+      dockerfile: Dockerfile
+    container_name: belegt-backend
+    expose:
+      - "5000"
+    volumes:
+      - backend_data:/app/instance
+    restart: unless-stopped
+    networks:
+      - belegt-network
+
+  # Frontend (React + Nginx)
+  app:
+    build:
+      # Ersetze <REPO-URL> mit deiner Git-URL
+      context: <REPO-URL>#main
+      dockerfile: Dockerfile
+    container_name: belegt-frontend
+    ports:
+      - "${HOST_PORT:-8080}:80"
+    environment:
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-belegt}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - belegt-network
+
+volumes:
+  backend_data:
+
+networks:
+  belegt-network:
+    driver: bridge
+```
+
+Starte den Stack anschließend mit:
+
+```bash
+docker-compose up -d --build
+```
+
+Die Anwendung ist dann unter `http://localhost:8080` (oder dem in `HOST_PORT` definierten Port) erreichbar.
 
 ## Konfiguration
 
-### Umgebungsvariablen (Docker)
+### Umgebungsvariablen
 
-Die Zugangsdaten für den Admin-Bereich können über die `docker-compose.yml` konfiguriert werden:
+Die Zugangsdaten für den Admin-Bereich können in der `docker-compose.yml` oder über eine `.env` Datei konfiguriert werden:
 
 | Variable | Beschreibung | Standardwert |
 |----------|--------------|--------------|
 | `ADMIN_USER` | Benutzername für Admin-Login | `admin` |
 | `ADMIN_PASSWORD` | Passwort für Admin-Login | `belegt` |
+| `HOST_PORT` | Port, auf dem das Frontend erreichbar ist | `8080` |
 
 ## Projektstruktur
 
 - `/src/components`: Wiederverwendbare UI-Komponenten (Navbar, etc.)
 - `/src/pages`: Hauptansichten (Dashboard, Buchung, Admin, Kiosk)
-- `/src/services`: Logik für Datenhaltung (API-Simulation) und ICS-Generierung
+- `/src/services`: Logik für Datenhaltung (API-Anbindung) und ICS-Generierung
 - `/src/types`: TypeScript Interfaces
+- `/backend`: Python Flask Server Code
