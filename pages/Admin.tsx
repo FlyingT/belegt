@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -141,12 +141,29 @@ export const Admin: React.FC = () => {
     }));
   };
 
+  const resetCategoryIcon = (type: string) => {
+    const newIcons = { ...config.categoryIcons };
+    delete newIcons[type];
+    setConfig(prev => ({
+      ...prev,
+      categoryIcons: newIcons
+    }));
+  };
+
   // Mappings for UI
   const categoryLabels: Record<string, string> = {
     'Room': 'Räume',
     'Vehicle': 'Fahrzeuge',
     'Equipment': 'Ausrüstung',
     'Other': 'Sonstiges'
+  };
+
+  // Default icons to display if nothing is selected (Matches Dashboard logic)
+  const defaultIcons: Record<string, string> = {
+    'Room': 'Users',
+    'Vehicle': 'Truck',
+    'Equipment': 'Box',
+    'Other': 'Wrench'
   };
 
   if (!isAuthenticated) {
@@ -346,14 +363,14 @@ export const Admin: React.FC = () => {
           )}
 
           {activeTab === 'settings' && (
-            <div className="max-w-2xl">
+            <div className="max-w-4xl">
               <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Konfiguration</h3>
               <form onSubmit={saveSettings} className="space-y-8">
                 
                 {/* General */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
-                  <div className="mb-4">
+                  <div className="mb-4 max-w-md">
                     <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -374,7 +391,7 @@ export const Admin: React.FC = () => {
                   <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
                   <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-md">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
                       <input
@@ -411,27 +428,60 @@ export const Admin: React.FC = () => {
                 {/* Category Icons */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 mb-4">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen, die auf der Startseite angezeigt werden.</p>
+                  <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(categoryLabels).map(([type, label]) => (
-                      <div key={type}>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                        <select
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2"
-                          value={config.categoryIcons?.[type] || ''}
-                          onChange={(e) => handleCategoryIconChange(type, e.target.value)}
-                        >
-                          <option value="">Standard</option>
-                          {Object.keys(ICON_MAP).map(iconName => (
-                            <option key={iconName} value={iconName}>{iconName}</option>
-                          ))}
-                        </select>
-                        <div className="mt-1 flex items-center text-xs text-gray-500">
-                          Vorschau: <span className="ml-2 bg-white p-1 rounded border"><DynamicIcon name={config.categoryIcons?.[type]} className="w-4 h-4 text-gray-700" /></span>
+                  <div className="space-y-8">
+                    {Object.entries(categoryLabels).map(([type, label]) => {
+                      const currentIcon = config.categoryIcons?.[type];
+                      const activeIcon = currentIcon || defaultIcons[type];
+                      
+                      return (
+                        <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                               <label className="text-base font-semibold text-gray-800">{label}</label>
+                               <div className="text-xs text-gray-500 mt-0.5 flex items-center">
+                                  Aktives Icon: 
+                                  <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
+                                    <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                    {activeIcon}
+                                  </span>
+                                  {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
+                               </div>
+                            </div>
+                            {currentIcon && (
+                              <button 
+                                type="button"
+                                onClick={() => resetCategoryIcon(type)}
+                                className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
+                              >
+                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                            {Object.keys(ICON_MAP).map(iconName => (
+                              <button
+                                key={iconName}
+                                type="button"
+                                onClick={() => handleCategoryIconChange(type, iconName)}
+                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${
+                                  currentIcon === iconName 
+                                    ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500' 
+                                    : (!currentIcon && iconName === defaultIcons[type]) 
+                                      ? 'bg-gray-100 border border-gray-300 opacity-75' 
+                                      : ''
+                                }`}
+                                title={iconName}
+                              >
+                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
