@@ -5,6 +5,7 @@ export interface Asset {
   description: string;
   color: string; // Hex code for UI identification
   is_maintenance: boolean;
+  icon?: string; // Icon name from lucide-react
 }
 
 export interface Booking {
@@ -20,6 +21,7 @@ export interface Booking {
 
 export interface AppConfig {
   headerText: string;
+  categoryIcons?: Record<string, string>; // Mapping type -> icon name
 }
 
 export interface AdminState {

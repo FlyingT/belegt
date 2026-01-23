@@ -2,16 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Asset } from '../types';
 import { api } from '../services/api';
-import { Monitor, Wrench, Truck, Box, ShieldAlert, Layers } from 'lucide-react';
-
-const getIcon = (type: string) => {
-  switch (type.toLowerCase()) {
-    case 'room': return <Monitor className="w-6 h-6" />;
-    case 'vehicle': return <Truck className="w-6 h-6" />;
-    case 'equipment': return <Box className="w-6 h-6" />;
-    default: return <Wrench className="w-6 h-6" />;
-  }
-};
+import { ShieldAlert, Layers } from 'lucide-react';
+import { DynamicIcon } from '../utils/iconMap';
 
 const getCategoryName = (type: string) => {
   switch (type) {
@@ -24,13 +16,20 @@ const getCategoryName = (type: string) => {
 
 export const Dashboard: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [categoryIcons, setCategoryIcons] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getAssets().then(data => {
-      setAssets(data);
+    const fetchData = async () => {
+      const [assetsData, configData] = await Promise.all([
+        api.getAssets(),
+        api.getAppConfig()
+      ]);
+      setAssets(assetsData);
+      setCategoryIcons(configData.categoryIcons || {});
       setLoading(false);
-    });
+    };
+    fetchData();
   }, []);
 
   if (loading) {
@@ -52,9 +51,21 @@ export const Dashboard: React.FC = () => {
   const sortedCategories = Object.keys(groupedAssets).sort((a, b) => {
     const indexA = sortOrder.indexOf(a);
     const indexB = sortOrder.indexOf(b);
-    // If not found in sortOrder, put at the end
     return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
   });
+
+  // Helper to determine category icon (fallback to defaults if config is missing)
+  const getCategoryIconName = (type: string) => {
+    if (categoryIcons[type]) return categoryIcons[type];
+    
+    // Defaults
+    switch (type) {
+      case 'Room': return 'Users';
+      case 'Vehicle': return 'Truck';
+      case 'Equipment': return 'Box';
+      default: return 'Wrench';
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -68,7 +79,7 @@ export const Dashboard: React.FC = () => {
           <div key={category}>
             <div className="flex items-center mb-6 border-b border-gray-200 pb-2">
               <span className="bg-indigo-100 text-indigo-800 p-2 rounded-lg mr-3">
-                {getIcon(category)}
+                <DynamicIcon name={getCategoryIconName(category)} className="w-6 h-6" />
               </span>
               <h2 className="text-2xl font-semibold text-gray-800">
                 {getCategoryName(category)}
@@ -88,7 +99,8 @@ export const Dashboard: React.FC = () => {
                         className={`p-2 rounded-lg text-white`}
                         style={{ backgroundColor: asset.is_maintenance ? '#9ca3af' : asset.color }}
                       >
-                        {getIcon(asset.type)}
+                         {/* Use Asset specific icon, or fallback to Category icon */}
+                        <DynamicIcon name={asset.icon || getCategoryIconName(category)} className="w-6 h-6" />
                       </div>
                       {asset.is_maintenance && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -122,7 +134,7 @@ export const Dashboard: React.FC = () => {
                         className="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
                         title="Kiosk Modus öffnen"
                       >
-                        <Monitor className="w-5 h-5" />
+                        <DynamicIcon name="Monitor" className="w-5 h-5" />
                       </Link>
                     </div>
                   </div>
