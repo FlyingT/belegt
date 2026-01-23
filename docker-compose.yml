@@ -12,12 +12,6 @@ services:
     restart: unless-stopped
     networks:
       - belegt-network
-    environment:
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SMTP_SENDER=${SMTP_SENDER}
 
   # Frontend (React + Nginx)
   app:
