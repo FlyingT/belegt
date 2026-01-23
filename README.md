@@ -14,6 +14,7 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
   - Kalenderauswahl und Zeiteingabe.
   - Angabe eines Buchungsgrundes (Titel).
   - Anzeige bestehender Buchungen am ausgewählten Tag zur Vermeidung von Konflikten.
+  - **Benutzerfreundliche Formulare:** Durch den Admin konfigurierbare Platzhaltertexte erleichtern die Eingabe.
 - **ICS-Export:** Herunterladen von Kalendereinträgen (.ics) nach erfolgreicher Buchung zur Integration in Outlook, Google Calendar oder Apple Calendar.
 
 ### 📺 Kiosk-Modus
@@ -25,12 +26,14 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 ### ⚙️ Admin-Bereich
 - **Ressourcen-Verwaltung:** 
   - Erstellen, Bearbeiten und Löschen von Assets.
-  - **Individualisierung:** Auswahl spezifischer Icons pro Ressource und zufällige Farbgenerierung für die UI.
+  - **Sortierung:** Einfaches Ändern der Reihenfolge der Ressourcen per Pfeiltasten.
+  - **Individualisierung:** Auswahl spezifischer Icons pro Ressource (via Icon-Picker) und zufällige Farbgenerierung für die UI.
 - **Wartungsmodus:** Setzen von Ressourcen auf "In Wartung" (macht sie für Mitarbeiter unbuchbar).
 - **Buchungsübersicht:** Liste aller Buchungen mit Löschfunktion.
 - **Konfiguration:** 
-  - Anpassung des Systemnamens.
-  - Zuweisung von Standard-Icons für Ressourcen-Kategorien (z.B. "Room" -> "Users", "Vehicle" -> "Truck").
+  - Anpassung des Systemnamens (Header-Text).
+  - **Kategorie-Icons:** Visuelle Zuweisung von Standard-Icons für Ressourcen-Kategorien über ein Raster.
+  - **Formular-Platzhalter:** Anpassung der Beispieltexte (Placeholder) für Titel, Name und E-Mail im Buchungsformular.
 
 ## Technologie-Stack
 
@@ -38,6 +41,7 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 - **Styling:** Tailwind CSS, Lucide React (Icons)
 - **Routing:** React Router DOM (Browser Router)
 - **Deployment:** Docker, Nginx
+- **Backend:** Python Flask, SQLAlchemy (SQLite)
 
 ## Installation & Entwicklung
 
