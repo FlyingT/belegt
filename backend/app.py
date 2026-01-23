@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dateutil import parser
+from sqlalchemy import text
 
 app = Flask(__name__)
 CORS(app)
@@ -46,6 +47,7 @@ class Asset(db.Model):
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False, default="Buchung")
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     user_name = db.Column(db.String(100), nullable=False)
@@ -56,6 +58,7 @@ class Booking(db.Model):
         return {
             'id': str(self.id),
             'assetId': str(self.asset_id),
+            'title': self.title,
             'startTime': self.start_time.isoformat(),
             'endTime': self.end_time.isoformat(),
             'userName': self.user_name,
@@ -71,6 +74,17 @@ class AppConfig(db.Model):
 def init_db():
     with app.app_context():
         db.create_all()
+        
+        # Check if 'title' column exists in 'booking' table (Migration hack for SQLite)
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("SELECT title FROM booking LIMIT 1"))
+        except Exception:
+            print("Migrating DB: Adding title column to booking table")
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE booking ADD COLUMN title VARCHAR(100) DEFAULT 'Buchung' NOT NULL"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             db.session.add(AppConfig(header_text='Buchungssystem'))
@@ -133,7 +147,7 @@ def delete_asset(id):
 
 @app.route('/api/bookings', methods=['GET'])
 def get_bookings():
-    bookings = Booking.query.order_by(Booking.created_at.desc()).all()
+    bookings = Booking.query.order_by(Booking.start_time.asc()).all()
     return jsonify([b.to_dict() for b in bookings])
 
 @app.route('/api/bookings', methods=['POST'])
@@ -155,6 +169,7 @@ def create_booking():
 
     new_booking = Booking(
         asset_id=asset_id,
+        title=data.get('title', 'Buchung'),
         start_time=start_time,
         end_time=end_time,
         user_name=data.get('userName'),
@@ -163,7 +178,6 @@ def create_booking():
     db.session.add(new_booking)
     db.session.commit()
     
-    # Mock Email sending log
     print(f"Sending email to {new_booking.user_email} for booking {new_booking.id}")
     
     return jsonify(new_booking.to_dict()), 201

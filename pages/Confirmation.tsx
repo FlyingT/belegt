@@ -29,6 +29,10 @@ export const Confirmation: React.FC = () => {
           </p>
 
           <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left border border-gray-100">
+             <div className="flex justify-between mb-2 pb-2 border-b border-gray-200">
+              <span className="text-gray-500 text-sm">Titel/Grund:</span>
+              <span className="font-bold text-indigo-700 text-sm">{booking.title}</span>
+            </div>
             <div className="flex justify-between mb-2">
               <span className="text-gray-500 text-sm">Zeitraum:</span>
               <span className="font-medium text-gray-900 text-sm">

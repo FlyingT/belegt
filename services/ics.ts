@@ -21,7 +21,7 @@ export const generateICS = (booking: Booking, assetName: string): string => {
     `UID:${booking.id}@belegt.local`,
     `DTSTART:${start}`,
     `DTEND:${end}`,
-    `SUMMARY:Buchung: ${assetName}`,
+    `SUMMARY:${booking.title} (${assetName})`,
     `DESCRIPTION:Gebucht von ${booking.userName}`,
     `LOCATION:${assetName}`,
     'STATUS:CONFIRMED',

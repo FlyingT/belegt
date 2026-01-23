@@ -10,6 +10,7 @@ export interface Asset {
 export interface Booking {
   id: string;
   assetId: string;
+  title: string;
   startTime: string; // ISO string
   endTime: string; // ISO string
   userName: string;

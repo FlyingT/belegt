@@ -249,7 +249,7 @@ export const Admin: React.FC = () => {
                   <thead>
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutzer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Von</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bis</th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
@@ -260,7 +260,8 @@ export const Admin: React.FC = () => {
                       <tr key={b.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{b.assetId}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {b.userName} <br/> <span className="text-xs text-gray-400">{b.userEmail}</span>
+                          <div className="font-bold text-indigo-700">{b.title}</div>
+                          {b.userName} <span className="text-xs text-gray-400">({b.userEmail})</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(b.startTime).toLocaleDateString()} {new Date(b.startTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
