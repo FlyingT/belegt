@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Backend (Python Flask API)
   backend:
-    image: ghcr.io/flyingt/belegt-backend:main
+    image: ghcr.io/flyingt/belegt-backend:latest
     container_name: belegt-backend
     expose:
       - "5000"
@@ -15,7 +15,7 @@ services:
 
   # Frontend (React + Nginx)
   app:
-    image: ghcr.io/flyingt/belegt-frontend:main
+    image: ghcr.io/flyingt/belegt-frontend:latest
     container_name: belegt-frontend
     ports:
       - "${APP_PORT:-8080}:80"
