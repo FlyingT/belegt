@@ -105,7 +105,7 @@ export const Kiosk: React.FC = () => {
 
       {/* Footer */}
       <div className="p-4 text-center text-sm opacity-50">
-         Kiosk Mode • Refreshing every 60s
+         Kiosk Modus • Aktualisiert alle 60s
       </div>
     </div>
   );
