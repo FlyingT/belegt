@@ -24,6 +24,12 @@ Nach der Buchung gibt's direkt den Kalendereintrag (.ics) zum Download für den 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S3-Buchung2.png)
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S4-Buchung3.png)
 
+### Kiosk-Modus
+Simple Anzeige unter eigenem Link für Kiosk-Anzeigen vor den Räumen.
+
+![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S10-Kiosk1.png)
+![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S11-Kiosk2.png)
+
 ### Admin-Bereich
 Volle Kontrolle über Assets und Buchungen, Benutzername und Kennwort wird via environment variable gesetzt.
 
