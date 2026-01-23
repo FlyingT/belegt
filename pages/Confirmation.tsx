@@ -24,8 +24,7 @@ export const Confirmation: React.FC = () => {
         <div className="p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Buchung erfolgreich!</h2>
           <p className="text-gray-600 mb-8">
-            Vielen Dank, {booking.userName}. Ihre Buchung für <strong>{assetName}</strong> wurde bestätigt. 
-            Eine E-Mail wurde an {booking.userEmail} gesendet.
+            Vielen Dank, {booking.userName}. Ihre Buchung für <strong>{assetName}</strong> wurde bestätigt.
           </p>
 
           <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left border border-gray-100">
