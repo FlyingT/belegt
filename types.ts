@@ -22,6 +22,9 @@ export interface Booking {
 export interface AppConfig {
   headerText: string;
   categoryIcons?: Record<string, string>; // Mapping type -> icon name
+  placeholderTitle?: string;
+  placeholderName?: string;
+  placeholderEmail?: string;
 }
 
 export interface AdminState {

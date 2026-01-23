@@ -319,7 +319,7 @@ export const Admin: React.FC = () => {
                 {/* General */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
-                  <div>
+                  <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -330,6 +330,45 @@ export const Admin: React.FC = () => {
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={config.headerText}
                         onChange={e => setConfig({ ...config, headerText: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Placeholders */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
+                  <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderTitle || ''}
+                        placeholder="z.B. Team Meeting, Kundenbesuch"
+                        onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderName || ''}
+                        placeholder="z.B. Max Mustermann"
+                        onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderEmail || ''}
+                        placeholder="z.B. max@firma.de"
+                        onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
                       />
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Asset, Booking } from '../types';
+import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
 import { ArrowLeft, Calendar as CalendarIcon, Clock, User, Mail, AlertCircle, Type, Info } from 'lucide-react';
 
@@ -9,6 +9,7 @@ export const BookingFlow: React.FC = () => {
   const navigate = useNavigate();
   const [asset, setAsset] = useState<Asset | null>(null);
   const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
+  const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +28,9 @@ export const BookingFlow: React.FC = () => {
     if (assetId) {
       Promise.all([
         api.getAssetById(assetId),
-        api.getBookings()
-      ]).then(([assetData, bookingsData]) => {
+        api.getBookings(),
+        api.getAppConfig()
+      ]).then(([assetData, bookingsData, configData]) => {
         if (!assetData) {
           navigate('/');
           return;
@@ -36,6 +38,7 @@ export const BookingFlow: React.FC = () => {
         setAsset(assetData);
         // Filter bookings for this asset
         setExistingBookings(bookingsData.filter(b => b.assetId === assetId));
+        setAppConfig(configData);
         setLoading(false);
       });
     }
@@ -122,7 +125,7 @@ export const BookingFlow: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="z.B. Team Meeting, Kundenbesuch"
+                    placeholder={appConfig?.placeholderTitle || "z.B. Team Meeting, Kundenbesuch"}
                     className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                     value={formData.title}
                     onChange={e => setFormData({...formData, title: e.target.value})}
@@ -186,6 +189,7 @@ export const BookingFlow: React.FC = () => {
                       <input
                         type="text"
                         required
+                        placeholder={appConfig?.placeholderName || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.name}
                         onChange={e => setFormData({...formData, name: e.target.value})}
@@ -202,6 +206,7 @@ export const BookingFlow: React.FC = () => {
                       <input
                         type="email"
                         required
+                        placeholder={appConfig?.placeholderEmail || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.email}
                         onChange={e => setFormData({...formData, email: e.target.value})}

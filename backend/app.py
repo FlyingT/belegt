@@ -72,13 +72,18 @@ class Booking(db.Model):
 class AppConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     header_text = db.Column(db.String(100), default='Buchungssystem')
-    # Store category icons as JSON string because SQLite simple arrays are tricky without extensions
     category_icons_json = db.Column(db.String(500), default='{}')
+    placeholder_title = db.Column(db.String(100), default='z.B. Team Meeting, Kundenbesuch')
+    placeholder_name = db.Column(db.String(100), default='')
+    placeholder_email = db.Column(db.String(100), default='')
 
     def to_dict(self):
         return {
             'headerText': self.header_text,
-            'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {}
+            'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {},
+            'placeholderTitle': self.placeholder_title,
+            'placeholderName': self.placeholder_name,
+            'placeholderEmail': self.placeholder_email
         }
 
 # --- Helper ---
@@ -112,6 +117,16 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN category_icons_json VARCHAR(500) DEFAULT '{}'"))
                 conn.commit()
 
+            # Check for placeholder fields in app_config
+            try:
+                conn.execute(text("SELECT placeholder_title FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding placeholder fields to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_title VARCHAR(100) DEFAULT 'z.B. Team Meeting, Kundenbesuch'"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_email VARCHAR(100) DEFAULT ''"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -122,7 +137,8 @@ def init_db():
             }
             db.session.add(AppConfig(
                 header_text='Buchungssystem', 
-                category_icons_json=json.dumps(default_cats)
+                category_icons_json=json.dumps(default_cats),
+                placeholder_title='z.B. Team Meeting, Kundenbesuch'
             ))
             db.session.commit()
         
@@ -242,6 +258,13 @@ def update_config():
     
     if 'categoryIcons' in data:
         config.category_icons_json = json.dumps(data['categoryIcons'])
+
+    if 'placeholderTitle' in data:
+        config.placeholder_title = data['placeholderTitle']
+    if 'placeholderName' in data:
+        config.placeholder_name = data['placeholderName']
+    if 'placeholderEmail' in data:
+        config.placeholder_email = data['placeholderEmail']
         
     db.session.commit()
     return jsonify(config.to_dict())
