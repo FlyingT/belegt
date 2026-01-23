@@ -63,6 +63,14 @@ Alles wird über die `.env` gesteuert.
 | `ADMIN_USER` | Benutzername | `admin` |
 | `ADMIN_PASSWORD` | Passwort | `belegt` |
 
+---
+
+## Troubleshooting
+
+### Portainer: "http2: frame too large" oder "failed to list workers"
+Dieser Fehler tritt auf, wenn Portainer Probleme mit Docker BuildKit hat.
+**Lösung:** Setze die Umgebungsvariable `DOCKER_BUILDKIT=0` im Portainer Stack oder in deiner `.env` Datei, um das klassische Build-System zu erzwingen.
+
 ## Tech Stack
 
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
