@@ -30,6 +30,16 @@ export const api = {
     });
   },
 
+  reorderAssets: async (assets: Asset[]): Promise<void> => {
+    // Send list of {id, sortOrder}
+    const payload = assets.map((a, index) => ({ id: a.id, sortOrder: index }));
+    await fetch('/api/assets/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  },
+
   deleteAsset: async (id: string): Promise<void> => {
     await fetch(`/api/assets/${id}`, { method: 'DELETE' });
   },

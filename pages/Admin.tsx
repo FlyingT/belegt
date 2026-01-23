@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -97,6 +97,21 @@ export const Admin: React.FC = () => {
   const toggleMaintenance = async (asset: Asset) => {
     await api.toggleMaintenance(asset.id, !asset.is_maintenance);
     loadData();
+  };
+
+  const moveAsset = async (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index === 0) || (direction === 'down' && index === assets.length - 1)) {
+      return;
+    }
+    
+    const newAssets = [...assets];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Swap
+    [newAssets[index], newAssets[targetIndex]] = [newAssets[targetIndex], newAssets[index]];
+    
+    setAssets(newAssets); // Optimistic UI update
+    await api.reorderAssets(newAssets); // Persist
   };
 
   // Bookings Management
@@ -215,6 +230,7 @@ export const Admin: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sort</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -222,8 +238,26 @@ export const Admin: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {assets.map(asset => (
+                    {assets.map((asset, index) => (
                       <tr key={asset.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                           <div className="flex flex-col space-y-1">
+                              <button 
+                                onClick={() => moveAsset(index, 'up')}
+                                disabled={index === 0}
+                                className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                              >
+                                <ArrowUp className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => moveAsset(index, 'down')}
+                                disabled={index === assets.length - 1}
+                                className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                              >
+                                <ArrowDown className="w-4 h-4" />
+                              </button>
+                           </div>
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
                           <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></span>
                           <span className="mr-2 text-gray-500"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
