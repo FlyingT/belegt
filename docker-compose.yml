@@ -3,13 +3,17 @@ version: '3.8'
 services:
   # Backend (Python Flask API)
   backend:
-    build: ./backend
+    build:
+      context: https://github.com/FlyingT/belegt.git#main:backend
+      dockerfile: Dockerfile
     container_name: belegt-backend
     expose:
       - "5000"
     volumes:
       - backend_data:/app/instance
     restart: unless-stopped
+    networks:
+      - belegt-network
     environment:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT:-587}
@@ -19,7 +23,9 @@ services:
 
   # Frontend (React + Nginx)
   app:
-    build: .
+    build:
+      context: https://github.com/FlyingT/belegt.git#main
+      dockerfile: Dockerfile
     container_name: belegt-frontend
     ports:
       - "${APP_PORT:-8080}:80"
@@ -29,6 +35,12 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - belegt-network
 
 volumes:
   backend_data:
+
+networks:
+  belegt-network:
+    driver: bridge
