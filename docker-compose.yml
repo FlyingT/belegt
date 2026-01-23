@@ -3,9 +3,7 @@ version: '3.8'
 services:
   # Backend (Python Flask API)
   backend:
-    build:
-      context: https://github.com/FlyingT/belegt.git#main:backend
-      dockerfile: Dockerfile
+    image: ghcr.io/flyingt/belegt-backend:main
     container_name: belegt-backend
     expose:
       - "5000"
@@ -23,9 +21,7 @@ services:
 
   # Frontend (React + Nginx)
   app:
-    build:
-      context: https://github.com/FlyingT/belegt.git#main
-      dockerfile: Dockerfile
+    image: ghcr.io/flyingt/belegt-frontend:main
     container_name: belegt-frontend
     ports:
       - "${APP_PORT:-8080}:80"
