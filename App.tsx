@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './pages/Dashboard';
 import { BookingFlow } from './pages/BookingFlow';
