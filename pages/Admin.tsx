@@ -126,6 +126,14 @@ export const Admin: React.FC = () => {
     }));
   };
 
+  // Mappings for UI
+  const categoryLabels: Record<string, string> = {
+    'Room': 'Räume',
+    'Vehicle': 'Fahrzeuge',
+    'Equipment': 'Ausrüstung',
+    'Other': 'Sonstiges'
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -221,7 +229,7 @@ export const Admin: React.FC = () => {
                           <span className="mr-2 text-gray-500"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
                           {asset.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{categoryLabels[asset.type] || asset.type}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.is_maintenance ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {asset.is_maintenance ? 'In Wartung' : 'Verfügbar'}
@@ -330,12 +338,12 @@ export const Admin: React.FC = () => {
                 {/* Category Icons */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 mb-4">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+                  <p className="text-sm text-gray-500 mb-4">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen, die auf der Startseite angezeigt werden.</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {['Room', 'Vehicle', 'Equipment', 'Other'].map(type => (
+                    {Object.entries(categoryLabels).map(([type, label]) => (
                       <div key={type}>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">{type}</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
                         <select
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border p-2"
                           value={config.categoryIcons?.[type] || ''}
