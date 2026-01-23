@@ -7,27 +7,36 @@ Die Anwendung wurde entwickelt, um den Buchungsprozess zu rationalisieren und bi
 ## Funktionen
 
 ### 🏢 Für Mitarbeiter
-- **Übersicht:** Intuitive Darstellung aller verfügbaren Ressourcen, gruppiert nach Kategorien (Räume, Fahrzeuge, Equipment).
+- **Übersicht:** Intuitive Darstellung aller verfügbaren Ressourcen, gruppiert nach Kategorien.
+- **Visualisierung:** Anpassbare Icons für Kategorien und einzelne Ressourcen für schnellere Erkennbarkeit.
 - **Status-Anzeige:** Sofortige Erkennung, ob eine Ressource verfügbar, belegt oder in Wartung ist.
-- **Buchung:** Einfacher Buchungsprozess mit Kalenderauswahl und Zeiteingabe.
+- **Buchung:** 
+  - Kalenderauswahl und Zeiteingabe.
+  - Angabe eines Buchungsgrundes (Titel).
+  - Anzeige bestehender Buchungen am ausgewählten Tag zur Vermeidung von Konflikten.
 - **ICS-Export:** Herunterladen von Kalendereinträgen (.ics) nach erfolgreicher Buchung zur Integration in Outlook, Google Calendar oder Apple Calendar.
 
 ### 📺 Kiosk-Modus
 - **Display-Ansicht:** Eine optimierte Vollbild-Ansicht für Tablets oder Bildschirme, die direkt vor Räumen oder bei Ressourcen angebracht sind.
 - **Live-Status:** Zeigt großflächig an, ob die Ressource "FREI" oder "BELEGT" ist.
+- **Tagesplan:** Listet alle heutigen Buchungen (Zeitraum, Titel, Nutzer) auf.
 - **Automatische Aktualisierung:** Die Anzeige aktualisiert sich automatisch alle 60 Sekunden.
 
 ### ⚙️ Admin-Bereich
-- **Ressourcen-Verwaltung:** Erstellen, Bearbeiten und Löschen von Assets.
+- **Ressourcen-Verwaltung:** 
+  - Erstellen, Bearbeiten und Löschen von Assets.
+  - **Individualisierung:** Auswahl spezifischer Icons pro Ressource und zufällige Farbgenerierung für die UI.
 - **Wartungsmodus:** Setzen von Ressourcen auf "In Wartung" (macht sie für Mitarbeiter unbuchbar).
 - **Buchungsübersicht:** Liste aller Buchungen mit Löschfunktion.
-- **Konfiguration:** Anpassung globaler Einstellungen (z.B. Systemname).
+- **Konfiguration:** 
+  - Anpassung des Systemnamens.
+  - Zuweisung von Standard-Icons für Ressourcen-Kategorien (z.B. "Room" -> "Users", "Vehicle" -> "Truck").
 
 ## Technologie-Stack
 
 - **Frontend:** React 18, TypeScript, Vite
 - **Styling:** Tailwind CSS, Lucide React (Icons)
-- **Routing:** React Router DOM
+- **Routing:** React Router DOM (Browser Router)
 - **Deployment:** Docker, Nginx
 
 ## Installation & Entwicklung
@@ -123,5 +132,6 @@ Die Zugangsdaten für den Admin-Bereich können in der `docker-compose.yml` oder
 - `/src/components`: Wiederverwendbare UI-Komponenten (Navbar, etc.)
 - `/src/pages`: Hauptansichten (Dashboard, Buchung, Admin, Kiosk)
 - `/src/services`: Logik für Datenhaltung (API-Anbindung) und ICS-Generierung
+- `/src/utils`: Hilfsfunktionen (z.B. Icon-Mapping)
 - `/src/types`: TypeScript Interfaces
 - `/backend`: Python Flask Server Code

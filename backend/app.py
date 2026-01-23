@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -33,6 +34,7 @@ class Asset(db.Model):
     description = db.Column(db.String(255), nullable=True)
     color = db.Column(db.String(20), default='#3b82f6')
     is_maintenance = db.Column(db.Boolean, default=False)
+    icon = db.Column(db.String(50), nullable=True)
 
     def to_dict(self):
         return {
@@ -41,7 +43,8 @@ class Asset(db.Model):
             'type': self.type,
             'description': self.description,
             'color': self.color,
-            'is_maintenance': self.is_maintenance
+            'is_maintenance': self.is_maintenance,
+            'icon': self.icon
         }
 
 class Booking(db.Model):
@@ -69,38 +72,71 @@ class Booking(db.Model):
 class AppConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     header_text = db.Column(db.String(100), default='Buchungssystem')
+    # Store category icons as JSON string because SQLite simple arrays are tricky without extensions
+    category_icons_json = db.Column(db.String(500), default='{}')
+
+    def to_dict(self):
+        return {
+            'headerText': self.header_text,
+            'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {}
+        }
 
 # --- Helper ---
 def init_db():
     with app.app_context():
         db.create_all()
         
-        # Check if 'title' column exists in 'booking' table (Migration hack for SQLite)
-        try:
-            with db.engine.connect() as conn:
+        # Migrations for SQLite (since we don't have Alembic set up)
+        with db.engine.connect() as conn:
+            # Check for title in booking
+            try:
                 conn.execute(text("SELECT title FROM booking LIMIT 1"))
-        except Exception:
-            print("Migrating DB: Adding title column to booking table")
-            with db.engine.connect() as conn:
+            except Exception:
+                print("Migrating: Adding title to booking")
                 conn.execute(text("ALTER TABLE booking ADD COLUMN title VARCHAR(100) DEFAULT 'Buchung' NOT NULL"))
+                conn.commit()
+
+            # Check for icon in asset
+            try:
+                conn.execute(text("SELECT icon FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding icon to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN icon VARCHAR(50)"))
+                conn.commit()
+
+            # Check for category_icons_json in app_config
+            try:
+                conn.execute(text("SELECT category_icons_json FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding category_icons_json to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN category_icons_json VARCHAR(500) DEFAULT '{}'"))
                 conn.commit()
 
         # Create default config if not exists
         if not AppConfig.query.first():
-            db.session.add(AppConfig(header_text='Buchungssystem'))
+            default_cats = {
+                'Room': 'Users',
+                'Vehicle': 'Car',
+                'Equipment': 'Box',
+                'Other': 'Wrench'
+            }
+            db.session.add(AppConfig(
+                header_text='Buchungssystem', 
+                category_icons_json=json.dumps(default_cats)
+            ))
             db.session.commit()
         
         # Create default assets if empty
         if not Asset.query.first():
             defaults = [
-                Asset(name='Konferenzraum A (Galaxy)', type='Room', description='Großer Meetingraum, 12 Plätze.', color='#3b82f6'),
-                Asset(name='Konferenzraum B (Nebula)', type='Room', description='Kleiner Raum, 4 Plätze.', color='#8b5cf6'),
-                Asset(name='Firmenwagen', type='Vehicle', description='Tesla Model 3', color='#ef4444', is_maintenance=True),
+                Asset(name='Konferenzraum A (Galaxy)', type='Room', description='Großer Meetingraum, 12 Plätze.', color='#3b82f6', icon='Users'),
+                Asset(name='Konferenzraum B (Nebula)', type='Room', description='Kleiner Raum, 4 Plätze.', color='#8b5cf6', icon='Coffee'),
+                Asset(name='Firmenwagen', type='Vehicle', description='Tesla Model 3', color='#ef4444', is_maintenance=True, icon='Car'),
             ]
             db.session.add_all(defaults)
             db.session.commit()
 
-# Initialize DB immediately to ensure it exists for Docker volumes
+# Initialize DB
 init_db()
 
 # --- Routes ---
@@ -118,7 +154,8 @@ def create_asset():
         type=data.get('type'),
         description=data.get('description'),
         color=data.get('color'),
-        is_maintenance=data.get('is_maintenance', False)
+        is_maintenance=data.get('is_maintenance', False),
+        icon=data.get('icon')
     )
     db.session.add(new_asset)
     db.session.commit()
@@ -132,6 +169,7 @@ def update_asset(id):
     asset.type = data.get('type', asset.type)
     asset.description = data.get('description', asset.description)
     asset.color = data.get('color', asset.color)
+    asset.icon = data.get('icon', asset.icon)
     if 'is_maintenance' in data:
         asset.is_maintenance = data['is_maintenance']
     
@@ -178,8 +216,6 @@ def create_booking():
     db.session.add(new_booking)
     db.session.commit()
     
-    print(f"Sending email to {new_booking.user_email} for booking {new_booking.id}")
-    
     return jsonify(new_booking.to_dict()), 201
 
 @app.route('/api/bookings/<int:id>', methods=['DELETE'])
@@ -192,7 +228,7 @@ def delete_booking(id):
 @app.route('/api/config', methods=['GET'])
 def get_config():
     config = AppConfig.query.first()
-    return jsonify({'headerText': config.header_text if config else 'Buchungssystem'})
+    return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'categoryIcons': {}})
 
 @app.route('/api/config', methods=['POST'])
 def update_config():
@@ -202,9 +238,13 @@ def update_config():
         config = AppConfig()
         db.session.add(config)
     
-    config.header_text = data.get('headerText')
+    config.header_text = data.get('headerText', config.header_text)
+    
+    if 'categoryIcons' in data:
+        config.category_icons_json = json.dumps(data['categoryIcons'])
+        
     db.session.commit()
-    return jsonify({'headerText': config.header_text})
+    return jsonify(config.to_dict())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
