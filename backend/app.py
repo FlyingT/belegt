@@ -35,6 +35,7 @@ class Asset(db.Model):
     color = db.Column(db.String(20), default='#3b82f6')
     is_maintenance = db.Column(db.Boolean, default=False)
     icon = db.Column(db.String(50), nullable=True)
+    sort_order = db.Column(db.Integer, default=0)
 
     def to_dict(self):
         return {
@@ -44,7 +45,8 @@ class Asset(db.Model):
             'description': self.description,
             'color': self.color,
             'is_maintenance': self.is_maintenance,
-            'icon': self.icon
+            'icon': self.icon,
+            'sortOrder': self.sort_order
         }
 
 class Booking(db.Model):
@@ -108,6 +110,14 @@ def init_db():
                 print("Migrating: Adding icon to asset")
                 conn.execute(text("ALTER TABLE asset ADD COLUMN icon VARCHAR(50)"))
                 conn.commit()
+            
+            # Check for sort_order in asset
+            try:
+                conn.execute(text("SELECT sort_order FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding sort_order to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN sort_order INTEGER DEFAULT 0"))
+                conn.commit()
 
             # Check for category_icons_json in app_config
             try:
@@ -145,9 +155,9 @@ def init_db():
         # Create default assets if empty
         if not Asset.query.first():
             defaults = [
-                Asset(name='Konferenzraum A (Galaxy)', type='Room', description='Großer Meetingraum, 12 Plätze.', color='#3b82f6', icon='Users'),
-                Asset(name='Konferenzraum B (Nebula)', type='Room', description='Kleiner Raum, 4 Plätze.', color='#8b5cf6', icon='Coffee'),
-                Asset(name='Firmenwagen', type='Vehicle', description='Tesla Model 3', color='#ef4444', is_maintenance=True, icon='Car'),
+                Asset(name='Konferenzraum A (Galaxy)', type='Room', description='Großer Meetingraum, 12 Plätze.', color='#3b82f6', icon='Users', sort_order=0),
+                Asset(name='Konferenzraum B (Nebula)', type='Room', description='Kleiner Raum, 4 Plätze.', color='#8b5cf6', icon='Coffee', sort_order=1),
+                Asset(name='Firmenwagen', type='Vehicle', description='Tesla Model 3', color='#ef4444', is_maintenance=True, icon='Car', sort_order=2),
             ]
             db.session.add_all(defaults)
             db.session.commit()
@@ -159,23 +169,42 @@ init_db()
 
 @app.route('/api/assets', methods=['GET'])
 def get_assets():
-    assets = Asset.query.all()
+    # Sort by sort_order ascending
+    assets = Asset.query.order_by(Asset.sort_order.asc()).all()
     return jsonify([a.to_dict() for a in assets])
 
 @app.route('/api/assets', methods=['POST'])
 def create_asset():
     data = request.json
+    # Assign new asset to the end of the list
+    max_order = db.session.query(db.func.max(Asset.sort_order)).scalar() or 0
+    
     new_asset = Asset(
         name=data.get('name'),
         type=data.get('type'),
         description=data.get('description'),
         color=data.get('color'),
         is_maintenance=data.get('is_maintenance', False),
-        icon=data.get('icon')
+        icon=data.get('icon'),
+        sort_order=max_order + 1
     )
     db.session.add(new_asset)
     db.session.commit()
     return jsonify(new_asset.to_dict()), 201
+
+@app.route('/api/assets/reorder', methods=['POST'])
+def reorder_assets():
+    # Expects list of objects: [{id: 1, sortOrder: 0}, {id: 2, sortOrder: 1}]
+    data = request.json
+    for item in data:
+        asset_id = item.get('id')
+        sort_order = item.get('sortOrder')
+        if asset_id is not None and sort_order is not None:
+             asset = Asset.query.get(asset_id)
+             if asset:
+                 asset.sort_order = sort_order
+    db.session.commit()
+    return '', 204
 
 @app.route('/api/assets/<int:id>', methods=['PUT'])
 def update_asset(id):

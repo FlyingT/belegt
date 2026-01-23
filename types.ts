@@ -6,6 +6,7 @@ export interface Asset {
   color: string; // Hex code for UI identification
   is_maintenance: boolean;
   icon?: string; // Icon name from lucide-react
+  sortOrder?: number;
 }
 
 export interface Booking {
