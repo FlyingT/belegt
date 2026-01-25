@@ -2,11 +2,11 @@
 
 "Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. Vibe-Coded mit Gemini 3 Pro!
 
-Alles dabei: Buchungsoberfläche für alle, Admin-Dashboard für die Verwaltung und ein schicker Kiosk-Modus für Displays.
+Alles dabei: Buchungsoberfläche für alle, passwortgeschützte Admin-Dashboard für die Verwaltung und ein schicker Kiosk-Modus für Displays vor dem Räumen.
 
 ---
 
-## 📸 Features
+## Features
 
 ### Dashboard
 Ohne Login erreichbare Übersicht aller Ressourcen.
@@ -75,7 +75,7 @@ docker-compose up -d --build
 
 ## Konfiguration
 
-Alles wird über die `.env` gesteuert.
+Nachfolgende Variablen werden über die `.env` gesteuert.
 
 ### Allgemein
 | Variable | Beschreibung | Standard |
