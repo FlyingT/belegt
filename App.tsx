@@ -13,6 +13,9 @@ const Layout = () => (
     <main className="flex-1 bg-gray-50">
       <Outlet />
     </main>
+    <footer className="bg-gray-200 text-gray-700 text-xs text-right py-1 px-4">
+      v1.0.0 von TK
+    </footer>
   </div>
 );
 
