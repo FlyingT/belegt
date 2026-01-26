@@ -13,7 +13,7 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 - **Buchung**: Automatische Anpassung der Endzeit (+1 Stunde), wenn die Startzeit im Buchungsformular geändert wird.
 - **Allgemein**: Versionsnummer im Footer auf v1.1.0 erhöht.
 
-## [v1.0.0] - 2023-07-20
+## [v1.0.0] - 2026-01-23
 
 ### Hinzugefügt
 - Initialer Release.

@@ -49,9 +49,7 @@ Buchungen einsehen und stornieren
 
 Texte, Labels und Seitentitel (Browsertab) konfigurieren
     
-    ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S9-AdminEinstellungen.png)
-    
-    ---
+![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S9-AdminEinstellungen.png)
 
 ## Deployment (Docker Compose)
 
