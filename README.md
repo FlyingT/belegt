@@ -47,11 +47,11 @@ Buchungen einsehen und stornieren
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S8-AdminBuchungen.png)
 
-Texte und Labels konfigurieren
-
-![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S9-AdminEinstellungen.png)
-
----
+Texte, Labels und Seitentitel (Browsertab) konfigurieren
+    
+    ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S9-AdminEinstellungen.png)
+    
+    ---
 
 ## Deployment (Docker Compose)
 

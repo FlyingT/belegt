@@ -8,12 +8,12 @@ export const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  
+
   // Data State
   const [assets, setAssets] = useState<Asset[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [activeTab, setActiveTab] = useState<'assets' | 'bookings' | 'settings'>('assets');
-  
+
   // Settings State
   const [config, setConfig] = useState<AppConfig>({ headerText: '', categoryIcons: {} });
   const [savingConfig, setSavingConfig] = useState(false);
@@ -47,7 +47,7 @@ export const Admin: React.FC = () => {
   // Helper: Random Color
   const getRandomColor = () => {
     const colors = [
-      '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', 
+      '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899',
       '#6366f1', '#14b8a6', '#f97316', '#06b6d4', '#84cc16'
     ];
     return colors[Math.floor(Math.random() * colors.length)];
@@ -103,13 +103,13 @@ export const Admin: React.FC = () => {
     if ((direction === 'up' && index === 0) || (direction === 'down' && index === assets.length - 1)) {
       return;
     }
-    
+
     const newAssets = [...assets];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    
+
     // Swap
     [newAssets[index], newAssets[targetIndex]] = [newAssets[targetIndex], newAssets[index]];
-    
+
     setAssets(newAssets); // Optimistic UI update
     await api.reorderAssets(newAssets); // Persist
   };
@@ -174,8 +174,8 @@ export const Admin: React.FC = () => {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Benutzername</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
@@ -183,8 +183,8 @@ export const Admin: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Passwort</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
@@ -201,8 +201,8 @@ export const Admin: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-8 relative">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Verwaltung</h1>
-        <button 
-          onClick={() => setIsAuthenticated(false)} 
+        <button
+          onClick={() => setIsAuthenticated(false)}
           className="flex items-center text-gray-500 hover:text-red-600"
         >
           <LogOut className="w-5 h-5 mr-2" /> Abmelden
@@ -212,19 +212,19 @@ export const Admin: React.FC = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Tabs */}
         <div className="border-b border-gray-200 flex">
-          <button 
+          <button
             className={`flex-1 py-4 text-center font-medium ${activeTab === 'assets' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('assets')}
           >
             Ressourcen
           </button>
-          <button 
+          <button
             className={`flex-1 py-4 text-center font-medium ${activeTab === 'bookings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('bookings')}
           >
             Buchungen
           </button>
-          <button 
+          <button
             className={`flex-1 py-4 text-center font-medium ${activeTab === 'settings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('settings')}
           >
@@ -247,7 +247,7 @@ export const Admin: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sort</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sortierung</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -258,22 +258,22 @@ export const Admin: React.FC = () => {
                     {assets.map((asset, index) => (
                       <tr key={asset.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                           <div className="flex flex-col space-y-1">
-                              <button 
-                                onClick={() => moveAsset(index, 'up')}
-                                disabled={index === 0}
-                                className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
-                              >
-                                <ArrowUp className="w-4 h-4" />
-                              </button>
-                              <button 
-                                onClick={() => moveAsset(index, 'down')}
-                                disabled={index === assets.length - 1}
-                                className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
-                              >
-                                <ArrowDown className="w-4 h-4" />
-                              </button>
-                           </div>
+                          <div className="flex flex-col space-y-1">
+                            <button
+                              onClick={() => moveAsset(index, 'up')}
+                              disabled={index === 0}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                            >
+                              <ArrowUp className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => moveAsset(index, 'down')}
+                              disabled={index === assets.length - 1}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                            >
+                              <ArrowDown className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
                           <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></span>
@@ -287,26 +287,26 @@ export const Admin: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                          <button 
+                          <button
                             onClick={() => toggleMaintenance(asset)}
                             className={`inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white ${asset.is_maintenance ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'}`}
                             title={asset.is_maintenance ? 'Aktivieren' : 'In Wartung setzen'}
                           >
                             <Power className="w-3 h-3" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => openEditAssetModal(asset)}
                             className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
                             title="Bearbeiten"
                           >
                             <Edit2 className="w-3 h-3" />
                           </button>
-                          <button 
-                             onClick={() => deleteAsset(asset.id)}
-                             className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700"
-                             title="Löschen"
+                          <button
+                            onClick={() => deleteAsset(asset.id)}
+                            className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700"
+                            title="Löschen"
                           >
-                             <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-3 h-3" />
                           </button>
                         </td>
                       </tr>
@@ -318,10 +318,10 @@ export const Admin: React.FC = () => {
           )}
 
           {activeTab === 'bookings' && (
-             <div className="overflow-x-auto">
-               {bookings.length === 0 ? (
-                 <p className="text-gray-500 text-center py-8">Keine Buchungen vorhanden.</p>
-               ) : (
+            <div className="overflow-x-auto">
+              {bookings.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Keine Buchungen vorhanden.</p>
+              ) : (
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
@@ -335,18 +335,18 @@ export const Admin: React.FC = () => {
                     {bookings.map(b => (
                       <tr key={b.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                           {assets.find(a => a.id === b.assetId)?.name || b.assetId}
+                          {assets.find(a => a.id === b.assetId)?.name || b.assetId}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           <div className="font-bold text-indigo-700">{b.title}</div>
                           {b.userName} <span className="text-xs text-gray-400">({b.userEmail})</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                           {new Date(b.startTime).toLocaleDateString()} <br />
-                           {new Date(b.startTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} - {new Date(b.endTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                          {new Date(b.startTime).toLocaleDateString()} <br />
+                          {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button 
+                          <button
                             onClick={() => deleteBooking(b.id)}
                             className="text-red-600 hover:text-red-900"
                             title="Löschen"
@@ -358,30 +358,47 @@ export const Admin: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-               )}
-             </div>
+              )}
+            </div>
           )}
 
           {activeTab === 'settings' && (
             <div className="max-w-4xl">
               <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Konfiguration</h3>
               <form onSubmit={saveSettings} className="space-y-8">
-                
+
                 {/* General */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
-                  <div className="mb-4 max-w-md">
-                    <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Settings className="h-4 w-4 text-gray-400" />
+                  <div className="space-y-4 max-w-md">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Settings className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          value={config.headerText}
+                          onChange={e => setConfig({ ...config, headerText: e.target.value })}
+                        />
                       </div>
-                      <input
-                        type="text"
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.headerText}
-                        onChange={e => setConfig({ ...config, headerText: e.target.value })}
-                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Seitentitel (Browser Tab)</label>
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Settings className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          value={config.siteTitle || ''}
+                          onChange={e => setConfig({ ...config, siteTitle: e.target.value })}
+                          placeholder="Belegt"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -390,7 +407,7 @@ export const Admin: React.FC = () => {
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
                   <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
-                  
+
                   <div className="space-y-4 max-w-md">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
@@ -429,28 +446,28 @@ export const Admin: React.FC = () => {
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
                   <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-                  
+
                   <div className="space-y-8">
                     {Object.entries(categoryLabels).map(([type, label]) => {
                       const currentIcon = config.categoryIcons?.[type];
                       const activeIcon = currentIcon || defaultIcons[type];
-                      
+
                       return (
                         <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                           <div className="flex items-center justify-between mb-3">
                             <div>
-                               <label className="text-base font-semibold text-gray-800">{label}</label>
-                               <div className="text-xs text-gray-500 mt-0.5 flex items-center">
-                                  Aktives Icon: 
-                                  <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
-                                    <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
-                                    {activeIcon}
-                                  </span>
-                                  {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
-                               </div>
+                              <label className="text-base font-semibold text-gray-800">{label}</label>
+                              <div className="text-xs text-gray-500 mt-0.5 flex items-center">
+                                Aktives Icon:
+                                <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
+                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                  {activeIcon}
+                                </span>
+                                {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
+                              </div>
                             </div>
                             {currentIcon && (
-                              <button 
+                              <button
                                 type="button"
                                 onClick={() => resetCategoryIcon(type)}
                                 className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
@@ -466,13 +483,12 @@ export const Admin: React.FC = () => {
                                 key={iconName}
                                 type="button"
                                 onClick={() => handleCategoryIconChange(type, iconName)}
-                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${
-                                  currentIcon === iconName 
-                                    ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500' 
-                                    : (!currentIcon && iconName === defaultIcons[type]) 
-                                      ? 'bg-gray-100 border border-gray-300 opacity-75' 
-                                      : ''
-                                }`}
+                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                                  : (!currentIcon && iconName === defaultIcons[type])
+                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
+                                    : ''
+                                  }`}
                                 title={iconName}
                               >
                                 <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
@@ -486,16 +502,15 @@ export const Admin: React.FC = () => {
                 </div>
 
                 <div className="pt-2">
-                   <button
+                  <button
                     type="submit"
                     disabled={savingConfig}
-                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
-                      savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                   >
-                     <Save className="w-4 h-4 mr-2" />
-                     {savingConfig ? 'Speichere...' : 'Speichern'}
-                   </button>
+                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {savingConfig ? 'Speichere...' : 'Speichern'}
+                  </button>
                 </div>
               </form>
             </div>
@@ -519,11 +534,11 @@ export const Admin: React.FC = () => {
                   <X className="h-6 w-6" />
                 </button>
               </div>
-              
+
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
                 {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
               </h3>
-              
+
               <form onSubmit={saveAsset} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -557,50 +572,50 @@ export const Admin: React.FC = () => {
                     onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
                   />
                 </div>
-                
+
                 {/* Color & Maintenance */}
                 <div className="flex gap-4 items-end">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Farbe 
-                        <button type="button" onClick={() => setEditingAsset({...editingAsset, color: getRandomColor()})} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3"/> Zufall</button>
-                      </label>
-                      <input
-                        type="color"
-                        className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        value={editingAsset.color || '#3b82f6'}
-                        onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
-                      />
-                    </div>
-                    <div className="flex items-center h-10 pb-3">
-                      <input
-                        id="maintenance_toggle"
-                        type="checkbox"
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        checked={editingAsset.is_maintenance || false}
-                        onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
-                      />
-                      <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
-                        In Wartung?
-                      </label>
-                    </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Farbe
+                      <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
+                    </label>
+                    <input
+                      type="color"
+                      className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      value={editingAsset.color || '#3b82f6'}
+                      onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex items-center h-10 pb-3">
+                    <input
+                      id="maintenance_toggle"
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={editingAsset.is_maintenance || false}
+                      onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
+                    />
+                    <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
+                      In Wartung?
+                    </label>
+                  </div>
                 </div>
 
                 {/* Icon Picker */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
                   <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
-                     {Object.keys(ICON_MAP).map(iconName => (
-                       <button
+                    {Object.keys(ICON_MAP).map(iconName => (
+                      <button
                         key={iconName}
                         type="button"
-                        onClick={() => setEditingAsset({...editingAsset, icon: iconName})}
+                        onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
                         className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
                         title={iconName}
-                       >
-                         <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
-                       </button>
-                     ))}
+                      >
+                        <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
+                      </button>
+                    ))}
                   </div>
                   {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
                 </div>
