@@ -1,4 +1,5 @@
-"Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. Vibe-Coded mit Gemini Antigravity!
+"Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. 
+Vibe-Coded mit Gemini Antigravity und ausschließlich für das Bereitstellen hinter einem Reverse Proxy im Intranet gedacht.
 
 Alles dabei:
 - **Dashboard**: Übersicht aller Ressourcen und deren aktueller Status.
