@@ -2,6 +2,11 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.3.0] - 2026-01-26
+
+### Hinzugefügt
+- **Admin**: Neue Spalte "Nutzung" in der Ressourcen-Tabelle zeigt die Gesamtanzahl der Buchungen pro Asset an.
+
 ## [v1.2.3] - 2026-01-26
 
 ### Geändert
