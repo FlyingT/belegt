@@ -71,9 +71,11 @@ class Booking(db.Model):
             'createdAt': self.created_at.isoformat()
         }
 
+
 class AppConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     header_text = db.Column(db.String(100), default='Buchungssystem')
+    site_title = db.Column(db.String(100), default='Belegt')
     category_icons_json = db.Column(db.String(500), default='{}')
     placeholder_title = db.Column(db.String(100), default='z.B. Team Meeting, Kundenbesuch')
     placeholder_name = db.Column(db.String(100), default='')
@@ -82,6 +84,7 @@ class AppConfig(db.Model):
     def to_dict(self):
         return {
             'headerText': self.header_text,
+            'siteTitle': self.site_title,
             'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {},
             'placeholderTitle': self.placeholder_title,
             'placeholderName': self.placeholder_name,
@@ -136,6 +139,14 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_email VARCHAR(100) DEFAULT ''"))
                 conn.commit()
+                
+            # Check for site_title in app_config
+            try:
+                conn.execute(text("SELECT site_title FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding site_title to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN site_title VARCHAR(100) DEFAULT 'Belegt'"))
+                conn.commit()
 
         # Create default config if not exists
         if not AppConfig.query.first():
@@ -147,6 +158,7 @@ def init_db():
             }
             db.session.add(AppConfig(
                 header_text='Buchungssystem', 
+                site_title='Belegt',
                 category_icons_json=json.dumps(default_cats),
                 placeholder_title='z.B. Team Meeting, Kundenbesuch'
             ))
@@ -273,7 +285,7 @@ def delete_booking(id):
 @app.route('/api/config', methods=['GET'])
 def get_config():
     config = AppConfig.query.first()
-    return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'categoryIcons': {}})
+    return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'siteTitle': 'Belegt', 'categoryIcons': {}})
 
 @app.route('/api/config', methods=['POST'])
 def update_config():
@@ -284,6 +296,7 @@ def update_config():
         db.session.add(config)
     
     config.header_text = data.get('headerText', config.header_text)
+    config.site_title = data.get('siteTitle', config.site_title)
     
     if 'categoryIcons' in data:
         config.category_icons_json = json.dumps(data['categoryIcons'])

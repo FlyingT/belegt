@@ -60,7 +60,7 @@ export const BookingFlow: React.FC = () => {
       }
 
       if (new Date(startIso) < new Date()) {
-         throw new Error("Buchungen in der Vergangenheit sind nicht erlaubt.");
+        throw new Error("Buchungen in der Vergangenheit sind nicht erlaubt.");
       }
 
       const booking = await api.createBooking({
@@ -92,8 +92,8 @@ export const BookingFlow: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <button 
-        onClick={() => navigate('/')} 
+      <button
+        onClick={() => navigate('/')}
         className="flex items-center text-gray-500 hover:text-gray-900 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4 mr-2" /> Zurück zur Übersicht
@@ -116,7 +116,7 @@ export const BookingFlow: React.FC = () => {
             )}
 
             <div className="space-y-4">
-               <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700">Titel / Grund der Buchung</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -128,7 +128,7 @@ export const BookingFlow: React.FC = () => {
                     placeholder={appConfig?.placeholderTitle || "z.B. Team Meeting, Kundenbesuch"}
                     className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                     value={formData.title}
-                    onChange={e => setFormData({...formData, title: e.target.value})}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
               </div>
@@ -137,7 +137,7 @@ export const BookingFlow: React.FC = () => {
                 <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
                   <Clock className="w-5 h-5 mr-2 text-indigo-500" /> Zeitwahl
                 </h3>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Datum</label>
                   <input
@@ -146,7 +146,7 @@ export const BookingFlow: React.FC = () => {
                     min={new Date().toISOString().split('T')[0]}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                     value={formData.date}
-                    onChange={e => setFormData({...formData, date: e.target.value})}
+                    onChange={e => setFormData({ ...formData, date: e.target.value })}
                   />
                 </div>
 
@@ -158,7 +158,35 @@ export const BookingFlow: React.FC = () => {
                       required
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.startTime}
-                      onChange={e => setFormData({...formData, startTime: e.target.value})}
+                      onChange={e => {
+                        const newStart = e.target.value;
+                        if (!newStart) {
+                          setFormData({ ...formData, startTime: newStart });
+                          return;
+                        }
+
+                        // Parse hours and minutes
+                        const [hours, minutes] = newStart.split(':').map(Number);
+
+                        // Add 1 hour
+                        let newEndHours = hours + 1;
+                        let newEndMinutes = minutes;
+
+                        // Handle rollover (simplified, wraps around 24h)
+                        if (newEndHours >= 24) {
+                          newEndHours = newEndHours - 24;
+                        }
+
+                        // Format back to HH:MM
+                        const formatTime = (h: number, m: number) =>
+                          `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+
+                        setFormData({
+                          ...formData,
+                          startTime: newStart,
+                          endTime: formatTime(newEndHours, newEndMinutes)
+                        });
+                      }}
                     />
                   </div>
                   <div>
@@ -168,7 +196,7 @@ export const BookingFlow: React.FC = () => {
                       required
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.endTime}
-                      onChange={e => setFormData({...formData, endTime: e.target.value})}
+                      onChange={e => setFormData({ ...formData, endTime: e.target.value })}
                     />
                   </div>
                 </div>
@@ -192,7 +220,7 @@ export const BookingFlow: React.FC = () => {
                         placeholder={appConfig?.placeholderName || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.name}
-                        onChange={e => setFormData({...formData, name: e.target.value})}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
                       />
                     </div>
                   </div>
@@ -209,7 +237,7 @@ export const BookingFlow: React.FC = () => {
                         placeholder={appConfig?.placeholderEmail || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.email}
-                        onChange={e => setFormData({...formData, email: e.target.value})}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
                   </div>
@@ -218,40 +246,39 @@ export const BookingFlow: React.FC = () => {
             </div>
 
             <div className="pt-6 border-t flex justify-end">
-               <button
+              <button
                 type="submit"
                 disabled={submitting}
-                className={`inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
-                  submitting ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-               >
-                 {submitting ? 'Wird gebucht...' : 'Jetzt Buchen'}
-               </button>
+                className={`inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${submitting ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+              >
+                {submitting ? 'Wird gebucht...' : 'Jetzt Buchen'}
+              </button>
             </div>
           </form>
         </div>
-        
+
         {/* Availability Sidebar */}
         <div className="bg-gray-50 border-t md:border-t-0 md:border-l border-gray-200 w-full md:w-72 p-6">
-           <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center">
-             <Info className="w-4 h-4 mr-2" /> Belegung am {new Date(formData.date).toLocaleDateString()}
-           </h3>
-           
-           {bookingsForDate.length === 0 ? (
-             <p className="text-sm text-gray-500 italic">Noch keine Buchungen für diesen Tag.</p>
-           ) : (
-             <div className="space-y-3">
-               {bookingsForDate.map(b => (
-                 <div key={b.id} className="bg-white p-3 rounded shadow-sm border border-gray-200">
-                    <div className="text-xs font-semibold text-indigo-600 mb-1">
-                      {new Date(b.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {new Date(b.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                    <div className="text-sm font-medium text-gray-800 truncate" title={b.title}>{b.title}</div>
-                    <div className="text-xs text-gray-500 truncate">{b.userName}</div>
-                 </div>
-               ))}
-             </div>
-           )}
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center">
+            <Info className="w-4 h-4 mr-2" /> Belegung am {new Date(formData.date).toLocaleDateString()}
+          </h3>
+
+          {bookingsForDate.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">Noch keine Buchungen für diesen Tag.</p>
+          ) : (
+            <div className="space-y-3">
+              {bookingsForDate.map(b => (
+                <div key={b.id} className="bg-white p-3 rounded shadow-sm border border-gray-200">
+                  <div className="text-xs font-semibold text-indigo-600 mb-1">
+                    {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  <div className="text-sm font-medium text-gray-800 truncate" title={b.title}>{b.title}</div>
+                  <div className="text-xs text-gray-500 truncate">{b.userName}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
