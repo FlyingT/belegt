@@ -432,6 +432,7 @@ export const Admin: React.FC = () => {
                   >
                     <Save className="w-4 h-4 mr-2" />
                     Speichern
+                  </button>
                 </div>
 
                 {/* Placeholders */}
@@ -482,6 +483,7 @@ export const Admin: React.FC = () => {
                   >
                     <Save className="w-4 h-4 mr-2" />
                     Speichern
+                  </button>
                 </div>
 
                 {/* Category Icons */}
@@ -685,5 +687,6 @@ export const Admin: React.FC = () => {
           }
         </div >
       </div >
-      );
+    </div >
+  );
 };
