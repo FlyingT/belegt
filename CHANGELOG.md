@@ -2,6 +2,11 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.5.0] - 2026-01-26
+
+### Hinzugefügt
+- **Admin**: "Buchungen" Tab strukturiert in "Tagesübersicht" (mit Statusfarben), "Anstehend" und "Vergangen".
+
 ## [v1.4.0] - 2026-01-26
 
 ### Hinzugefügt
