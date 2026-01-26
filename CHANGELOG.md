@@ -2,6 +2,12 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.2.2] - 2026-01-26
+
+### Geändert
+- **App**: Versionsnummer im Footer ist nun anklickbar und verlinkt auf das Changelog.
+- **Buchung**: Hinweistext zum Datenschutz (Sichtbarkeit der Daten) neben dem "Jetzt Buchen"-Button hinzugefügt.
+
 ## [v1.2.1] - 2026-01-26
 
 ### Geändert
