@@ -2,6 +2,13 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.5.1] - 2026-01-26
+
+### Geändert
+- **Favicon**: Browser-Icon (Kalender) hinzugefügt.
+- **Admin**: "Speichern"-Buttons in den Einstellungen zu "Speichern & Neuladen" umbenannt und in die jeweiligen Boxen (unten rechts) verschoben.
+- **Admin**: Akzentfarben-Vorschau in den Einstellungen verbreitert.
+
 ## [v1.5.0] - 2026-01-26
 
 ### Hinzugefügt

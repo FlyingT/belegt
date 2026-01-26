@@ -618,7 +618,7 @@ export const Admin: React.FC = () => {
                       <div className="flex gap-2 items-center mt-1">
                         <input
                           type="color"
-                          className="h-10 w-14 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
+                          className="h-10 w-44 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
                           value={config.accentColor || '#3b82f6'}
                           onChange={e => setConfig({ ...config, accentColor: e.target.value })}
                         />
@@ -633,18 +633,18 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={saveSettings}
-                    disabled={savingConfig}
-                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Speichern
-                  </button>
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={saveSettings}
+                      disabled={savingConfig}
+                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Speichern & Neuladen
+                    </button>
+                  </div>
                 </div>
 
                 {/* Placeholders */}
@@ -684,18 +684,18 @@ export const Admin: React.FC = () => {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={saveSettings}
-                    disabled={savingConfig}
-                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    Speichern
-                  </button>
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={saveSettings}
+                      disabled={savingConfig}
+                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Speichern & Neuladen
+                    </button>
+                  </div>
                 </div>
 
                 {/* Category Icons */}
@@ -755,18 +755,17 @@ export const Admin: React.FC = () => {
                       );
                     })}
                   </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={savingConfig}
-                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Speichern'}
-                  </button>
+                  <div className="mt-8 flex justify-end pt-4 border-t border-gray-200">
+                    <button
+                      type="submit"
+                      disabled={savingConfig}
+                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
