@@ -2,6 +2,15 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.2.0] - 2026-01-27
+
+### Hinzugefügt
+- Konfigurierbare Akzentfarbe hinzugefügt (Admin kann Farbe für Titel und Buttons festlegen)
+
+### Geändert
+- Buchungszeit wird jetzt auf die nächste volle Stunde vorausgewählt
+- Reihenfolge im Buchungsformular optimiert (Titel -> Daten -> Zeit)
+
 ## [v1.1.0] - 2026-01-26
 
 ### Hinzugefügt

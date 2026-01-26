@@ -1,8 +1,11 @@
-# Belegt? - Ressourcen-Buchungssystem
-
 "Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. Vibe-Coded mit Gemini 3 Pro!
 
 Alles dabei: Buchungsoberfläche für alle, passwortgeschützte Admin-Dashboard für die Verwaltung und ein schicker Kiosk-Modus für Displays vor dem Räumen.
+
+### Features
+- **Ressourcen-Management**: Einfaches Anlegen und Verwalten von Räumen, Fahrzeugen und Equipment.
+- **Individuelles Design**: Anpassbare Akzentfarbe für Titel und Buttons über das Admin-Panel.
+- **Übersichtliches Dashboard**: Klares Dashboard mit Statusanzeige (Verfügbar/Gebucht/Wartung).
 
 ---
 

@@ -10,15 +10,33 @@ export const BookingFlow: React.FC = () => {
   const [asset, setAsset] = useState<Asset | null>(null);
   const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
+  const [accentColor, setAccentColor] = useState('#3b82f6');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Calculate default times
+  const getNextFullHour = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    now.setMinutes(0);
+    return now.toTimeString().slice(0, 5); // HH:MM
+  };
+
+  const getOneHourLater = (time: string) => {
+    const [h, m] = time.split(':').map(Number);
+    let newH = h + 1;
+    if (newH >= 24) newH -= 24;
+    return `${newH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  };
+
+  const defaultStart = getNextFullHour();
+
   // Form State
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
-    startTime: '09:00',
-    endTime: '10:00',
+    startTime: defaultStart,
+    endTime: getOneHourLater(defaultStart),
     title: '',
     name: '',
     email: ''
@@ -39,6 +57,7 @@ export const BookingFlow: React.FC = () => {
         // Filter bookings for this asset
         setExistingBookings(bookingsData.filter(b => b.assetId === assetId));
         setAppConfig(configData);
+        if (configData.accentColor) setAccentColor(configData.accentColor);
         setLoading(false);
       });
     }
@@ -135,6 +154,48 @@ export const BookingFlow: React.FC = () => {
 
               <div className="border-t pt-4">
                 <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
+                  <User className="w-5 h-5 mr-2 text-indigo-500" /> Ihre Daten
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <div className="mt-1 relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        placeholder={appConfig?.placeholderName || ""}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">E-Mail Adresse</label>
+                    <div className="mt-1 relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        placeholder={appConfig?.placeholderEmail || ""}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
                   <Clock className="w-5 h-5 mr-2 text-indigo-500" /> Zeitwahl
                 </h3>
 
@@ -201,56 +262,15 @@ export const BookingFlow: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-indigo-500" /> Ihre Daten
-                </h3>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        required
-                        placeholder={appConfig?.placeholderName || ""}
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={formData.name}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">E-Mail Adresse</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="email"
-                        required
-                        placeholder={appConfig?.placeholderEmail || ""}
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={formData.email}
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="pt-6 border-t flex justify-end">
               <button
                 type="submit"
                 disabled={submitting}
-                className={`inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${submitting ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                className={`inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${submitting ? 'opacity-70 cursor-wait' : 'hover:opacity-90'
                   } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                style={{ backgroundColor: accentColor }}
               >
                 {submitting ? 'Wird gebucht...' : 'Jetzt Buchen'}
               </button>
