@@ -5,6 +5,7 @@ import { api } from '../services/api';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const [headerText, setHeaderText] = useState('Buchungssystem');
   const [accentColor, setAccentColor] = useState('#3b82f6');
 
   useEffect(() => {
@@ -30,8 +31,8 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/"
                 className={`${location.pathname === '/'
-                    ? 'border-indigo-500 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  ? 'border-indigo-500 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Übersicht
@@ -39,8 +40,8 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/admin"
                 className={`${location.pathname.startsWith('/admin')
-                    ? 'border-indigo-500 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  ? 'border-indigo-500 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Verwaltung
