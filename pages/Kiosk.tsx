@@ -11,10 +11,11 @@ export const Kiosk: React.FC = () => {
   const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
   const [status, setStatus] = useState<AssetStatus>(AssetStatus.FREE);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(60);
 
   const fetchData = async () => {
     if (!assetId) return;
-    
+
     // 1. Get Asset
     const assetData = await api.getAssetById(assetId);
     if (!assetData) return;
@@ -29,13 +30,13 @@ export const Kiosk: React.FC = () => {
     const allBookings = await api.getBookings();
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
-    
+
     // Filter for this asset and today
     const filtered = allBookings.filter(b => {
       const bDate = new Date(b.startTime).toISOString().split('T')[0];
       return b.assetId === assetId && bDate === todayStr;
     }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-    
+
     setTodaysBookings(filtered);
 
     // Find active booking
@@ -56,14 +57,22 @@ export const Kiosk: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    // Refresh Data every 60s
-    const dataInterval = setInterval(fetchData, 60000);
-    // Refresh Clock every 1s
-    const clockInterval = setInterval(() => setCurrentTime(new Date()), 1000);
+
+    // Combined interval for Clock and Data Refresh Countdown
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+
+      setSecondsUntilRefresh(prev => {
+        if (prev <= 1) {
+          fetchData();
+          return 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
-      clearInterval(dataInterval);
-      clearInterval(clockInterval);
+      clearInterval(intervalId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assetId]);
@@ -78,7 +87,7 @@ export const Kiosk: React.FC = () => {
   if (status === AssetStatus.OCCUPIED && currentBooking) {
     bgColor = 'bg-red-600';
     mainText = 'BELEGT';
-    const until = new Date(currentBooking.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const until = new Date(currentBooking.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     subText = `Bis ${until} Uhr: ${currentBooking.title}`;
   } else if (status === AssetStatus.MAINTENANCE) {
     bgColor = 'bg-gray-800';
@@ -93,7 +102,7 @@ export const Kiosk: React.FC = () => {
         <h1 className="text-4xl font-bold">{asset.name}</h1>
         <div className="flex items-center text-3xl font-mono">
           <Clock className="w-8 h-8 mr-4" />
-          {currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+          {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
 
@@ -102,53 +111,53 @@ export const Kiosk: React.FC = () => {
         <div className="bg-white bg-opacity-20 rounded-full px-12 py-4 backdrop-blur-sm mb-8">
           <span className="text-8xl font-black tracking-wider shadow-sm">{mainText}</span>
         </div>
-        
+
         <p className="text-4xl font-light opacity-90">{subText}</p>
 
         {status === AssetStatus.OCCUPIED && currentBooking && (
           <div className="mt-12 flex items-center bg-black bg-opacity-30 px-8 py-4 rounded-xl">
-             <User className="w-8 h-8 mr-4 opacity-80" />
-             <div className="text-left">
-                <div className="text-xl font-medium">{currentBooking.userName}</div>
-             </div>
+            <User className="w-8 h-8 mr-4 opacity-80" />
+            <div className="text-left">
+              <div className="text-xl font-medium">{currentBooking.userName}</div>
+            </div>
           </div>
         )}
       </div>
 
       {/* Today's Schedule (Bottom Panel) */}
       <div className="bg-black bg-opacity-40 p-6 backdrop-blur-md flex-shrink-0">
-         <div className="flex items-center mb-4 text-white opacity-80">
-            <Calendar className="w-6 h-6 mr-2" />
-            <span className="text-xl font-semibold">Tagesplan</span>
-         </div>
-         
-         {todaysBookings.length === 0 ? (
-           <p className="opacity-60">Keine weiteren Buchungen für heute.</p>
-         ) : (
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-             {todaysBookings.map(b => {
-                const isCurrent = currentBooking && currentBooking.id === b.id;
-                const isPast = new Date(b.endTime) < currentTime;
-                
-                return (
-                  <div key={b.id} className={`p-3 rounded-lg flex flex-col ${isCurrent ? 'bg-white bg-opacity-20 border border-white' : isPast ? 'bg-white bg-opacity-5 opacity-50' : 'bg-white bg-opacity-10'}`}>
-                      <div className="flex justify-between items-center mb-1">
-                          <span className="font-mono font-bold">
-                            {new Date(b.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {new Date(b.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                          </span>
-                      </div>
-                      <span className="font-medium truncate">{b.title}</span>
-                      <span className="text-sm opacity-70 truncate">{b.userName}</span>
+        <div className="flex items-center mb-4 text-white opacity-80">
+          <Calendar className="w-6 h-6 mr-2" />
+          <span className="text-xl font-semibold">Tagesplan</span>
+        </div>
+
+        {todaysBookings.length === 0 ? (
+          <p className="opacity-60">Keine weiteren Buchungen für heute.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {todaysBookings.map(b => {
+              const isCurrent = currentBooking && currentBooking.id === b.id;
+              const isPast = new Date(b.endTime) < currentTime;
+
+              return (
+                <div key={b.id} className={`p-3 rounded-lg flex flex-col ${isCurrent ? 'bg-white bg-opacity-20 border border-white' : isPast ? 'bg-white bg-opacity-5 opacity-50' : 'bg-white bg-opacity-10'}`}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-mono font-bold">
+                      {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
-                );
-             })}
-           </div>
-         )}
+                  <span className="font-medium truncate">{b.title}</span>
+                  <span className="text-sm opacity-70 truncate">{b.userName}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      
+
       {/* Footer Line */}
       <div className="py-2 text-center text-xs opacity-40 bg-black bg-opacity-50">
-         Kiosk Modus • Aktualisiert alle 60s
+        Kiosk Modus • Aktualisiert in {secondsUntilRefresh}s
       </div>
     </div>
   );

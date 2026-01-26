@@ -2,6 +2,12 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.2.3] - 2026-01-26
+
+### Geändert
+- **Buchung**: Hinweistext im Buchungsformular nach links verschoben.
+- **Kiosk**: Countdown für Datenaktualisierung ist nun dynamisch sichtbar.
+
 ## [v1.2.2] - 2026-01-26
 
 ### Geändert
@@ -11,10 +17,12 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 ## [v1.2.1] - 2026-01-26
 
 ### Geändert
-- Admin-Einstellungen: Speichern-Button in allen Sektionen hinzugefügt
 - Admin-Einstellungen: Seite wird nach dem Speichern automatisch neu geladen
 
 ## [v1.2.0] - 2026-01-26
+
+### Geändert
+- Admin-Einstellungen: Speichern-Button in allen Sektionen hinzugefügt
 
 ## [v1.1.0] - 2026-01-26
 
