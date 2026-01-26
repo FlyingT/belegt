@@ -558,10 +558,10 @@ export const Admin: React.FC = () => {
                 </div>
               </form>
             </div>
-          )
+          )}
 
 
-  {/* Asset Modal */}
+          {/* Asset Modal */}
           {
             isAssetModalOpen && (
               <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
