@@ -2,6 +2,11 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.4.0] - 2026-01-26
+
+### Hinzugefügt
+- **Admin**: Export (Download als JSON) und Import (Upload JSON) von Buchungen im Tab "Buchungen".
+
 ## [v1.3.0] - 2026-01-26
 
 ### Hinzugefügt
