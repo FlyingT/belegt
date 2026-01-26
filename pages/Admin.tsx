@@ -248,659 +248,657 @@ export const Admin: React.FC = () => {
     };
     reader.readAsText(file);
   };
-  reader.readAsText(file);
-};
 
-// Helper: Date Categories
-const isSameDate = (d1: Date, d2: Date) => {
-  return d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-};
+  // Helper: Date Categories
+  const isSameDate = (d1: Date, d2: Date) => {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+  };
 
-const now = new Date();
-const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-const todayBookings = bookings.filter(b => isSameDate(new Date(b.startTime), now)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-const upcomingBookings = bookings.filter(b => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-const pastBookings = bookings.filter(b => new Date(b.startTime) < today).sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
+  const todayBookings = bookings.filter(b => isSameDate(new Date(b.startTime), now)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const upcomingBookings = bookings.filter(b => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const pastBookings = bookings.filter(b => new Date(b.startTime) < today).sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
 
-const getTodayStatusStyle = (b: Booking) => {
-  const start = new Date(b.startTime).getTime();
-  const end = new Date(b.endTime).getTime();
-  const current = now.getTime();
+  const getTodayStatusStyle = (b: Booking) => {
+    const start = new Date(b.startTime).getTime();
+    const end = new Date(b.endTime).getTime();
+    const current = now.getTime();
 
-  if (current > end) return 'text-gray-400 opacity-75'; // Past
-  if (current >= start && current <= end) return 'font-bold text-indigo-900 bg-indigo-50'; // Active
-  return 'text-gray-900'; // Future
-};
+    if (current > end) return 'text-gray-400 opacity-75'; // Past
+    if (current >= start && current <= end) return 'font-bold text-indigo-900 bg-indigo-50'; // Active
+    return 'text-gray-900'; // Future
+  };
 
-if (!isAuthenticated) {
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Admin Anmeldung</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Benutzername</label>
+              <input
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Passwort</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+              />
+            </div>
+            <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Anmelden</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Admin Anmeldung</h2>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Benutzername</label>
-            <input
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Passwort</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
-            />
-          </div>
-          <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Anmelden</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-return (
-  <div className="max-w-7xl mx-auto px-4 py-8 relative">
-    <div className="flex justify-between items-center mb-8">
-      <h1 className="text-3xl font-bold text-gray-900">Verwaltung</h1>
-      <button
-        onClick={() => setIsAuthenticated(false)}
-        className="flex items-center text-gray-500 hover:text-red-600"
-      >
-        <LogOut className="w-5 h-5 mr-2" /> Abmelden
-      </button>
-    </div>
-
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      {/* Tabs */}
-      <div className="border-b border-gray-200 flex">
+    <div className="max-w-7xl mx-auto px-4 py-8 relative">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Verwaltung</h1>
         <button
-          className={`flex-1 py-4 text-center font-medium ${activeTab === 'assets' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('assets')}
+          onClick={() => setIsAuthenticated(false)}
+          className="flex items-center text-gray-500 hover:text-red-600"
         >
-          Ressourcen
-        </button>
-        <button
-          className={`flex-1 py-4 text-center font-medium ${activeTab === 'bookings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('bookings')}
-        >
-          Buchungen
-        </button>
-        <button
-          className={`flex-1 py-4 text-center font-medium ${activeTab === 'settings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('settings')}
-        >
-          Einstellungen
+          <LogOut className="w-5 h-5 mr-2" /> Abmelden
         </button>
       </div>
 
-      <div className="p-6">
-        {activeTab === 'assets' && (
-          <div>
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={openNewAssetModal}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
-              >
-                <Plus className="w-4 h-4 mr-2" /> Neue Ressource
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sortierung</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutzung</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {assets.map((asset, index) => (
-                    <tr key={asset.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex flex-col space-y-1">
-                          <button
-                            onClick={() => moveAsset(index, 'up')}
-                            disabled={index === 0}
-                            className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
-                          >
-                            <ArrowUp className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => moveAsset(index, 'down')}
-                            disabled={index === assets.length - 1}
-                            className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
-                          >
-                            <ArrowDown className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
-                        <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></span>
-                        <span className="mr-2 text-gray-500"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
-                        {asset.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{categoryLabels[asset.type] || asset.type}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.is_maintenance ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                          {asset.is_maintenance ? 'In Wartung' : 'Verfügbar'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {bookings.filter(b => b.assetId === asset.id).length} Buchungen
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <button
-                          onClick={() => toggleMaintenance(asset)}
-                          className={`inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white ${asset.is_maintenance ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'}`}
-                          title={asset.is_maintenance ? 'Aktivieren' : 'In Wartung setzen'}
-                        >
-                          <Power className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => openEditAssetModal(asset)}
-                          className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-                          title="Bearbeiten"
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => deleteAsset(asset.id)}
-                          className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700"
-                          title="Löschen"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {/* Tabs */}
+        <div className="border-b border-gray-200 flex">
+          <button
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'assets' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('assets')}
+          >
+            Ressourcen
+          </button>
+          <button
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'bookings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('bookings')}
+          >
+            Buchungen
+          </button>
+          <button
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'settings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            Einstellungen
+          </button>
+        </div>
 
-        {activeTab === 'bookings' && (
-          <div>
-            <div className="flex justify-end mb-4 space-x-2">
-              <button
-                onClick={handleExport}
-                className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center"
-              >
-                <Download className="w-4 h-4 mr-2" /> Exportieren
-              </button>
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleImport}
-                  disabled={importing}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                />
+        <div className="p-6">
+          {activeTab === 'assets' && (
+            <div>
+              <div className="flex justify-end mb-4">
                 <button
-                  className={`bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center ${importing ? 'opacity-50' : ''}`}
+                  onClick={openNewAssetModal}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
                 >
-                  <Upload className="w-4 h-4 mr-2" />
-                  {importing ? importProgress : 'Importieren'}
+                  <Plus className="w-4 h-4 mr-2" /> Neue Ressource
                 </button>
               </div>
-            </div>
-
-            {/* Tagesübersicht */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Tagesübersicht (Heute)</h3>
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead>
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeitraum</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sortierung</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutzung</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {todayBookings.length === 0 ? (
-                      <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine Buchungen für heute.</td></tr>
-                    ) : (
-                      todayBookings.map(b => {
-                        const rowClass = getTodayStatusStyle(b);
-                        return (
-                          <tr key={b.id} className={rowClass}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              {assets.find(a => a.id === b.assetId)?.name || b.assetId}
+                    {assets.map((asset, index) => (
+                      <tr key={asset.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex flex-col space-y-1">
+                            <button
+                              onClick={() => moveAsset(index, 'up')}
+                              disabled={index === 0}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                            >
+                              <ArrowUp className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => moveAsset(index, 'down')}
+                              disabled={index === assets.length - 1}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                            >
+                              <ArrowDown className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                          <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></span>
+                          <span className="mr-2 text-gray-500"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
+                          {asset.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{categoryLabels[asset.type] || asset.type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.is_maintenance ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                            {asset.is_maintenance ? 'In Wartung' : 'Verfügbar'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {bookings.filter(b => b.assetId === asset.id).length} Buchungen
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                          <button
+                            onClick={() => toggleMaintenance(asset)}
+                            className={`inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white ${asset.is_maintenance ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'}`}
+                            title={asset.is_maintenance ? 'Aktivieren' : 'In Wartung setzen'}
+                          >
+                            <Power className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => openEditAssetModal(asset)}
+                            className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                            title="Bearbeiten"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => deleteAsset(asset.id)}
+                            className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700"
+                            title="Löschen"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'bookings' && (
+            <div>
+              <div className="flex justify-end mb-4 space-x-2">
+                <button
+                  onClick={handleExport}
+                  className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center"
+                >
+                  <Download className="w-4 h-4 mr-2" /> Exportieren
+                </button>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImport}
+                    disabled={importing}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <button
+                    className={`bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center ${importing ? 'opacity-50' : ''}`}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {importing ? importProgress : 'Importieren'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Tagesübersicht */}
+              <div className="mb-8">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Tagesübersicht (Heute)</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeitraum</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {todayBookings.length === 0 ? (
+                        <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine Buchungen für heute.</td></tr>
+                      ) : (
+                        todayBookings.map(b => {
+                          const rowClass = getTodayStatusStyle(b);
+                          return (
+                            <tr key={b.id} className={rowClass}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {assets.find(a => a.id === b.assetId)?.name || b.assetId}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <div className="font-bold">{b.title}</div>
+                                {b.userName} <span className="text-xs">({b.userEmail})</span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900" title="Löschen"><Trash2 className="w-5 h-5" /></button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Anstehend */}
+              <div className="mb-8">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Anstehend (Ab Morgen)</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeit</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {upcomingBookings.length === 0 ? (
+                        <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
+                      ) : (
+                        upcomingBookings.map(b => (
+                          <tr key={b.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              <div className="text-indigo-700">{b.title}</div>
+                              {b.userName}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              <div className="font-bold">{b.title}</div>
-                              {b.userName} <span className="text-xs">({b.userEmail})</span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900" title="Löschen"><Trash2 className="w-5 h-5" /></button>
+                              <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
                             </td>
                           </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Vergangen */}
+              <div>
+                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Vergangen</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {pastBookings.length === 0 ? (
+                        <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
+                      ) : (
+                        pastBookings.map(b => (
+                          <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              <div>{b.title}</div>
+                              <span className="text-xs text-gray-500">{b.userName}</span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Anstehend */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Anstehend (Ab Morgen)</h3>
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeit</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {upcomingBookings.length === 0 ? (
-                      <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
-                    ) : (
-                      upcomingBookings.map(b => (
-                        <tr key={b.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <div className="text-indigo-700">{b.title}</div>
-                            {b.userName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          {activeTab === 'settings' && (
+            <div className="max-w-4xl">
+              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Konfiguration</h3>
+              <form onSubmit={saveSettings} className="space-y-8">
 
-            {/* Vergangen */}
-            <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Vergangen</h3>
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {pastBookings.length === 0 ? (
-                      <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
-                    ) : (
-                      pastBookings.map(b => (
-                        <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div>{b.title}</div>
-                            <span className="text-xs text-gray-500">{b.userName}</span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="max-w-4xl">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Konfiguration</h3>
-            <form onSubmit={saveSettings} className="space-y-8">
-
-              {/* General */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
-                <div className="space-y-4 max-w-md">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Settings className="h-4 w-4 text-gray-400" />
+                {/* General */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
+                  <div className="space-y-4 max-w-md">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Settings className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          value={config.headerText}
+                          onChange={e => setConfig({ ...config, headerText: e.target.value })}
+                        />
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Seitentitel (Browser Tab)</label>
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Settings className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          value={config.siteTitle || ''}
+                          onChange={e => setConfig({ ...config, siteTitle: e.target.value })}
+                          placeholder="Belegt"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Akzentfarbe (Titel & Buttons)</label>
+                      <div className="flex gap-2 items-center mt-1">
+                        <input
+                          type="color"
+                          className="h-10 w-14 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
+                          value={config.accentColor || '#3b82f6'}
+                          onChange={e => setConfig({ ...config, accentColor: e.target.value })}
+                        />
+                        <span className="text-sm text-gray-500">{config.accentColor || '#3b82f6'}</span>
+                        <button
+                          type="button"
+                          onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 ml-2"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={saveSettings}
+                    disabled={savingConfig}
+                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Speichern
+                  </button>
+                </div>
+
+                {/* Placeholders */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
+                  <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+
+                  <div className="space-y-4 max-w-md">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
                       <input
                         type="text"
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.headerText}
-                        onChange={e => setConfig({ ...config, headerText: e.target.value })}
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderTitle || ''}
+                        placeholder="z.B. Team Meeting, Kundenbesuch"
+                        onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderName || ''}
+                        placeholder="z.B. Max Mustermann"
+                        onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        value={config.placeholderEmail || ''}
+                        placeholder="z.B. max@firma.de"
+                        onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Seitentitel (Browser Tab)</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Settings className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.siteTitle || ''}
-                        onChange={e => setConfig({ ...config, siteTitle: e.target.value })}
-                        placeholder="Belegt"
-                      />
-                    </div>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={saveSettings}
+                    disabled={savingConfig}
+                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Speichern
+                  </button>
+                </div>
+
+                {/* Category Icons */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
+                  <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+
+                  <div className="space-y-8">
+                    {Object.entries(categoryLabels).map(([type, label]) => {
+                      const currentIcon = config.categoryIcons?.[type];
+                      const activeIcon = currentIcon || defaultIcons[type];
+
+                      return (
+                        <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <label className="text-base font-semibold text-gray-800">{label}</label>
+                              <div className="text-xs text-gray-500 mt-0.5 flex items-center">
+                                Aktives Icon:
+                                <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
+                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                  {activeIcon}
+                                </span>
+                                {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
+                              </div>
+                            </div>
+                            {currentIcon && (
+                              <button
+                                type="button"
+                                onClick={() => resetCategoryIcon(type)}
+                                className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
+                              >
+                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                            {Object.keys(ICON_MAP).map(iconName => (
+                              <button
+                                key={iconName}
+                                type="button"
+                                onClick={() => handleCategoryIconChange(type, iconName)}
+                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                                  : (!currentIcon && iconName === defaultIcons[type])
+                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
+                                    : ''
+                                  }`}
+                                title={iconName}
+                              >
+                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Akzentfarbe (Titel & Buttons)</label>
-                    <div className="flex gap-2 items-center mt-1">
-                      <input
-                        type="color"
-                        className="h-10 w-14 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
-                        value={config.accentColor || '#3b82f6'}
-                        onChange={e => setConfig({ ...config, accentColor: e.target.value })}
-                      />
-                      <span className="text-sm text-gray-500">{config.accentColor || '#3b82f6'}</span>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={savingConfig}
+                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {savingConfig ? 'Speichere...' : 'Speichern'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+
+          {/* Asset Modal */}
+          {
+            isAssetModalOpen && (
+              <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                  <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
+                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div className="absolute top-0 right-0 pt-4 pr-4">
                       <button
                         type="button"
-                        onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 ml-2"
+                        className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                        onClick={() => setIsAssetModalOpen(false)}
                       >
-                        Reset
+                        <span className="sr-only">Schließen</span>
+                        <X className="h-6 w-6" />
                       </button>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={saveSettings}
-                  disabled={savingConfig}
-                  className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Speichern
-                </button>
-              </div>
 
-              {/* Placeholders */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
-                <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                      {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
+                    </h3>
 
-                <div className="space-y-4 max-w-md">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
-                    <input
-                      type="text"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                      value={config.placeholderTitle || ''}
-                      placeholder="z.B. Team Meeting, Kundenbesuch"
-                      onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
-                    <input
-                      type="text"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                      value={config.placeholderName || ''}
-                      placeholder="z.B. Max Mustermann"
-                      onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
-                    <input
-                      type="text"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                      value={config.placeholderEmail || ''}
-                      placeholder="z.B. max@firma.de"
-                      onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={saveSettings}
-                  disabled={savingConfig}
-                  className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Speichern
-                </button>
-              </div>
+                    <form onSubmit={saveAsset} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                        <input
+                          type="text"
+                          required
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          value={editingAsset.name || ''}
+                          onChange={e => setEditingAsset({ ...editingAsset, name: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Typ</label>
+                        <select
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                          value={editingAsset.type || 'Room'}
+                          onChange={e => setEditingAsset({ ...editingAsset, type: e.target.value })}
+                        >
+                          <option value="Room">Raum</option>
+                          <option value="Vehicle">Fahrzeug</option>
+                          <option value="Equipment">Ausrüstung</option>
+                          <option value="Other">Sonstiges</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
+                        <textarea
+                          rows={3}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          value={editingAsset.description || ''}
+                          onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
+                        />
+                      </div>
 
-              {/* Category Icons */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
-                <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-
-                <div className="space-y-8">
-                  {Object.entries(categoryLabels).map(([type, label]) => {
-                    const currentIcon = config.categoryIcons?.[type];
-                    const activeIcon = currentIcon || defaultIcons[type];
-
-                    return (
-                      <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <label className="text-base font-semibold text-gray-800">{label}</label>
-                            <div className="text-xs text-gray-500 mt-0.5 flex items-center">
-                              Aktives Icon:
-                              <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
-                                <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
-                                {activeIcon}
-                              </span>
-                              {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
-                            </div>
-                          </div>
-                          {currentIcon && (
-                            <button
-                              type="button"
-                              onClick={() => resetCategoryIcon(type)}
-                              className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
-                            >
-                              <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
-                            </button>
-                          )}
+                      {/* Color & Maintenance */}
+                      <div className="flex gap-4 items-end">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Farbe
+                            <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
+                          </label>
+                          <input
+                            type="color"
+                            className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            value={editingAsset.color || '#3b82f6'}
+                            onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
+                          />
                         </div>
+                        <div className="flex items-center h-10 pb-3">
+                          <input
+                            id="maintenance_toggle"
+                            type="checkbox"
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            checked={editingAsset.is_maintenance || false}
+                            onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
+                          />
+                          <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
+                            In Wartung?
+                          </label>
+                        </div>
+                      </div>
 
-                        <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                      {/* Icon Picker */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
+                        <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
                           {Object.keys(ICON_MAP).map(iconName => (
                             <button
                               key={iconName}
                               type="button"
-                              onClick={() => handleCategoryIconChange(type, iconName)}
-                              className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
-                                ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
-                                : (!currentIcon && iconName === defaultIcons[type])
-                                  ? 'bg-gray-100 border border-gray-300 opacity-75'
-                                  : ''
-                                }`}
+                              onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
+                              className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
                               title={iconName}
                             >
-                              <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                              <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
                             </button>
                           ))}
                         </div>
+                        {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
 
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={savingConfig}
-                  className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {savingConfig ? 'Speichere...' : 'Speichern'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-
-        {/* Asset Modal */}
-        {
-          isAssetModalOpen && (
-            <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-              <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
-                <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                  <div className="absolute top-0 right-0 pt-4 pr-4">
-                    <button
-                      type="button"
-                      className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
-                      onClick={() => setIsAssetModalOpen(false)}
-                    >
-                      <span className="sr-only">Schließen</span>
-                      <X className="h-6 w-6" />
-                    </button>
+                      <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                        <button
+                          type="submit"
+                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                          Speichern
+                        </button>
+                        <button
+                          type="button"
+                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                          onClick={() => setIsAssetModalOpen(false)}
+                        >
+                          Abbrechen
+                        </button>
+                      </div>
+                    </form>
                   </div>
-
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                    {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
-                  </h3>
-
-                  <form onSubmit={saveAsset} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Name</label>
-                      <input
-                        type="text"
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        value={editingAsset.name || ''}
-                        onChange={e => setEditingAsset({ ...editingAsset, name: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Typ</label>
-                      <select
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                        value={editingAsset.type || 'Room'}
-                        onChange={e => setEditingAsset({ ...editingAsset, type: e.target.value })}
-                      >
-                        <option value="Room">Raum</option>
-                        <option value="Vehicle">Fahrzeug</option>
-                        <option value="Equipment">Ausrüstung</option>
-                        <option value="Other">Sonstiges</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
-                      <textarea
-                        rows={3}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        value={editingAsset.description || ''}
-                        onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
-                      />
-                    </div>
-
-                    {/* Color & Maintenance */}
-                    <div className="flex gap-4 items-end">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Farbe
-                          <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
-                        </label>
-                        <input
-                          type="color"
-                          className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          value={editingAsset.color || '#3b82f6'}
-                          onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
-                        />
-                      </div>
-                      <div className="flex items-center h-10 pb-3">
-                        <input
-                          id="maintenance_toggle"
-                          type="checkbox"
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                          checked={editingAsset.is_maintenance || false}
-                          onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
-                        />
-                        <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
-                          In Wartung?
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Icon Picker */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
-                      <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
-                        {Object.keys(ICON_MAP).map(iconName => (
-                          <button
-                            key={iconName}
-                            type="button"
-                            onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
-                            className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
-                            title={iconName}
-                          >
-                            <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
-                          </button>
-                        ))}
-                      </div>
-                      {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
-                    </div>
-
-                    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                      <button
-                        type="submit"
-                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                      >
-                        Speichern
-                      </button>
-                      <button
-                        type="button"
-                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                        onClick={() => setIsAssetModalOpen(false)}
-                      >
-                        Abbrechen
-                      </button>
-                    </div>
-                  </form>
                 </div>
               </div>
-            </div>
-          )
-        }
+            )
+          }
+        </div >
       </div >
     </div >
-  </div >
-);
+  );
 };
