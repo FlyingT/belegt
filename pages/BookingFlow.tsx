@@ -264,7 +264,7 @@ export const BookingFlow: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-6 border-t flex justify-end">
+            <div className="pt-6 border-t flex justify-end items-center">
               <button
                 type="submit"
                 disabled={submitting}
@@ -274,6 +274,9 @@ export const BookingFlow: React.FC = () => {
               >
                 {submitting ? 'Wird gebucht...' : 'Jetzt Buchen'}
               </button>
+              <span className="ml-4 text-xs text-gray-500 max-w-xs text-left">
+                Hinweis: Titel/Grund, Ihr Name sowie der Zeitraum sind für jeden sichtbar
+              </span>
             </div>
           </form>
         </div>
