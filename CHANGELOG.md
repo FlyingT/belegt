@@ -2,14 +2,13 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
-## [v1.2.0] - 2026-01-27
-
-### Hinzugefügt
-- Konfigurierbare Akzentfarbe hinzugefügt (Admin kann Farbe für Titel und Buttons festlegen)
+## [v1.2.1] - 2026-01-26
 
 ### Geändert
-- Buchungszeit wird jetzt auf die nächste volle Stunde vorausgewählt
-- Reihenfolge im Buchungsformular optimiert (Titel -> Daten -> Zeit)
+- Admin-Einstellungen: Speichern-Button in allen Sektionen hinzugefügt
+- Admin-Einstellungen: Seite wird nach dem Speichern automatisch neu geladen
+
+## [v1.2.0] - 2026-01-26
 
 ## [v1.1.0] - 2026-01-26
 

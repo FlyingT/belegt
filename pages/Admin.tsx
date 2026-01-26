@@ -127,7 +127,8 @@ export const Admin: React.FC = () => {
     setSavingConfig(true);
     await api.updateAppConfig(config);
     setSavingConfig(false);
-    alert('Einstellungen wurden gespeichert.');
+    // Reload to reflect changes immediately (e.g. title, buttons)
+    window.location.reload();
   };
 
   // Helper for Category Icons Setting
@@ -421,244 +422,273 @@ export const Admin: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Placeholders */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
-                  <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
-
-                  <div className="space-y-4 max-w-md">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.placeholderTitle || ''}
-                        placeholder="z.B. Team Meeting, Kundenbesuch"
-                        onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.placeholderName || ''}
-                        placeholder="z.B. Max Mustermann"
-                        onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                        value={config.placeholderEmail || ''}
-                        placeholder="z.B. max@firma.de"
-                        onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Category Icons */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-
-                  <div className="space-y-8">
-                    {Object.entries(categoryLabels).map(([type, label]) => {
-                      const currentIcon = config.categoryIcons?.[type];
-                      const activeIcon = currentIcon || defaultIcons[type];
-
-                      return (
-                        <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <label className="text-base font-semibold text-gray-800">{label}</label>
-                              <div className="text-xs text-gray-500 mt-0.5 flex items-center">
-                                Aktives Icon:
-                                <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
-                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
-                                  {activeIcon}
-                                </span>
-                                {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
-                              </div>
-                            </div>
-                            {currentIcon && (
-                              <button
-                                type="button"
-                                onClick={() => resetCategoryIcon(type)}
-                                className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
-                              >
-                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
-                            {Object.keys(ICON_MAP).map(iconName => (
-                              <button
-                                key={iconName}
-                                type="button"
-                                onClick={() => handleCategoryIconChange(type, iconName)}
-                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
-                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
-                                  : (!currentIcon && iconName === defaultIcons[type])
-                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
-                                    : ''
-                                  }`}
-                                title={iconName}
-                              >
-                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="pt-2">
+                <div className="mt-4 flex justify-end">
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={saveSettings}
                     disabled={savingConfig}
                     className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
                       } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Speichern'}
+                    Speichern
                   </button>
                 </div>
-              </form>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Asset Modal */}
-      {isAssetModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-              <div className="absolute top-0 right-0 pt-4 pr-4">
-                <button
-                  type="button"
-                  className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
-                  onClick={() => setIsAssetModalOpen(false)}
-                >
-                  <span className="sr-only">Schließen</span>
-                  <X className="h-6 w-6" />
-                </button>
+                {/* Placeholders */}
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
+            <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+
+            <div className="space-y-4 max-w-md">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
+                <input
+                  type="text"
+                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                  value={config.placeholderTitle || ''}
+                  placeholder="z.B. Team Meeting, Kundenbesuch"
+                  onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
+                />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
+                <input
+                  type="text"
+                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                  value={config.placeholderName || ''}
+                  placeholder="z.B. Max Mustermann"
+                  onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
+                <input
+                  type="text"
+                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                  value={config.placeholderEmail || ''}
+                  placeholder="z.B. max@firma.de"
+                  onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              onClick={saveSettings}
+              disabled={savingConfig}
+              className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Speichern
+            </button>
+          </div>
+        </div>
 
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
-              </h3>
+        {/* Category Icons */}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
+          <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
 
-              <form onSubmit={saveAsset} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <input
-                    type="text"
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    value={editingAsset.name || ''}
-                    onChange={e => setEditingAsset({ ...editingAsset, name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Typ</label>
-                  <select
-                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                    value={editingAsset.type || 'Room'}
-                    onChange={e => setEditingAsset({ ...editingAsset, type: e.target.value })}
-                  >
-                    <option value="Room">Raum</option>
-                    <option value="Vehicle">Fahrzeug</option>
-                    <option value="Equipment">Ausrüstung</option>
-                    <option value="Other">Sonstiges</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
-                  <textarea
-                    rows={3}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    value={editingAsset.description || ''}
-                    onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
-                  />
-                </div>
+          <div className="space-y-8">
+            {Object.entries(categoryLabels).map(([type, label]) => {
+              const currentIcon = config.categoryIcons?.[type];
+              const activeIcon = currentIcon || defaultIcons[type];
 
-                {/* Color & Maintenance */}
-                <div className="flex gap-4 items-end">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Farbe
-                      <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
-                    </label>
-                    <input
-                      type="color"
-                      className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                      value={editingAsset.color || '#3b82f6'}
-                      onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
-                    />
+              return (
+                <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-base font-semibold text-gray-800">{label}</label>
+                      <div className="text-xs text-gray-500 mt-0.5 flex items-center">
+                        Aktives Icon:
+                        <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
+                          <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
+                          {activeIcon}
+                        </span>
+                        {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
+                      </div>
+                    </div>
+                    {currentIcon && (
+                      <button
+                        type="button"
+                        onClick={() => resetCategoryIcon(type)}
+                        className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
+                      >
+                        <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
+                      </button>
+                    )}
                   </div>
-                  <div className="flex items-center h-10 pb-3">
-                    <input
-                      id="maintenance_toggle"
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      checked={editingAsset.is_maintenance || false}
-                      onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
-                    />
-                    <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
-                      In Wartung?
-                    </label>
-                  </div>
-                </div>
 
-                {/* Icon Picker */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
-                  <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
+                  <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
                     {Object.keys(ICON_MAP).map(iconName => (
                       <button
                         key={iconName}
                         type="button"
-                        onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
-                        className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
+                        onClick={() => handleCategoryIconChange(type, iconName)}
+                        className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                          ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                          : (!currentIcon && iconName === defaultIcons[type])
+                            ? 'bg-gray-100 border border-gray-300 opacity-75'
+                            : ''
+                          }`}
                         title={iconName}
                       >
-                        <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
+                        <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
                       </button>
                     ))}
                   </div>
-                  {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
                 </div>
-
-                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="submit"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  >
-                    Speichern
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                    onClick={() => setIsAssetModalOpen(false)}
-                  >
-                    Abbrechen
-                  </button>
-                </div>
-              </form>
-            </div>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={savingConfig}
+            className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {savingConfig ? 'Speichere...' : 'Speichern'}
+          </button>
+        </div>
+      </form>
     </div>
+  )
+}
+        </div >
+      </div >
+
+  {/* Asset Modal */ }
+{
+  isAssetModalOpen && (
+    <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
+        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+          <div className="absolute top-0 right-0 pt-4 pr-4">
+            <button
+              type="button"
+              className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+              onClick={() => setIsAssetModalOpen(false)}
+            >
+              <span className="sr-only">Schließen</span>
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+            {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
+          </h3>
+
+          <form onSubmit={saveAsset} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={editingAsset.name || ''}
+                onChange={e => setEditingAsset({ ...editingAsset, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Typ</label>
+              <select
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                value={editingAsset.type || 'Room'}
+                onChange={e => setEditingAsset({ ...editingAsset, type: e.target.value })}
+              >
+                <option value="Room">Raum</option>
+                <option value="Vehicle">Fahrzeug</option>
+                <option value="Equipment">Ausrüstung</option>
+                <option value="Other">Sonstiges</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
+              <textarea
+                rows={3}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={editingAsset.description || ''}
+                onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
+              />
+            </div>
+
+            {/* Color & Maintenance */}
+            <div className="flex gap-4 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Farbe
+                  <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
+                </label>
+                <input
+                  type="color"
+                  className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={editingAsset.color || '#3b82f6'}
+                  onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
+                />
+              </div>
+              <div className="flex items-center h-10 pb-3">
+                <input
+                  id="maintenance_toggle"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  checked={editingAsset.is_maintenance || false}
+                  onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
+                />
+                <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
+                  In Wartung?
+                </label>
+              </div>
+            </div>
+
+            {/* Icon Picker */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
+                {Object.keys(ICON_MAP).map(iconName => (
+                  <button
+                    key={iconName}
+                    type="button"
+                    onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
+                    className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
+                    title={iconName}
+                  >
+                    <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
+                  </button>
+                ))}
+              </div>
+              {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
+            </div>
+
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Speichern
+              </button>
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setIsAssetModalOpen(false)}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+    </div >
   );
 };
