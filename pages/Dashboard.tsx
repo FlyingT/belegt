@@ -17,6 +17,7 @@ const getCategoryName = (type: string) => {
 export const Dashboard: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categoryIcons, setCategoryIcons] = useState<Record<string, string>>({});
+  const [accentColor, setAccentColor] = useState('#3b82f6');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export const Dashboard: React.FC = () => {
   // Helper to determine category icon (fallback to defaults if config is missing)
   const getCategoryIconName = (type: string) => {
     if (categoryIcons[type]) return categoryIcons[type];
-    
+
     // Defaults
     switch (type) {
       case 'Room': return 'Users';
@@ -88,18 +89,18 @@ export const Dashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {groupedAssets[category].map((asset) => (
-                <div 
-                  key={asset.id} 
+                <div
+                  key={asset.id}
                   className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 transition-transform hover:scale-[1.02] ${asset.is_maintenance ? 'border-gray-400 opacity-75' : ''}`}
                   style={{ borderLeftColor: asset.is_maintenance ? undefined : asset.color }}
                 >
                   <div className="p-6">
                     <div className="flex justify-between items-start">
-                      <div 
+                      <div
                         className={`p-2 rounded-lg text-white`}
                         style={{ backgroundColor: asset.is_maintenance ? '#9ca3af' : asset.color }}
                       >
-                         {/* Use Asset specific icon, or fallback to Category icon */}
+                        {/* Use Asset specific icon, or fallback to Category icon */}
                         <DynamicIcon name={asset.icon || getCategoryIconName(category)} className="w-6 h-6" />
                       </div>
                       {asset.is_maintenance && (
@@ -109,25 +110,26 @@ export const Dashboard: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    
+
                     <h3 className="mt-4 text-lg font-medium text-gray-900">{asset.name}</h3>
                     <p className="mt-1 text-sm text-gray-500">{asset.description}</p>
-                    
+
                     <div className="mt-6 flex gap-3">
                       {asset.is_maintenance ? (
                         <button disabled className="flex-1 bg-gray-100 text-gray-400 py-2 px-4 rounded-md text-sm font-medium cursor-not-allowed">
                           Nicht buchbar
                         </button>
                       ) : (
-                        <Link 
+                        <Link
                           to={`/book/${asset.id}`}
-                          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-center py-2 px-4 rounded-md text-sm font-medium transition-colors"
+                          className="flex-1 text-white text-center py-2 px-4 rounded-md text-sm font-medium transition-colors hover:opacity-90"
+                          style={{ backgroundColor: accentColor }}
                         >
                           Buchen
                         </Link>
                       )}
-                      
-                      <Link 
+
+                      <Link
                         to={`/kiosk/${asset.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -144,13 +146,13 @@ export const Dashboard: React.FC = () => {
           </div>
         ))}
       </div>
-      
+
       {assets.length === 0 && (
-         <div className="text-center py-12 bg-white rounded-lg shadow">
-            <Layers className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">Keine Ressourcen gefunden</h3>
-            <p className="text-gray-500">Es wurden noch keine Ressourcen angelegt.</p>
-         </div>
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <Layers className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900">Keine Ressourcen gefunden</h3>
+          <p className="text-gray-500">Es wurden noch keine Ressourcen angelegt.</p>
+        </div>
       )}
     </div>
   );

@@ -76,6 +76,7 @@ class AppConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     header_text = db.Column(db.String(100), default='Buchungssystem')
     site_title = db.Column(db.String(100), default='Belegt')
+    accent_color = db.Column(db.String(20), default='#3b82f6')
     category_icons_json = db.Column(db.String(500), default='{}')
     placeholder_title = db.Column(db.String(100), default='z.B. Team Meeting, Kundenbesuch')
     placeholder_name = db.Column(db.String(100), default='')
@@ -85,6 +86,7 @@ class AppConfig(db.Model):
         return {
             'headerText': self.header_text,
             'siteTitle': self.site_title,
+            'accentColor': self.accent_color,
             'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {},
             'placeholderTitle': self.placeholder_title,
             'placeholderName': self.placeholder_name,
@@ -148,6 +150,14 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN site_title VARCHAR(100) DEFAULT 'Belegt'"))
                 conn.commit()
 
+            # Check for accent_color in app_config
+            try:
+                conn.execute(text("SELECT accent_color FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding accent_color to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN accent_color VARCHAR(20) DEFAULT '#3b82f6'"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -159,6 +169,7 @@ def init_db():
             db.session.add(AppConfig(
                 header_text='Buchungssystem', 
                 site_title='Belegt',
+                accent_color='#3b82f6',
                 category_icons_json=json.dumps(default_cats),
                 placeholder_title='z.B. Team Meeting, Kundenbesuch'
             ))
@@ -285,7 +296,7 @@ def delete_booking(id):
 @app.route('/api/config', methods=['GET'])
 def get_config():
     config = AppConfig.query.first()
-    return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'siteTitle': 'Belegt', 'categoryIcons': {}})
+    return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'siteTitle': 'Belegt', 'accentColor': '#3b82f6', 'categoryIcons': {}})
 
 @app.route('/api/config', methods=['POST'])
 def update_config():
@@ -297,6 +308,7 @@ def update_config():
     
     config.header_text = data.get('headerText', config.header_text)
     config.site_title = data.get('siteTitle', config.site_title)
+    config.accent_color = data.get('accentColor', config.accent_color)
     
     if 'categoryIcons' in data:
         config.category_icons_json = json.dumps(data['categoryIcons'])

@@ -400,6 +400,25 @@ export const Admin: React.FC = () => {
                         />
                       </div>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Akzentfarbe (Titel & Buttons)</label>
+                      <div className="flex gap-2 items-center mt-1">
+                        <input
+                          type="color"
+                          className="h-10 w-14 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
+                          value={config.accentColor || '#3b82f6'}
+                          onChange={e => setConfig({ ...config, accentColor: e.target.value })}
+                        />
+                        <span className="text-sm text-gray-500">{config.accentColor || '#3b82f6'}</span>
+                        <button
+                          type="button"
+                          onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 ml-2"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
