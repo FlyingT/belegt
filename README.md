@@ -54,7 +54,7 @@ Icons und Farben anpassen
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S7-AdminRessourcen2.png)
 
-Buchungen einsehen und stornieren
+Buchungen verwalten (Tagesübersicht, Anstehend, Vergangen) und Exportieren/Importieren (.json)
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S8-AdminBuchungen.png)
 
