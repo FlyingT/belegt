@@ -1,5 +1,7 @@
+# Belegt - Das Raum- & Ressourcenbuchungssystem (v1.10.2)
+
 "Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. 
-Vibe-Coded mit Gemini Antigravity und ausschließlich für das Bereitstellen hinter einem Reverse Proxy im Intranet gedacht.
+Vibe-Coded mit Gemini Antigravity und Google Deepmind (Advanced Agentic Coding).
 
 Alles dabei:
 - **Dashboard**: Übersicht aller Ressourcen und deren aktueller Status.
@@ -13,15 +15,8 @@ Alles dabei:
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
 - **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
 - **Catering & Arbeitsmittel**: Optionale Zusatzleistungen (z.B. Kaffee, Technik) pro Ressource konfigurierbar.
-- **Automatisierte E-Mail-Bestätigung**: Automatische Benachrichtigung (inkl. Kalendereintrag) für Nutzer nach erfolgreicher Buchung.
+- **Automatisierte E-Mail-Bestätigung**: Professionelle Email-Bestatigung nach erfolgreicher Buchung (SMTP Konfiguration im Admin-Bereich).
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
-
-
-
-### Features
-- **Ressourcen-Management**: Einfaches Anlegen und Verwalten von Räumen, Fahrzeugen und Equipment.
-- **Individuelles Design**: Anpassbare Akzentfarbe für Titel und Buttons über das Admin-Panel.
-- **Übersichtliches Dashboard**: Klares Dashboard mit Statusanzeige (Verfügbar/Gebucht/Wartung).
 
 ---
 
@@ -37,11 +32,8 @@ Einfaches Formular mit direkter Verfügbarkeitsprüfung.
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S2-Buchung1.png)
 
-### Kalender Export
-Nach der Buchung gibt's direkt den Kalendereintrag (.ics) zum Download für den eigenen Kalender.
-
-![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S3-Buchung2.png)
-![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S4-Buchung3.png)
+### E-Mail Bestätigung
+Nach der Buchung wird automatisch eine Bestätigung an den Nutzer verschickt (konfigurierbar).
 
 ### Kiosk-Modus
 Simple Anzeige unter eigenem Link für Kiosk-Anzeigen vor den Räumen.
@@ -117,3 +109,7 @@ Nachfolgende Variablen werden über die `.env` gesteuert.
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
 - **Backend:** Python Flask, SQLAlchemy (SQLite)
 - **Container:** Docker, Nginx (Alpine)
+
+---
+
+**Release v1.10.2** - Polishing & Fixes 🚀

@@ -59,7 +59,7 @@ export const Confirmation: React.FC = () => {
                 <div>
                   <h4 className="font-medium text-indigo-900 dark:text-indigo-200 text-sm">E-Mail wurde gesendet</h4>
                   <p className="text-indigo-700 dark:text-indigo-300 text-xs mt-1">
-                    Eine Bestätigung inklusive Kalendereintrag wurde an <strong>{booking.userEmail}</strong> verschickt.
+                    Eine Bestätigung wurde an <strong>{booking.userEmail}</strong> verschickt.
                   </p>
                 </div>
               </div>

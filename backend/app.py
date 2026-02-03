@@ -406,25 +406,28 @@ def create_booking():
         asset = Asset.query.get(asset_id)
         asset_name = asset.name if asset else "Ressource"
         
-        subject = f"Buchungsbestätigung: {new_booking.title}"
-        body = f"Hallo {new_booking.user_name},\n\n"
-        body += f"Ihre Buchung war erfolgreich!\n\n"
+        date_str = new_booking.start_time.strftime('%d.%m.%Y')
+        time_range = f"{new_booking.start_time.strftime('%H:%M')} - {new_booking.end_time.strftime('%H:%M')}"
+        
+        subject = f"Buchungsbestätigung: {new_booking.title}, {asset_name}, {date_str} {time_range}"
+        body = f"Hallo {new_booking.user_name},\n"
+        body += f"Ihre nachfolgende Buchung war erfolgreich:\n\n"
         body += f"Ressource: {asset_name}\n"
         body += f"Titel: {new_booking.title}\n"
-        body += f"Datum: {new_booking.start_time.strftime('%d.%m.%Y')}\n"
-        body += f"Zeit: {new_booking.start_time.strftime('%H:%M')} - {new_booking.end_time.strftime('%H:%M')} Uhr\n"
+        body += f"Datum: {date_str}\n"
+        body += f"Zeit: {time_range} Uhr\n"
         
         if new_booking.department:
             body += f"Abteilung: {new_booking.department}\n"
             
         catering = json.loads(new_booking.catering_json)
         if catering:
-            body += "\nZugebuchtes Catering:\n"
-            for item, qty in catering.items():
-                if qty > 0:
-                    body += f"- {item}: {qty}\n"
-        
-        body += f"\nVielen Dank für Ihre Buchung bei {config.site_title}!"
+            has_catering = any(qty > 0 for qty in catering.values())
+            if has_catering:
+                body += "\nZugebuchtes Catering / Arbeitsmittel:\n"
+                for item, qty in catering.items():
+                    if qty > 0:
+                        body += f"- {item}: {qty}\n"
         
         send_email(config, new_booking.user_email, subject, body)
     

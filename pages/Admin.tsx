@@ -726,126 +726,6 @@ export const Admin: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Placeholders */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
-
-                  <div className="space-y-4 max-w-md">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Titel / Grund"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderTitle || ''}
-                        placeholder="z.B. Team Meeting, Kundenbesuch"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Name"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderName || ''}
-                        placeholder="z.B. Max Mustermann"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderDepartment || ''}
-                        placeholder="z.B. IT, Vertrieb"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderEmail || ''}
-                        placeholder="z.B. max@firma.de"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-6 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={saveSettings}
-                      disabled={savingConfig}
-                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Speichern & Neuladen
-                    </button>
-                  </div>
-                </div>
-
-                {/* Category Icons */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-
-                  <div className="space-y-8">
-                    {Object.entries(categoryLabels).map(([type, label]) => {
-                      const currentIcon = config.categoryIcons?.[type];
-                      const activeIcon = currentIcon || defaultIcons[type];
-
-                      return (
-                        <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
-                                Aktives Icon:
-                                <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
-                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
-                                  {activeIcon}
-                                </span>
-                                {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
-                              </div>
-                            </div>
-                            {currentIcon && (
-                              <button
-                                type="button"
-                                onClick={() => resetCategoryIcon(type)}
-                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
-                              >
-                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
-                            {Object.keys(ICON_MAP).map((iconName: string) => (
-                              <button
-                                key={iconName}
-                                type="button"
-                                onClick={() => handleCategoryIconChange(type, iconName)}
-                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
-                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
-                                  : (!currentIcon && iconName === defaultIcons[type])
-                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
-                                    : ''
-                                  }`}
-                                title={iconName}
-                              >
-                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 {/* E-Mail Notifications */}
                 <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                   <div className="flex items-center justify-between mb-4">
@@ -977,6 +857,127 @@ export const Admin: React.FC = () => {
                     </button>
                   </div>
                 </div>
+
+                {/* Placeholders */}
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+
+                  <div className="space-y-4 max-w-md">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Titel / Grund"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderTitle || ''}
+                        placeholder="z.B. Team Meeting, Kundenbesuch"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Name"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderName || ''}
+                        placeholder="z.B. Max Mustermann"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderDepartment || ''}
+                        placeholder="z.B. IT, Vertrieb"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderEmail || ''}
+                        placeholder="z.B. max@firma.de"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={saveSettings}
+                      disabled={savingConfig}
+                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Speichern & Neuladen
+                    </button>
+                  </div>
+                </div>
+
+                {/* Category Icons */}
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+
+                  <div className="space-y-8">
+                    {Object.entries(categoryLabels).map(([type, label]) => {
+                      const currentIcon = config.categoryIcons?.[type];
+                      const activeIcon = currentIcon || defaultIcons[type];
+
+                      return (
+                        <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
+                                Aktives Icon:
+                                <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
+                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
+                                  {activeIcon}
+                                </span>
+                                {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
+                              </div>
+                            </div>
+                            {currentIcon && (
+                              <button
+                                type="button"
+                                onClick={() => resetCategoryIcon(type)}
+                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
+                              >
+                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                            {Object.keys(ICON_MAP).map((iconName: string) => (
+                              <button
+                                key={iconName}
+                                type="button"
+                                onClick={() => handleCategoryIconChange(type, iconName)}
+                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                                  : (!currentIcon && iconName === defaultIcons[type])
+                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
+                                    : ''
+                                  }`}
+                                title={iconName}
+                              >
+                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </form>
             </div>
           )}
