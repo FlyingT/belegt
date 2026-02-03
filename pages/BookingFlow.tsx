@@ -178,7 +178,7 @@ export const BookingFlow: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Type className="h-4 w-4 text-gray-400" />
@@ -311,8 +311,8 @@ export const BookingFlow: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {bookingsForDate.map(b => (
-                <div key={b.id} className="bg-white dark:bg-gray-700 p-3 rounded shadow-sm border border-gray-200 dark:border-gray-600">
-                  <div className="text-xs font-semibold text-indigo-600 mb-1">
+                <div key={b.id} className="bg-white dark:bg-gray-800 p-3 rounded shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-300 mb-1">
                     {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                   <div className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate" title={b.title}>{b.title}</div>

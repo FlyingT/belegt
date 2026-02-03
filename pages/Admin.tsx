@@ -271,7 +271,7 @@ export const Admin: React.FC = () => {
     const current = now.getTime();
 
     if (current > end) return 'text-gray-400 opacity-75'; // Past
-    if (current >= start && current <= end) return 'font-bold text-indigo-900 bg-indigo-50'; // Active
+    if (current >= start && current <= end) return 'font-bold text-indigo-900 bg-indigo-50 dark:bg-indigo-900/40 dark:text-indigo-100'; // Active
     return 'text-gray-900'; // Future
   };
 

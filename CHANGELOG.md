@@ -3,6 +3,12 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
+## [v1.7.2] - 2026-02-03
+### Behoben
+- **Booking Flow**: Rote Markierung (*) bei dem Feld \"Abteilung\" entfernt (optionales Feld).
+- **Booking Flow**: Kontrast der Zeitangaben bei vorhandenen Buchungen im Dark Mode verbessert.
+- **Admin**: Styling-Fehler bei aktiven Terminen im Dark Mode behoben (bessere Lesbarkeit und Hintergrundfarbe).
+
 ## [v1.7.1] - 2026-02-03
 ### Behoben
 - **Admin**: Reihenfolge der Platzhalter für E-Mail und Abteilung korrigiert.
