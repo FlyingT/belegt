@@ -3,6 +3,11 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
+## [1.9.1] - 2026-02-03
+### Behoben
+- **Build-Fix**: TypeScript-Fehler und API-Methodennamen korrigiert, die den GitHub Actions Build blockiert haben.
+- **Typisierung**: Explizite Typen in `Admin.tsx` und `PublicOverview.tsx` hinzugefügt.
+
 ## [1.9.0] - 2026-02-03
 ### Hinzugefügt
 - **Öffentliche Übersicht (`/info`)**: Eine passwortfreie, schreibgeschützte Übersicht aller Buchungen (Heute, Anstehend, Vergangen), erreichbar über einen neuen Button im Admin-Bereich oder direkt via `/info`.

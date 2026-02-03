@@ -8,19 +8,17 @@ export default function PublicOverview() {
     const [assets, setAssets] = useState<Asset[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
-    const [categoryLabels, setCategoryLabels] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [assetsData, bookingsData, configData] = await Promise.all([
-                    api.fetchAssets(),
-                    api.fetchBookings(),
-                    api.fetchConfig()
+                    api.api.getAssets(),
+                    api.api.getBookings(),
+                    api.api.getAppConfig()
                 ]);
                 setAssets(assetsData);
                 setBookings(bookingsData);
-                setCategoryLabels(configData.categoryLabels || {});
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -36,19 +34,19 @@ export default function PublicOverview() {
     startOfTomorrow.setDate(startOfToday.getDate() + 1);
 
     const todayBookings = bookings
-        .filter(b => {
+        .filter((b: Booking) => {
             const d = new Date(b.startTime);
             return d >= startOfToday && d < startOfTomorrow;
         })
-        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+        .sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
     const upcomingBookings = bookings
-        .filter(b => new Date(b.startTime) >= startOfTomorrow)
-        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+        .filter((b: Booking) => new Date(b.startTime) >= startOfTomorrow)
+        .sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
     const pastBookings = bookings
-        .filter(b => new Date(b.endTime) < startOfToday)
-        .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+        .filter((b: Booking) => new Date(b.endTime) < startOfToday)
+        .sort((a: Booking, b: Booking) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
     if (loading) {
         return (
@@ -94,10 +92,10 @@ export default function PublicOverview() {
                                     {todayBookings.length === 0 ? (
                                         <tr><td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">Keine Buchungen für heute.</td></tr>
                                     ) : (
-                                        todayBookings.map(b => (
+                                        todayBookings.map((b: Booking) => (
                                             <tr key={b.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                                    {assets.find(a => a.id === b.assetId)?.name || 'Gelöschte Ressource'}
+                                                    {assets.find((a: Asset) => a.id === b.assetId)?.name || 'Gelöschte Ressource'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                                                     <div className="font-bold">{b.title}</div>
@@ -106,7 +104,7 @@ export default function PublicOverview() {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     {b.catering && Object.entries(b.catering).length > 0 && (
                                                         <div className="flex flex-wrap gap-1">
-                                                            {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                                            {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]: [string, unknown]) => (
                                                                 <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
                                                                     {item}: {qty as number}
                                                                 </span>
@@ -145,7 +143,7 @@ export default function PublicOverview() {
                                     {upcomingBookings.length === 0 ? (
                                         <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">Keine anstehenden Buchungen.</td></tr>
                                     ) : (
-                                        upcomingBookings.map(b => (
+                                        upcomingBookings.map((b: Booking) => (
                                             <tr key={b.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || 'Gelöschte Ressource'}</td>
@@ -195,7 +193,7 @@ export default function PublicOverview() {
                                     {pastBookings.length === 0 ? (
                                         <tr><td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">Keine vergangenen Buchungen.</td></tr>
                                     ) : (
-                                        pastBookings.map(b => (
+                                        pastBookings.map((b: Booking) => (
                                             <tr key={b.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || 'Gelöschte Ressource'}</td>
@@ -206,7 +204,7 @@ export default function PublicOverview() {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     {b.catering && Object.entries(b.catering).length > 0 && (
                                                         <div className="flex flex-wrap gap-1">
-                                                            {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                                            {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]: [string, unknown]) => (
                                                                 <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
                                                                     {item}: {qty as number}
                                                                 </span>

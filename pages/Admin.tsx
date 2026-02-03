@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee, Layout } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -44,7 +44,7 @@ export const Admin: React.FC = () => {
     const b = await api.getBookings();
     const c = await api.getAppConfig();
     setAssets(a);
-    setBookings(b.sort((x, y) => new Date(y.createdAt).getTime() - new Date(x.createdAt).getTime()));
+    setBookings(b.sort((x: Booking, y: Booking) => new Date(y.createdAt).getTime() - new Date(x.createdAt).getTime()));
     setConfig(c);
   };
 
@@ -264,9 +264,9 @@ export const Admin: React.FC = () => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const todayBookings = bookings.filter(b => isSameDate(new Date(b.startTime), now)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-  const upcomingBookings = bookings.filter(b => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-  const pastBookings = bookings.filter(b => new Date(b.startTime) < today).sort((a: Booking, b: Booking) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
+  const todayBookings = bookings.filter((b: Booking) => isSameDate(new Date(b.startTime), now)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const upcomingBookings = bookings.filter((b: Booking) => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const pastBookings = bookings.filter((b: Booking) => new Date(b.startTime) < today).sort((a: Booking, b: Booking) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
 
   const getTodayStatusStyle = (b: Booking) => {
     const start = new Date(b.startTime).getTime();
@@ -289,7 +289,7 @@ export const Admin: React.FC = () => {
               <input
                 type="text"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm border p-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -298,7 +298,7 @@ export const Admin: React.FC = () => {
               <input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm border p-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -500,7 +500,7 @@ export const Admin: React.FC = () => {
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 {b.catering && Object.entries(b.catering).length > 0 && (
                                   <div className="flex flex-wrap gap-1">
-                                    {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                    {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]: [string, unknown]) => (
                                       <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
                                         {item}: {qty as number}
                                       </span>
@@ -542,7 +542,7 @@ export const Admin: React.FC = () => {
                       {upcomingBookings.length === 0 ? (
                         <tr><td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
                       ) : (
-                        upcomingBookings.map(b => (
+                        upcomingBookings.map((b: Booking) => (
                           <tr key={b.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
@@ -554,7 +554,7 @@ export const Admin: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {b.catering && Object.entries(b.catering).length > 0 && (
                                 <div className="flex flex-wrap gap-1">
-                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]: [string, unknown]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
                                       {item}: {qty as number}
                                     </span>
@@ -595,7 +595,7 @@ export const Admin: React.FC = () => {
                       {pastBookings.length === 0 ? (
                         <tr><td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
                       ) : (
-                        pastBookings.map(b => (
+                        pastBookings.map((b: Booking) => (
                           <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
@@ -607,7 +607,7 @@ export const Admin: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {b.catering && Object.entries(b.catering).length > 0 && (
                                 <div className="flex flex-wrap gap-1">
-                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]: [string, unknown]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
                                       {item}: {qty as number}
                                     </span>
@@ -800,7 +800,7 @@ export const Admin: React.FC = () => {
                           </div>
 
                           <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
-                            {Object.keys(ICON_MAP).map(iconName => (
+                            {Object.keys(ICON_MAP).map((iconName: string) => (
                               <button
                                 key={iconName}
                                 type="button"
