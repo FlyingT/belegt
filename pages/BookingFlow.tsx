@@ -88,7 +88,6 @@ export const BookingFlow: React.FC = () => {
         title: formData.title,
         startTime: startIso,
         endTime: endIso,
-        endTime: endIso,
         userName: formData.name,
         userEmail: formData.email,
         department: formData.department
@@ -179,13 +178,14 @@ export const BookingFlow: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Abteilung <span className="text-gray-400 font-normal">(Optional)</span></label>
+                    <label className="block text-sm font-medium text-gray-700">Abteilung</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Type className="h-4 w-4 text-gray-400" />
                       </div>
                       <input
                         type="text"
+                        required
                         placeholder={appConfig?.placeholderName ? "z.B. IT, Vertrieb" : "z.B. IT, Vertrieb"}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.department}

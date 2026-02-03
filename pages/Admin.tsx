@@ -64,7 +64,6 @@ export const Admin: React.FC = () => {
       type: 'Room',
       description: '',
       color: getRandomColor(),
-      color: getRandomColor(),
       is_maintenance: false,
       icon: '',
       showKiosk: true
