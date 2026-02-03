@@ -3,6 +3,12 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
+## [v1.7.3] - 2026-02-03
+### Behoben
+- **Admin**: Kontrast der Zeitraum-Anzeige bei anstehenden Buchungen im Dark Mode verbessert.
+- **Admin**: Beschriftung der Spalten in der Buchungsübersicht von \"Asset\" zu \"Ressource\" geändert.
+- **Admin**: Schreibweise von \"Anstehend (ab Morgen)\" korrigiert.
+
 ## [v1.7.2] - 2026-02-03
 ### Behoben
 - **Booking Flow**: Rote Markierung (*) bei dem Feld \"Abteilung\" entfernt (optionales Feld).

@@ -272,7 +272,7 @@ export const Admin: React.FC = () => {
 
     if (current > end) return 'text-gray-400 opacity-75'; // Past
     if (current >= start && current <= end) return 'font-bold text-indigo-900 bg-indigo-50 dark:bg-indigo-900/40 dark:text-indigo-100'; // Active
-    return 'text-gray-900'; // Future
+    return 'text-gray-900 dark:text-gray-300'; // Future
   };
 
   if (!isAuthenticated) {
@@ -502,7 +502,7 @@ export const Admin: React.FC = () => {
 
               {/* Anstehend */}
               <div className="mb-8">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Anstehend (Ab Morgen)</h3>
+                <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Anstehend (ab Morgen)</h3>
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-gray-700 md:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-700">

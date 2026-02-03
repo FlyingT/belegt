@@ -11,6 +11,7 @@ Alles dabei:
 - **Erweiterte Buchungsdaten**: Erfassung der Abteilung bei Buchungen.
 - **Daten-Export/Import**: Sicherung und Wiederherstellung von Buchungsdaten inklusive Abteilungsinfo.
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
+- **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
 
 
@@ -51,7 +52,7 @@ Volle Kontrolle über Assets und Buchungen, Benutzername und Kennwort wird via e
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S5-AdminLogin.png)
 
-Ressourcen verwalten (anlegen, bearbeiten, löschen, sortieren)
+Ressourcen verwalten (anlegen, bearbeiten, löschen, Drag & Drop Sortierung)
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S6-AdminRessourcen1.png)
 
