@@ -64,8 +64,10 @@ export const Admin: React.FC = () => {
       type: 'Room',
       description: '',
       color: getRandomColor(),
+      color: getRandomColor(),
       is_maintenance: false,
-      icon: ''
+      icon: '',
+      showKiosk: true
     });
     setIsAssetModalOpen(true);
   };
@@ -227,7 +229,8 @@ export const Admin: React.FC = () => {
               startTime: b.startTime,
               endTime: b.endTime,
               userName: b.userName || 'Imported',
-              userEmail: b.userEmail || 'imported@system'
+              userEmail: b.userEmail || 'imported@system',
+              department: b.department || ''
             });
             successCount++;
           } catch (err) {
@@ -481,6 +484,7 @@ export const Admin: React.FC = () => {
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 <div className="font-bold">{b.title}</div>
                                 {b.userName} <span className="text-xs">({b.userEmail})</span>
+                                {b.department && <div className="text-xs text-gray-500">{b.department}</div>}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -506,7 +510,7 @@ export const Admin: React.FC = () => {
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeit</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
                       </tr>
@@ -522,6 +526,7 @@ export const Admin: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               <div className="text-indigo-700">{b.title}</div>
                               {b.userName}
+                              {b.department && <div className="text-xs text-gray-500">{b.department}</div>}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -546,7 +551,7 @@ export const Admin: React.FC = () => {
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
@@ -561,6 +566,7 @@ export const Admin: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               <div>{b.title}</div>
                               <span className="text-xs text-gray-500">{b.userName}</span>
+                              {b.department && <span className="text-xs text-gray-400 ml-2">({b.department})</span>}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
@@ -852,6 +858,18 @@ export const Admin: React.FC = () => {
                           />
                           <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
                             In Wartung?
+                          </label>
+                        </div>
+                        <div className="flex items-center h-10 pb-3 ml-4">
+                          <input
+                            id="kiosk_toggle"
+                            type="checkbox"
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            checked={editingAsset.showKiosk !== false} // Default true
+                            onChange={e => setEditingAsset({ ...editingAsset, showKiosk: e.target.checked })}
+                          />
+                          <label htmlFor="kiosk_toggle" className="ml-2 block text-sm text-gray-900">
+                            Kiosk-Ansicht?
                           </label>
                         </div>
                       </div>

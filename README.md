@@ -6,7 +6,10 @@ Alles dabei:
 - **Buchungsoberfläche**: Einfaches Buchen von Ressourcen mit automatischer Zeitprüfung.
 - **Kiosk-Modus**: Schlanke Ansicht für Displays vor Räumen mit dynamischem Countdown.
 - **Admin-Dashboard**: Passwortgeschützte Verwaltung von Ressourcen (Räume, Fahrzeuge, Equipment).
-- **Daten-Management**: Export und Import von Buchungen als JSON.
+- **Buchungsorganisation**: Kategorisierung von Buchungen (Heute, Anstehend, Vergangen) im Admin-Bereich.
+- **Kiosk-Steuerung**: Gezielte Freigabe von Ressourcen für den Kiosk-Modus.
+- **Erweiterte Buchungsdaten**: Erfassung der Abteilung bei Buchungen.
+- **Daten-Export/Import**: Sicherung und Wiederherstellung von Buchungsdaten inklusive Abteilungsinfo.
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
 
 

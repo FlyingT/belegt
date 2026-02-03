@@ -36,6 +36,7 @@ class Asset(db.Model):
     is_maintenance = db.Column(db.Boolean, default=False)
     icon = db.Column(db.String(50), nullable=True)
     sort_order = db.Column(db.Integer, default=0)
+    show_kiosk = db.Column(db.Boolean, default=True)
 
     def to_dict(self):
         return {
@@ -46,7 +47,8 @@ class Asset(db.Model):
             'color': self.color,
             'is_maintenance': self.is_maintenance,
             'icon': self.icon,
-            'sortOrder': self.sort_order
+            'sortOrder': self.sort_order,
+            'showKiosk': self.show_kiosk
         }
 
 class Booking(db.Model):
@@ -57,6 +59,7 @@ class Booking(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     user_name = db.Column(db.String(100), nullable=False)
     user_email = db.Column(db.String(100), nullable=False)
+    department = db.Column(db.String(100), nullable=False, default="")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -68,6 +71,7 @@ class Booking(db.Model):
             'endTime': self.end_time.isoformat(),
             'userName': self.user_name,
             'userEmail': self.user_email,
+            'department': self.department,
             'createdAt': self.created_at.isoformat()
         }
 
@@ -158,6 +162,22 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN accent_color VARCHAR(20) DEFAULT '#3b82f6'"))
                 conn.commit()
 
+            # Check for show_kiosk in asset
+            try:
+                conn.execute(text("SELECT show_kiosk FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding show_kiosk to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN show_kiosk BOOLEAN DEFAULT 1"))
+                conn.commit()
+
+            # Check for department in booking
+            try:
+                conn.execute(text("SELECT department FROM booking LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding department to booking")
+                conn.execute(text("ALTER TABLE booking ADD COLUMN department VARCHAR(100) DEFAULT ''"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -209,7 +229,8 @@ def create_asset():
         color=data.get('color'),
         is_maintenance=data.get('is_maintenance', False),
         icon=data.get('icon'),
-        sort_order=max_order + 1
+        sort_order=max_order + 1,
+        show_kiosk=data.get('showKiosk', True)
     )
     db.session.add(new_asset)
     db.session.commit()
@@ -240,6 +261,8 @@ def update_asset(id):
     asset.icon = data.get('icon', asset.icon)
     if 'is_maintenance' in data:
         asset.is_maintenance = data['is_maintenance']
+    if 'showKiosk' in data:
+        asset.show_kiosk = data['showKiosk']
     
     db.session.commit()
     return jsonify(asset.to_dict())
@@ -279,7 +302,8 @@ def create_booking():
         start_time=start_time,
         end_time=end_time,
         user_name=data.get('userName'),
-        user_email=data.get('userEmail')
+        user_email=data.get('userEmail'),
+        department=data.get('department', '')
     )
     db.session.add(new_booking)
     db.session.commit()

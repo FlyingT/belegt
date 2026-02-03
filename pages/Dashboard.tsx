@@ -129,15 +129,17 @@ export const Dashboard: React.FC = () => {
                         </Link>
                       )}
 
-                      <Link
-                        to={`/kiosk/${asset.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
-                        title="Kiosk Modus öffnen"
-                      >
-                        <DynamicIcon name="Monitor" className="w-5 h-5" />
-                      </Link>
+                      {asset.showKiosk !== false && (
+                        <Link
+                          to={`/kiosk/${asset.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
+                          title="Kiosk Modus öffnen"
+                        >
+                          <DynamicIcon name="Monitor" className="w-5 h-5" />
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>

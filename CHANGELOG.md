@@ -2,7 +2,14 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
-## [v1.5.1] - 2026-01-26
+## [v1.6.0] - 2026-02-03
+### Hinzugefügt
+- **Kiosk Toggle pro Asset**: Assets können nun explizit für den Kiosk-Modus aktiviert/deaktiviert werden.
+- **Abteilung als Feld**: Buchungen enthalten nun ein optionales Feld für die Abteilung.
+- **Import Erweiterung**: Import von Buchungen unterstützt nun das Abteilungsfeld.
+- **Admin UI Updates**: Anzeige der Kiosk-Option in der Asset-Verwaltung und Abteilung in der Buchungsliste.
+
+## [v1.5.1] - 2026-02-0326
 
 ### Geändert
 - **Favicon**: Browser-Icon (Kalender) hinzugefügt.

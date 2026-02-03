@@ -7,6 +7,7 @@ export interface Asset {
   is_maintenance: boolean;
   icon?: string; // Icon name from lucide-react
   sortOrder?: number;
+  showKiosk?: boolean;
 }
 
 export interface Booking {
@@ -17,6 +18,7 @@ export interface Booking {
   endTime: string; // ISO string
   userName: string;
   userEmail: string;
+  department?: string;
   createdAt: string;
 }
 
