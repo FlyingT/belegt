@@ -37,6 +37,8 @@ class Asset(db.Model):
     icon = db.Column(db.String(50), nullable=True)
     sort_order = db.Column(db.Integer, default=0)
     show_kiosk = db.Column(db.Boolean, default=True)
+    has_catering = db.Column(db.Boolean, default=False)
+    catering_options_json = db.Column(db.String(1000), default='[]')
 
     def to_dict(self):
         return {
@@ -48,7 +50,9 @@ class Asset(db.Model):
             'is_maintenance': self.is_maintenance,
             'icon': self.icon,
             'sortOrder': self.sort_order,
-            'showKiosk': self.show_kiosk
+            'showKiosk': self.show_kiosk,
+            'hasCatering': self.has_catering,
+            'cateringOptions': json.loads(self.catering_options_json) if self.catering_options_json else []
         }
 
 class Booking(db.Model):
@@ -60,6 +64,7 @@ class Booking(db.Model):
     user_name = db.Column(db.String(100), nullable=False)
     user_email = db.Column(db.String(100), nullable=False)
     department = db.Column(db.String(100), nullable=False, default="")
+    catering_json = db.Column(db.String(500), default='{}')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -72,6 +77,7 @@ class Booking(db.Model):
             'userName': self.user_name,
             'userEmail': self.user_email,
             'department': self.department,
+            'catering': json.loads(self.catering_json) if self.catering_json else {},
             'createdAt': self.created_at.isoformat()
         }
 
@@ -183,6 +189,23 @@ def init_db():
                 conn.execute(text("ALTER TABLE booking ADD COLUMN department VARCHAR(100) DEFAULT ''"))
                 conn.commit()
 
+            # Check for catering in asset
+            try:
+                conn.execute(text("SELECT has_catering FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding catering fields to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN has_catering BOOLEAN DEFAULT 0"))
+                conn.execute(text("ALTER TABLE asset ADD COLUMN catering_options_json VARCHAR(1000) DEFAULT '[]'"))
+                conn.commit()
+
+            # Check for catering in booking
+            try:
+                conn.execute(text("SELECT catering_json FROM booking LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding catering_json to booking")
+                conn.execute(text("ALTER TABLE booking ADD COLUMN catering_json VARCHAR(500) DEFAULT '{}'"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -235,7 +258,9 @@ def create_asset():
         is_maintenance=data.get('is_maintenance', False),
         icon=data.get('icon'),
         sort_order=max_order + 1,
-        show_kiosk=data.get('showKiosk', True)
+        show_kiosk=data.get('showKiosk', True),
+        has_catering=data.get('hasCatering', False),
+        catering_options_json=json.dumps(data.get('cateringOptions', []))
     )
     db.session.add(new_asset)
     db.session.commit()
@@ -268,6 +293,10 @@ def update_asset(id):
         asset.is_maintenance = data['is_maintenance']
     if 'showKiosk' in data:
         asset.show_kiosk = data['showKiosk']
+    if 'hasCatering' in data:
+        asset.has_catering = data['hasCatering']
+    if 'cateringOptions' in data:
+        asset.catering_options_json = json.dumps(data['cateringOptions'])
     
     db.session.commit()
     return jsonify(asset.to_dict())
@@ -308,7 +337,8 @@ def create_booking():
         end_time=end_time,
         user_name=data.get('userName'),
         user_email=data.get('userEmail'),
-        department=data.get('department', '')
+        department=data.get('department', ''),
+        catering_json=json.dumps(data.get('catering', {}))
     )
     db.session.add(new_booking)
     db.session.commit()
