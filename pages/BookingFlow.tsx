@@ -107,7 +107,7 @@ export const BookingFlow: React.FC = () => {
   const bookingsForDate = existingBookings.filter(b => {
     const bookingDate = new Date(b.startTime).toISOString().split('T')[0];
     return bookingDate === formData.date;
-  }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  }).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
   if (loading || !asset) return <div className="p-8 text-center">Laden...</div>;
 
@@ -149,7 +149,7 @@ export const BookingFlow: React.FC = () => {
                     placeholder={appConfig?.placeholderTitle || "z.B. Team Meeting, Kundenbesuch"}
                     className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                     value={formData.title}
-                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
               </div>
@@ -172,13 +172,13 @@ export const BookingFlow: React.FC = () => {
                         placeholder={appConfig?.placeholderName || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.name}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Abteilung</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung <span className="text-red-500">*</span></label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Type className="h-4 w-4 text-gray-400" />
@@ -186,10 +186,10 @@ export const BookingFlow: React.FC = () => {
                       <input
                         type="text"
                         required
-                        placeholder={appConfig?.placeholderName ? "z.B. IT, Vertrieb" : "z.B. IT, Vertrieb"}
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                        placeholder={appConfig?.placeholderDepartment || "z.B. IT, Vertrieb"}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={formData.department}
-                        onChange={e => setFormData({ ...formData, department: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, department: e.target.value })}
                       />
                     </div>
                   </div>
@@ -206,7 +206,7 @@ export const BookingFlow: React.FC = () => {
                         placeholder={appConfig?.placeholderEmail || ""}
                         className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
                         value={formData.email}
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export const BookingFlow: React.FC = () => {
                     min={new Date().toISOString().split('T')[0]}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                     value={formData.date}
-                    onChange={e => setFormData({ ...formData, date: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, date: e.target.value })}
                   />
                 </div>
 
@@ -238,7 +238,7 @@ export const BookingFlow: React.FC = () => {
                       required
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.startTime}
-                      onChange={e => {
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const newStart = e.target.value;
                         if (!newStart) {
                           setFormData({ ...formData, startTime: newStart });
@@ -276,7 +276,7 @@ export const BookingFlow: React.FC = () => {
                       required
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.endTime}
-                      onChange={e => setFormData({ ...formData, endTime: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, endTime: e.target.value })}
                     />
                   </div>
                 </div>

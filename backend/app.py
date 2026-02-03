@@ -85,6 +85,7 @@ class AppConfig(db.Model):
     placeholder_title = db.Column(db.String(100), default='z.B. Team Meeting, Kundenbesuch')
     placeholder_name = db.Column(db.String(100), default='')
     placeholder_email = db.Column(db.String(100), default='')
+    placeholder_department = db.Column(db.String(100), default='')
 
     def to_dict(self):
         return {
@@ -94,7 +95,9 @@ class AppConfig(db.Model):
             'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {},
             'placeholderTitle': self.placeholder_title,
             'placeholderName': self.placeholder_name,
-            'placeholderEmail': self.placeholder_email
+            'placeholderName': self.placeholder_name,
+            'placeholderEmail': self.placeholder_email,
+            'placeholderDepartment': self.placeholder_department
         }
 
 # --- Helper ---
@@ -143,7 +146,9 @@ def init_db():
                 print("Migrating: Adding placeholder fields to app_config")
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_title VARCHAR(100) DEFAULT 'z.B. Team Meeting, Kundenbesuch'"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_email VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_department VARCHAR(100) DEFAULT ''"))
                 conn.commit()
                 
             # Check for site_title in app_config
@@ -343,6 +348,8 @@ def update_config():
         config.placeholder_name = data['placeholderName']
     if 'placeholderEmail' in data:
         config.placeholder_email = data['placeholderEmail']
+    if 'placeholderDepartment' in data:
+        config.placeholder_department = data['placeholderDepartment']
         
     db.session.commit()
     return jsonify(config.to_dict())

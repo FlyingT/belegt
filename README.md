@@ -11,6 +11,8 @@ Alles dabei:
 - **Erweiterte Buchungsdaten**: Erfassung der Abteilung bei Buchungen.
 - **Daten-Export/Import**: Sicherung und Wiederherstellung von Buchungsdaten inklusive Abteilungsinfo.
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
+- **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
+
 
 
 ### Features

@@ -28,8 +28,8 @@ export const Admin: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const envUser = (window._env_ && window._env_.ADMIN_USER) || 'admin';
-    const envPass = (window._env_ && window._env_.ADMIN_PASSWORD) || 'belegt';
+    const envUser = ((window as any)._env_ && (window as any)._env_.ADMIN_USER) || 'admin';
+    const envPass = ((window as any)._env_ && (window as any)._env_.ADMIN_PASSWORD) || 'belegt';
 
     if (username === envUser && password === envPass) {
       setIsAuthenticated(true);
@@ -138,7 +138,7 @@ export const Admin: React.FC = () => {
 
   // Helper for Category Icons Setting
   const handleCategoryIconChange = (type: string, iconName: string) => {
-    setConfig(prev => ({
+    setConfig((prev: AppConfig) => ({
       ...prev,
       categoryIcons: {
         ...prev.categoryIcons,
@@ -150,7 +150,7 @@ export const Admin: React.FC = () => {
   const resetCategoryIcon = (type: string) => {
     const newIcons = { ...config.categoryIcons };
     delete newIcons[type];
-    setConfig(prev => ({
+    setConfig((prev: AppConfig) => ({
       ...prev,
       categoryIcons: newIcons
     }));
@@ -261,9 +261,9 @@ export const Admin: React.FC = () => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const todayBookings = bookings.filter(b => isSameDate(new Date(b.startTime), now)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-  const upcomingBookings = bookings.filter(b => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-  const pastBookings = bookings.filter(b => new Date(b.startTime) < today).sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
+  const todayBookings = bookings.filter(b => isSameDate(new Date(b.startTime), now)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const upcomingBookings = bookings.filter(b => new Date(b.startTime) >= new Date(today.getTime() + 24 * 60 * 60 * 1000)).sort((a: Booking, b: Booking) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  const pastBookings = bookings.filter(b => new Date(b.startTime) < today).sort((a: Booking, b: Booking) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()); // Descending for past
 
   const getTodayStatusStyle = (b: Booking) => {
     const start = new Date(b.startTime).getTime();
@@ -278,28 +278,28 @@ export const Admin: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Admin Anmeldung</h2>
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md border dark:border-gray-700">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Admin Anmeldung</h2>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Benutzername</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Benutzername</label>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm border p-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Passwort</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Passwort</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm border p-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-            <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Anmelden</button>
+            <button type="submit" className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors">Anmelden</button>
           </form>
         </div>
       </div>
@@ -309,32 +309,32 @@ export const Admin: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 relative">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Verwaltung</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verwaltung</h1>
         <button
           onClick={() => setIsAuthenticated(false)}
-          className="flex items-center text-gray-500 hover:text-red-600"
+          className="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
         >
           <LogOut className="w-5 h-5 mr-2" /> Abmelden
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         {/* Tabs */}
-        <div className="border-b border-gray-200 flex">
+        <div className="border-b border-gray-200 dark:border-gray-700 flex">
           <button
-            className={`flex-1 py-4 text-center font-medium ${activeTab === 'assets' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'assets' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
             onClick={() => setActiveTab('assets')}
           >
             Ressourcen
           </button>
           <button
-            className={`flex-1 py-4 text-center font-medium ${activeTab === 'bookings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'bookings' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
             onClick={() => setActiveTab('bookings')}
           >
             Buchungen
           </button>
           <button
-            className={`flex-1 py-4 text-center font-medium ${activeTab === 'settings' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-4 text-center font-medium ${activeTab === 'settings' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
             onClick={() => setActiveTab('settings')}
           >
             Einstellungen
@@ -353,50 +353,50 @@ export const Admin: React.FC = () => {
                 </button>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Sortierung</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutzung</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-10">Sortierung</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Typ</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nutzung</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktionen</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {assets.map((asset, index) => (
                       <tr key={asset.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           <div className="flex flex-col space-y-1">
                             <button
                               onClick={() => moveAsset(index, 'up')}
                               disabled={index === 0}
-                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500 dark:text-gray-400 dark:hover:text-indigo-400`}
                             >
                               <ArrowUp className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => moveAsset(index, 'down')}
                               disabled={index === assets.length - 1}
-                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500`}
+                              className={`text-gray-500 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-gray-500 dark:text-gray-400 dark:hover:text-indigo-400`}
                             >
                               <ArrowDown className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white flex items-center">
                           <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: asset.color }}></span>
-                          <span className="mr-2 text-gray-500"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
+                          <span className="mr-2 text-gray-500 dark:text-gray-400"><DynamicIcon name={asset.icon} className="w-4 h-4" /></span>
                           {asset.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{categoryLabels[asset.type] || asset.type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{categoryLabels[asset.type] || asset.type}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.is_maintenance ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.is_maintenance ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
                             {asset.is_maintenance ? 'In Wartung' : 'Verfügbar'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                           {bookings.filter(b => b.assetId === asset.id).length} Buchungen
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
@@ -435,7 +435,7 @@ export const Admin: React.FC = () => {
               <div className="flex justify-end mb-4 space-x-2">
                 <button
                   onClick={handleExport}
-                  className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center"
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center"
                 >
                   <Download className="w-4 h-4 mr-2" /> Exportieren
                 </button>
@@ -448,7 +448,7 @@ export const Admin: React.FC = () => {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                   />
                   <button
-                    className={`bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center ${importing ? 'opacity-50' : ''}`}
+                    className={`bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center ${importing ? 'opacity-50' : ''}`}
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     {importing ? importProgress : 'Importieren'}
@@ -458,18 +458,18 @@ export const Admin: React.FC = () => {
 
               {/* Tagesübersicht */}
               <div className="mb-8">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Tagesübersicht (Heute)</h3>
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Tagesübersicht (Heute)</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-gray-700 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeitraum</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Zeitraum</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {todayBookings.length === 0 ? (
                         <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine Buchungen für heute.</td></tr>
                       ) : (
@@ -477,13 +477,13 @@ export const Admin: React.FC = () => {
                           const rowClass = getTodayStatusStyle(b);
                           return (
                             <tr key={b.id} className={rowClass}>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium dark:text-gray-200">
                                 {assets.find(a => a.id === b.assetId)?.name || b.assetId}
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-300">
                                 <div className="font-bold">{b.title}</div>
                                 {b.userName} <span className="text-xs">({b.userEmail})</span>
-                                {b.department && <div className="text-xs text-gray-500">{b.department}</div>}
+                                {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -502,32 +502,32 @@ export const Admin: React.FC = () => {
 
               {/* Anstehend */}
               <div className="mb-8">
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Anstehend (Ab Morgen)</h3>
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Anstehend (Ab Morgen)</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-gray-700 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zeit</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Datum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Zeit</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {upcomingBookings.length === 0 ? (
                         <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
                       ) : (
                         upcomingBookings.map(b => (
                           <tr key={b.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              <div className="text-indigo-700">{b.title}</div>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                              <div className="text-indigo-700 dark:text-indigo-400">{b.title}</div>
                               {b.userName}
-                              {b.department && <div className="text-xs text-gray-500">{b.department}</div>}
+                              {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                               {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -543,29 +543,29 @@ export const Admin: React.FC = () => {
 
               {/* Vergangen */}
               <div>
-                <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">Vergangen</h3>
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Vergangen</h3>
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-gray-700 md:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Datum</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asset</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {pastBookings.length === 0 ? (
                         <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
                       ) : (
                         pastBookings.map(b => (
                           <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(b.startTime).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(b.startTime).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{assets.find(a => a.id === b.assetId)?.name || b.assetId}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                               <div>{b.title}</div>
-                              <span className="text-xs text-gray-500">{b.userName}</span>
-                              {b.department && <span className="text-xs text-gray-400 ml-2">({b.department})</span>}
+                              <span className="text-xs text-gray-500 dark:text-gray-400">{b.userName}</span>
+                              {b.department && <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({b.department})</span>}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
@@ -586,52 +586,52 @@ export const Admin: React.FC = () => {
               <form onSubmit={saveSettings} className="space-y-8">
 
                 {/* General */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-4">Allgemein</h4>
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Allgemein</h4>
                   <div className="space-y-4 max-w-md">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">System Name (Header Text)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">System Name (Header Text)</label>
                       <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Settings className="h-4 w-4 text-gray-400" />
                         </div>
                         <input
                           type="text"
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                           value={config.headerText}
-                          onChange={e => setConfig({ ...config, headerText: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, headerText: e.target.value })}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Seitentitel (Browser Tab)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Seitentitel (Browser Tab)</label>
                       <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Settings className="h-4 w-4 text-gray-400" />
                         </div>
                         <input
                           type="text"
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                           value={config.siteTitle || ''}
-                          onChange={e => setConfig({ ...config, siteTitle: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, siteTitle: e.target.value })}
                           placeholder="Belegt"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Akzentfarbe (Titel & Buttons)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Akzentfarbe (Titel & Buttons)</label>
                       <div className="flex gap-2 items-center mt-1">
                         <input
                           type="color"
-                          className="h-10 w-44 p-1 border border-gray-300 rounded-md shadow-sm cursor-pointer"
+                          className="h-10 w-44 p-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm cursor-pointer bg-white dark:bg-gray-700"
                           value={config.accentColor || '#3b82f6'}
-                          onChange={e => setConfig({ ...config, accentColor: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, accentColor: e.target.value })}
                         />
-                        <span className="text-sm text-gray-500">{config.accentColor || '#3b82f6'}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{config.accentColor || '#3b82f6'}</span>
                         <button
                           type="button"
                           onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
-                          className="text-xs text-indigo-600 hover:text-indigo-800 ml-2"
+                          className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 ml-2"
                         >
                           Reset
                         </button>
@@ -653,39 +653,49 @@ export const Admin: React.FC = () => {
                 </div>
 
                 {/* Placeholders */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-4">Buchungsformular: Platzhalter</h4>
-                  <p className="text-sm text-gray-500 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
 
                   <div className="space-y-4 max-w-md">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Titel / Grund"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Titel / Grund"</label>
                       <input
                         type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderTitle || ''}
                         placeholder="z.B. Team Meeting, Kundenbesuch"
-                        onChange={e => setConfig({ ...config, placeholderTitle: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "Name"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Name"</label>
                       <input
                         type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderName || ''}
                         placeholder="z.B. Max Mustermann"
-                        onChange={e => setConfig({ ...config, placeholderName: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Platzhalter für "E-Mail"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
                       <input
                         type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderEmail || ''}
                         placeholder="z.B. max@firma.de"
-                        onChange={e => setConfig({ ...config, placeholderEmail: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderDepartment || ''}
+                        placeholder="z.B. IT, Vertrieb"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
                       />
                     </div>
                   </div>
@@ -704,9 +714,9 @@ export const Admin: React.FC = () => {
                 </div>
 
                 {/* Category Icons */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
 
                   <div className="space-y-8">
                     {Object.entries(categoryLabels).map(([type, label]) => {
@@ -714,24 +724,24 @@ export const Admin: React.FC = () => {
                       const activeIcon = currentIcon || defaultIcons[type];
 
                       return (
-                        <div key={type} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                        <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
                           <div className="flex items-center justify-between mb-3">
                             <div>
-                              <label className="text-base font-semibold text-gray-800">{label}</label>
-                              <div className="text-xs text-gray-500 mt-0.5 flex items-center">
+                              <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
                                 Aktives Icon:
-                                <span className="inline-flex items-center ml-2 bg-white px-2 py-0.5 rounded border border-gray-300">
-                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
+                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
                                   {activeIcon}
                                 </span>
-                                {!currentIcon && <span className="ml-2 text-gray-400 italic">(Standard)</span>}
+                                {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
                               </div>
                             </div>
                             {currentIcon && (
                               <button
                                 type="button"
                                 onClick={() => resetCategoryIcon(type)}
-                                className="text-xs text-red-600 hover:text-red-800 flex items-center bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50"
+                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
                               >
                                 <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
                               </button>
@@ -807,7 +817,7 @@ export const Admin: React.FC = () => {
                           required
                           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                           value={editingAsset.name || ''}
-                          onChange={e => setEditingAsset({ ...editingAsset, name: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, name: e.target.value })}
                         />
                       </div>
                       <div>
@@ -815,7 +825,7 @@ export const Admin: React.FC = () => {
                         <select
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                           value={editingAsset.type || 'Room'}
-                          onChange={e => setEditingAsset({ ...editingAsset, type: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditingAsset({ ...editingAsset, type: e.target.value })}
                         >
                           <option value="Room">Raum</option>
                           <option value="Vehicle">Fahrzeug</option>
@@ -829,7 +839,7 @@ export const Admin: React.FC = () => {
                           rows={3}
                           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                           value={editingAsset.description || ''}
-                          onChange={e => setEditingAsset({ ...editingAsset, description: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditingAsset({ ...editingAsset, description: e.target.value })}
                         />
                       </div>
 
@@ -844,7 +854,7 @@ export const Admin: React.FC = () => {
                             type="color"
                             className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             value={editingAsset.color || '#3b82f6'}
-                            onChange={e => setEditingAsset({ ...editingAsset, color: e.target.value })}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, color: e.target.value })}
                           />
                         </div>
                         <div className="flex items-center h-10 pb-3">
@@ -853,7 +863,7 @@ export const Admin: React.FC = () => {
                             type="checkbox"
                             className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                             checked={editingAsset.is_maintenance || false}
-                            onChange={e => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
                           />
                           <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
                             In Wartung?
@@ -865,7 +875,7 @@ export const Admin: React.FC = () => {
                             type="checkbox"
                             className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                             checked={editingAsset.showKiosk !== false} // Default true
-                            onChange={e => setEditingAsset({ ...editingAsset, showKiosk: e.target.checked })}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, showKiosk: e.target.checked })}
                           />
                           <label htmlFor="kiosk_toggle" className="ml-2 block text-sm text-gray-900">
                             Kiosk-Ansicht?

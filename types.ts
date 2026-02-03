@@ -30,6 +30,7 @@ export interface AppConfig {
   placeholderTitle?: string;
   placeholderName?: string;
   placeholderEmail?: string;
+  placeholderDepartment?: string;
 }
 
 export interface AdminState {

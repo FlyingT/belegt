@@ -2,6 +2,12 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [v1.7.0] - 2026-02-03
+### Hinzugefügt
+- **Dark Mode**: Vollständiger Dark Mode Support für die gesamte Applikation (Admin, Booking, Confirmation).
+- **Admin**: Styling-Anpassungen (Schatten, Farben) für eine bessere Konsistenz.
+- **Confirmation**: Dark Mode Support für die Bestätigungsseite.
+
 ## [v1.6.0] - 2026-02-03
 ### Hinzugefügt
 - **Kiosk Toggle pro Asset**: Assets können nun explizit für den Kiosk-Modus aktiviert/deaktiviert werden.

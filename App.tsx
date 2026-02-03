@@ -9,14 +9,14 @@ import { Admin } from './pages/Admin';
 import { api } from './services/api';
 
 const Layout = () => (
-  <div className="min-h-screen flex flex-col">
+  <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
     <Navbar />
-    <main className="flex-1 bg-gray-50">
+    <main className="flex-1">
       <Outlet />
     </main>
-    <footer className="bg-gray-200 text-gray-700 text-xs text-right py-1 px-4">
+    <footer className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-400 text-xs text-right py-1 px-4 border-t border-gray-300 dark:border-gray-700">
       <a href="https://github.com/FlyingT/belegt/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" className="hover:underline">
-        v1.6.0 von TK
+        v1.7.0 von TK
       </a>
     </footer>
   </div>

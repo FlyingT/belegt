@@ -71,8 +71,8 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Verfügbare Ressourcen</h1>
-        <p className="mt-2 text-gray-600">Wählen Sie eine Ressource aus, um eine Buchung vorzunehmen oder den Status zu prüfen.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verfügbare Ressourcen</h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-300">Wählen Sie eine Ressource aus, um eine Buchung vorzunehmen oder den Status zu prüfen.</p>
       </div>
 
       <div className="space-y-12">
@@ -82,7 +82,7 @@ export const Dashboard: React.FC = () => {
               <span className="bg-indigo-100 text-indigo-800 p-2 rounded-lg mr-3">
                 <DynamicIcon name={getCategoryIconName(category)} className="w-6 h-6" />
               </span>
-              <h2 className="text-2xl font-semibold text-gray-800">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
                 {getCategoryName(category)}
               </h2>
             </div>
@@ -91,7 +91,7 @@ export const Dashboard: React.FC = () => {
               {groupedAssets[category].map((asset) => (
                 <div
                   key={asset.id}
-                  className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 transition-transform hover:scale-[1.02] ${asset.is_maintenance ? 'border-gray-400 opacity-75' : ''}`}
+                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border-l-4 transition-transform hover:scale-[1.02] ${asset.is_maintenance ? 'border-gray-400 opacity-75' : ''}`}
                   style={{ borderLeftColor: asset.is_maintenance ? undefined : asset.color }}
                 >
                   <div className="p-6">
@@ -111,8 +111,8 @@ export const Dashboard: React.FC = () => {
                       )}
                     </div>
 
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">{asset.name}</h3>
-                    <p className="mt-1 text-sm text-gray-500">{asset.description}</p>
+                    <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">{asset.name}</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{asset.description}</p>
 
                     <div className="mt-6 flex gap-3">
                       {asset.is_maintenance ? (
@@ -134,7 +134,7 @@ export const Dashboard: React.FC = () => {
                           to={`/kiosk/${asset.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
+                          className="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                           title="Kiosk Modus öffnen"
                         >
                           <DynamicIcon name="Monitor" className="w-5 h-5" />
@@ -150,10 +150,10 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {assets.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <Layers className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900">Keine Ressourcen gefunden</h3>
-          <p className="text-gray-500">Es wurden noch keine Ressourcen angelegt.</p>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <Layers className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Keine Ressourcen gefunden</h3>
+          <p className="text-gray-500 dark:text-gray-400">Es wurden noch keine Ressourcen angelegt.</p>
         </div>
       )}
     </div>
