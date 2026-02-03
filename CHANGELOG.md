@@ -3,6 +3,15 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
+## [v1.8.1] - 2026-02-03
+### Geändert
+- **Admin**: Beschriftung "Weiteres Feld hinzufügen" in Kleinschreibung geändert.
+- **Admin**: Tabellenüberschrift "Nutzung" in der Ressourcen-Liste zu "Gesamtnutzung" umbenannt.
+- **Admin**: Dedizierte Spalte "Catering" in den Buchungsübersichten hinzugefügt.
+- **Booking Flow**: Checkbox für Catering zur besseren Lesbarkeit hinter den Text verschoben.
+- **Booking Flow**: Hinweistext zur Catering-Auswahl entfernt.
+- **Booking Flow**: Up/Down Arrows (Spin-Buttons) bei den Mengenangaben für Catering entfernt.
+
 ## [v1.8.0] - 2026-02-03
 ### Hinzugefügt
 - **Catering / Arbeitsmittel**: Ressourcen können nun mit optionalen Catering-Optionen oder Arbeitsmitteln konfiguriert werden.

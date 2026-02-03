@@ -363,7 +363,7 @@ export const Admin: React.FC = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Typ</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nutzung</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Gesamtnutzung</th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktionen</th>
                     </tr>
                   </thead>
@@ -468,13 +468,14 @@ export const Admin: React.FC = () => {
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ressource</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catering</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Zeitraum</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {todayBookings.length === 0 ? (
-                        <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine Buchungen für heute.</td></tr>
+                        <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine Buchungen für heute.</td></tr>
                       ) : (
                         todayBookings.map(b => {
                           const rowClass = getTodayStatusStyle(b);
@@ -487,8 +488,10 @@ export const Admin: React.FC = () => {
                                 <div className="font-bold">{b.title}</div>
                                 {b.userName} <span className="text-xs">({b.userEmail})</span>
                                 {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 {b.catering && Object.entries(b.catering).length > 0 && (
-                                  <div className="mt-1 flex flex-wrap gap-1">
+                                  <div className="flex flex-wrap gap-1">
                                     {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                       <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
                                         <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
@@ -522,13 +525,14 @@ export const Admin: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Datum</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ressource</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catering</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Zeit</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {upcomingBookings.length === 0 ? (
-                        <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
+                        <tr><td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">Keine anstehenden Buchungen.</td></tr>
                       ) : (
                         upcomingBookings.map(b => (
                           <tr key={b.id}>
@@ -538,8 +542,10 @@ export const Admin: React.FC = () => {
                               <div className="text-indigo-700 dark:text-indigo-400">{b.title}</div>
                               {b.userName}
                               {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {b.catering && Object.entries(b.catering).length > 0 && (
-                                <div className="mt-1 flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-1">
                                   {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
                                       <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
@@ -572,12 +578,13 @@ export const Admin: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Datum</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ressource</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catering</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {pastBookings.length === 0 ? (
-                        <tr><td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
+                        <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
                       ) : (
                         pastBookings.map(b => (
                           <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
@@ -587,8 +594,10 @@ export const Admin: React.FC = () => {
                               <div>{b.title}</div>
                               <span className="text-xs text-gray-500 dark:text-gray-400">{b.userName}</span>
                               {b.department && <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({b.department})</span>}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {b.catering && Object.entries(b.catering).length > 0 && (
-                                <div className="mt-1 flex flex-wrap gap-1">
+                                <div className="flex flex-wrap gap-1">
                                   {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
                                       <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
@@ -968,7 +977,7 @@ export const Admin: React.FC = () => {
                               })}
                               className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
                             >
-                              <Plus className="w-3 h-3 mr-1" /> Weiteres Feld hinzufügen
+                              <Plus className="w-3 h-3 mr-1" /> weiteres Feld hinzufügen
                             </button>
                           </div>
                         )}

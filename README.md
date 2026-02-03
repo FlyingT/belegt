@@ -12,6 +12,7 @@ Alles dabei:
 - **Daten-Export/Import**: Sicherung und Wiederherstellung von Buchungsdaten inklusive Abteilungsinfo.
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
 - **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
+- **Catering & Arbeitsmittel**: Optionale Zusatzleistungen (z.B. Kaffee, Technik) pro Ressource konfigurierbar.
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
 
 

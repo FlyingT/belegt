@@ -291,24 +291,21 @@ export const BookingFlow: React.FC = () => {
               {/* Catering / Arbeitsmittel Section */}
               {asset.hasCatering && asset.cateringOptions && asset.cateringOptions.length > 0 && (
                 <div className="border-t pt-4">
-                  <div className="flex items-center mb-4">
+                  <div className="flex items-center">
+                    <label htmlFor="catering_toggle" className="mr-2 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
+                      <Coffee className="w-5 h-5 mr-2 text-indigo-500" /> Catering / Arbeitsmittel?
+                    </label>
                     <input
                       id="catering_toggle"
                       type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
                       checked={showCatering}
                       onChange={(e) => setShowCatering(e.target.checked)}
                     />
-                    <label htmlFor="catering_toggle" className="ml-2 block text-lg font-medium text-gray-900 dark:text-white flex items-center">
-                      <Coffee className="w-5 h-5 mr-2 text-indigo-500" /> Catering / Arbeitsmittel?
-                    </label>
                   </div>
 
                   {showCatering && (
                     <div className="ml-6 space-y-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                        Wählen Sie hier bei Bedarf zusätzliche Optionen für Ihre Buchung aus:
-                      </p>
                       {asset.cateringOptions.map((option) => (
                         <div key={option} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600 last:border-0">
                           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{option}</span>
@@ -326,7 +323,7 @@ export const BookingFlow: React.FC = () => {
                             <input
                               type="number"
                               min="0"
-                              className="w-12 text-center bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-900 dark:text-white"
+                              className="w-12 text-center bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-900 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               value={cateringSelection[option] || 0}
                               onChange={(e) => {
                                 const val = parseInt(e.target.value) || 0;
