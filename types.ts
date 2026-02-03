@@ -34,6 +34,13 @@ export interface AppConfig {
   placeholderName?: string;
   placeholderEmail?: string;
   placeholderDepartment?: string;
+  mailEnabled?: boolean;
+  mailHost?: string;
+  mailPort?: number;
+  mailUser?: string;
+  mailPass?: string;
+  mailFrom?: string;
+  mailSecure?: boolean;
 }
 
 export interface AdminState {

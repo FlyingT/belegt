@@ -5,6 +5,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dateutil import parser
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 from sqlalchemy import text
 
 app = Flask(__name__)
@@ -92,6 +95,13 @@ class AppConfig(db.Model):
     placeholder_name = db.Column(db.String(100), default='')
     placeholder_email = db.Column(db.String(100), default='')
     placeholder_department = db.Column(db.String(100), default='')
+    mail_enabled = db.Column(db.Boolean, default=False)
+    mail_host = db.Column(db.String(100), default='')
+    mail_port = db.Column(db.Integer, default=587)
+    mail_user = db.Column(db.String(100), default='')
+    mail_pass = db.Column(db.String(100), default='')
+    mail_from = db.Column(db.String(100), default='')
+    mail_secure = db.Column(db.Boolean, default=True)
 
     def to_dict(self):
         return {
@@ -101,10 +111,43 @@ class AppConfig(db.Model):
             'categoryIcons': json.loads(self.category_icons_json) if self.category_icons_json else {},
             'placeholderTitle': self.placeholder_title,
             'placeholderName': self.placeholder_name,
-            'placeholderName': self.placeholder_name,
             'placeholderEmail': self.placeholder_email,
-            'placeholderDepartment': self.placeholder_department
+            'placeholderDepartment': self.placeholder_department,
+            'mailEnabled': self.mail_enabled,
+            'mailHost': self.mail_host,
+            'mailPort': self.mail_port,
+            'mailUser': self.mail_user,
+            'mailPass': self.mail_pass,
+            'mailFrom': self.mail_from,
+            'mailSecure': self.mail_secure
         }
+
+# --- Email Helper ---
+def send_email(config, recipient, subject, body):
+    if not config or not config.mail_enabled:
+        return False
+    
+    try:
+        msg = MIMEText(body, 'plain', 'utf-8')
+        msg['Subject'] = Header(subject, 'utf-8')
+        msg['From'] = config.mail_from
+        msg['To'] = recipient
+
+        if config.mail_secure:
+            server = smtplib.SMTP_SSL(config.mail_host, config.mail_port)
+        else:
+            server = smtplib.SMTP(config.mail_host, config.mail_port)
+            server.starttls()
+        
+        if config.mail_user and config.mail_pass:
+            server.login(config.mail_user, config.mail_pass)
+        
+        server.sendmail(config.mail_from, [recipient], msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
 
 # --- Helper ---
 def init_db():
@@ -204,6 +247,20 @@ def init_db():
             except Exception:
                 print("Migrating: Adding catering_json to booking")
                 conn.execute(text("ALTER TABLE booking ADD COLUMN catering_json VARCHAR(500) DEFAULT '{}'"))
+                conn.commit()
+
+            # Check for mail fields in app_config
+            try:
+                conn.execute(text("SELECT mail_enabled FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding mail fields to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_enabled BOOLEAN DEFAULT 0"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_host VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_port INTEGER DEFAULT 587"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_user VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_pass VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_from VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_secure BOOLEAN DEFAULT 1"))
                 conn.commit()
 
         # Create default config if not exists
@@ -343,6 +400,34 @@ def create_booking():
     db.session.add(new_booking)
     db.session.commit()
     
+    # Send Confirmation Email if enabled
+    config = AppConfig.query.first()
+    if config and config.mail_enabled and new_booking.user_email:
+        asset = Asset.query.get(asset_id)
+        asset_name = asset.name if asset else "Ressource"
+        
+        subject = f"Buchungsbestätigung: {new_booking.title}"
+        body = f"Hallo {new_booking.user_name},\n\n"
+        body += f"Ihre Buchung war erfolgreich!\n\n"
+        body += f"Ressource: {asset_name}\n"
+        body += f"Titel: {new_booking.title}\n"
+        body += f"Datum: {new_booking.start_time.strftime('%d.%m.%Y')}\n"
+        body += f"Zeit: {new_booking.start_time.strftime('%H:%M')} - {new_booking.end_time.strftime('%H:%M')} Uhr\n"
+        
+        if new_booking.department:
+            body += f"Abteilung: {new_booking.department}\n"
+            
+        catering = json.loads(new_booking.catering_json)
+        if catering:
+            body += "\nZugebuchtes Catering:\n"
+            for item, qty in catering.items():
+                if qty > 0:
+                    body += f"- {item}: {qty}\n"
+        
+        body += f"\nVielen Dank für Ihre Buchung bei {config.site_title}!"
+        
+        send_email(config, new_booking.user_email, subject, body)
+    
     return jsonify(new_booking.to_dict()), 201
 
 @app.route('/api/bookings/<int:id>', methods=['DELETE'])
@@ -380,9 +465,50 @@ def update_config():
         config.placeholder_email = data['placeholderEmail']
     if 'placeholderDepartment' in data:
         config.placeholder_department = data['placeholderDepartment']
+    
+    if 'mailEnabled' in data:
+        config.mail_enabled = data['mailEnabled']
+    if 'mailHost' in data:
+        config.mail_host = data['mailHost']
+    if 'mailPort' in data:
+        config.mail_port = data['mailPort']
+    if 'mailUser' in data:
+        config.mail_user = data['mailUser']
+    if 'mailPass' in data:
+        config.mail_pass = data['mailPass']
+    if 'mailFrom' in data:
+        config.mail_from = data['mailFrom']
+    if 'mailSecure' in data:
+        config.mail_secure = data['mailSecure']
         
     db.session.commit()
     return jsonify(config.to_dict())
+
+@app.route('/api/config/test-mail', methods=['POST'])
+def test_mail():
+    data = request.json
+    # Create a temporary config object from the provided data to test without saving
+    temp_config = AppConfig(
+        mail_enabled=True,
+        mail_host=data.get('mailHost'),
+        mail_port=data.get('mailPort'),
+        mail_user=data.get('mailUser'),
+        mail_pass=data.get('mailPass'),
+        mail_from=data.get('mailFrom'),
+        mail_secure=data.get('mailSecure', True),
+        site_title=data.get('siteTitle', 'Belegt Test')
+    )
+    
+    recipient = data.get('testRecipient')
+    if not recipient:
+        return jsonify({'error': 'Empfänger-Email fehlt.'}), 400
+        
+    success = send_email(temp_config, recipient, "Test-Mail vom Buchungssystem", "Dies ist eine Test-Mail, um Ihre SMTP-Einstellungen zu verifizieren.")
+    
+    if success:
+        return jsonify({'message': 'Test-Mail erfolgreich versendet.'})
+    else:
+        return jsonify({'error': 'Fehler beim Versenden der Test-Mail. Bitte prüfen Sie die SMTP-Einstellungen.'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

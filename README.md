@@ -13,6 +13,7 @@ Alles dabei:
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
 - **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
 - **Catering & Arbeitsmittel**: Optionale Zusatzleistungen (z.B. Kaffee, Technik) pro Ressource konfigurierbar.
+- **Automatisierte E-Mail-Bestätigung**: Automatische Benachrichtigung (inkl. Kalendereintrag) für Nutzer nach erfolgreicher Buchung.
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
 
 
@@ -68,6 +69,11 @@ Buchungen verwalten (Tagesübersicht, Anstehend, Vergangen) und Exportieren/Impo
 Texte, Labels und Seitentitel (Browsertab) konfigurieren
     
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S9-AdminEinstellungen.png)
+
+### E-Mail & SMTP
+Konfiguration der SMTP-Schnittstelle direkt im Admin-Panel inklusive Test-Versand.
+
+---
 
 ## Deployment (Docker Compose)
 

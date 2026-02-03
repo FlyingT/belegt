@@ -1,12 +1,17 @@
-import React from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
-import { Booking } from '../types';
+import { Booking, AppConfig } from '../types';
 import { downloadICS } from '../services/ics';
-import { CheckCircle, Calendar, Home, ArrowRight } from 'lucide-react';
+import { api } from '../services/api';
+import { CheckCircle, Calendar, Home, Mail, Info } from 'lucide-react';
 
 export const Confirmation: React.FC = () => {
   const location = useLocation();
   const state = location.state as { booking: Booking; assetName: string } | undefined;
+  const [config, setConfig] = React.useState<AppConfig | null>(null);
+
+  React.useEffect(() => {
+    api.getAppConfig().then(setConfig).catch(console.error);
+  }, []);
 
   if (!state) {
     return <Navigate to="/" />;
@@ -35,7 +40,7 @@ export const Confirmation: React.FC = () => {
             <div className="flex justify-between mb-2">
               <span className="text-gray-500 dark:text-gray-400 text-sm">Zeitraum:</span>
               <span className="font-medium text-gray-900 dark:text-gray-200 text-sm">
-                {new Date(booking.startTime).toLocaleDateString()}
+                {new Date(booking.startTime).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' })}
               </span>
             </div>
             <div className="flex justify-between">
@@ -47,13 +52,25 @@ export const Confirmation: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            <button
-              onClick={() => downloadICS(booking, assetName)}
-              className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900 transition-colors"
-            >
-              <Calendar className="w-5 h-5 mr-2" />
-              Kalendereintrag herunterladen (.ics)
-            </button>
+            {config?.mailEnabled ? (
+              <div className="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded-lg p-4 mb-4 flex items-start text-left">
+                <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5 mr-3 flex-shrink-0" />
+                <div>
+                  <h4 className="font-medium text-indigo-900 dark:text-indigo-200 text-sm">E-Mail wurde gesendet</h4>
+                  <p className="text-indigo-700 dark:text-indigo-300 text-xs mt-1">
+                    Eine Bestätigung inklusive Kalendereintrag wurde an <strong>{booking.userEmail}</strong> verschickt.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => downloadICS(booking, assetName)}
+                className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900 transition-colors shadow-sm"
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                Kalendereintrag herunterladen (.ics)
+              </button>
+            )}
 
             <Link
               to="/"

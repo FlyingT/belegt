@@ -2,6 +2,16 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.10.0] - 2026-02-03
+### Hinzugefügt
+- **Automatisierte E-Mail-Bestätigung**: System verschickt nun automatisch Bestätigungs-Mails nach erfolgreicher Buchung.
+- **Admin**: Neuer Bereich "E-Mail Benachrichtigungen" in den Einstellungen zur Konfiguration der SMTP-Schnittstelle.
+- **Admin**: "Test-Mail senden" Funktionalität zur sofortigen Überprüfung der SMTP-Konfiguration.
+- **Buchung**: Dynamische Bestätigungsseite zeigt nun an, wenn eine Bestätigung per Mail verschickt wurde.
+
+### Geändert
+- **Confirmation Page**: Der manuelle .ics-Download Button wird nur noch angezeigt, wenn der E-Mail-Versand deaktiviert ist.
+
 
 ## [1.9.1] - 2026-02-03
 ### Behoben

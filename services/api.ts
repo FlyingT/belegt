@@ -64,12 +64,12 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(booking),
     });
-    
+
     if (res.status === 409) {
       const err = await res.json();
       throw new Error(err.error || 'Conflict');
     }
-    
+
     if (!res.ok) throw new Error('Failed to create booking');
     return res.json();
   },
@@ -90,5 +90,17 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
     });
+  },
+
+  sendTestMail: async (config: Partial<AppConfig> & { testRecipient: string }): Promise<void> => {
+    const res = await fetch('/api/config/test-mail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send test mail');
+    }
   },
 };

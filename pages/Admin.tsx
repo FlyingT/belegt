@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee, Layout } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee, Layout, Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -17,6 +17,9 @@ export const Admin: React.FC = () => {
   // Settings State
   const [config, setConfig] = useState<AppConfig>({ headerText: '', categoryIcons: {} });
   const [savingConfig, setSavingConfig] = useState(false);
+  const [testRecipient, setTestRecipient] = useState('');
+  const [testStatus, setTestStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+  const [testLoading, setTestLoading] = useState(false);
 
   // Asset Edit State
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
@@ -136,6 +139,26 @@ export const Admin: React.FC = () => {
     setSavingConfig(false);
     // Reload to reflect changes immediately (e.g. title, buttons)
     window.location.reload();
+  };
+
+  const handleTestMail = async () => {
+    if (!testRecipient) {
+      setTestStatus({ type: 'error', message: 'Bitte Empfänger-Email angeben.' });
+      return;
+    }
+    setTestLoading(true);
+    setTestStatus(null);
+    try {
+      await api.sendTestMail({
+        ...config,
+        testRecipient
+      });
+      setTestStatus({ type: 'success', message: 'Test-Mail erfolgreich versendet!' });
+    } catch (err: any) {
+      setTestStatus({ type: 'error', message: err.message || 'Fehler beim Versenden.' });
+    } finally {
+      setTestLoading(false);
+    }
   };
 
   // Helper for Category Icons Setting
@@ -821,15 +844,136 @@ export const Admin: React.FC = () => {
                       );
                     })}
                   </div>
-                  <div className="mt-8 flex justify-end pt-4 border-t border-gray-200">
+                </div>
+
+                {/* E-Mail Notifications */}
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="font-medium text-gray-700 dark:text-gray-200">E-Mail Benachrichtigungen</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Versenden Sie automatische Bestätigungs-Mails nach jeder Buchung.</p>
+                    </div>
+                    <div className="flex items-center">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={config.mailEnabled || false}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailEnabled: e.target.checked })}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.mailEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {config.mailEnabled && (
+                    <div className="space-y-4 max-w-2xl mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Host</label>
+                          <input
+                            type="text"
+                            placeholder="smtp.example.com"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.mailHost || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailHost: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Port</label>
+                          <input
+                            type="number"
+                            placeholder="587"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.mailPort || 587}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPort: parseInt(e.target.value) })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Benutzer</label>
+                          <input
+                            type="text"
+                            placeholder="benutzer@example.com"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.mailUser || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailUser: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Passwort</label>
+                          <input
+                            type="password"
+                            placeholder="••••••••"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.mailPass || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPass: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Absender-E-Mail</label>
+                          <input
+                            type="email"
+                            placeholder="buchung@firma.de"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.mailFrom || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailFrom: e.target.value })}
+                          />
+                        </div>
+                        <div className="flex items-end pb-2">
+                          <label className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                              checked={config.mailSecure !== false}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailSecure: e.target.checked })}
+                            />
+                            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">SSL/TLS verschlüsselt</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Test Mail Section */}
+                      <div className="mt-8 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Einstellungen testen</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="email"
+                            placeholder="Empfänger für Test-Mail"
+                            className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={testRecipient}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleTestMail}
+                            disabled={testLoading}
+                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
+                          >
+                            {testLoading ? 'Sende...' : 'Test-Mail senden'}
+                            {!testLoading && <Mail className="ml-2 w-4 h-4" />}
+                          </button>
+                        </div>
+                        {testStatus && (
+                          <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
+                            {testStatus.message}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-6 flex justify-end">
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={saveSettings}
                       disabled={savingConfig}
                       className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
                         } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                     >
                       <Save className="w-4 h-4 mr-2" />
-                      {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
+                      Speichern & Neuladen
                     </button>
                   </div>
                 </div>
