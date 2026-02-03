@@ -582,7 +582,7 @@ export const Admin: React.FC = () => {
 
           {activeTab === 'settings' && (
             <div className="max-w-4xl">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Konfiguration</h3>
+              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Konfiguration</h3>
               <form onSubmit={saveSettings} className="space-y-8">
 
                 {/* General */}

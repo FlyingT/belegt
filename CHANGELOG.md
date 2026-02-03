@@ -3,13 +3,9 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
-## [v1.7.4] - 2026-02-03
-### Behoben
-- **Admin**: Fehlerhafte Umbenennung von \"Asset\" zu \"Ressource\" in den Tabellenköpfen korrigiert.
-
 ## [v1.7.3] - 2026-02-03
 ### Behoben
-- **Admin**: Kontrast der Zeitraum-Anzeige bei anstehenden Buchungen im Dark Mode verbessert.
+- **Admin**: Kontrast der Zeitraum-Anzeige bei anstehenden Buchungen sowie die Überschrift \"Konfiguration\" im Dark Mode verbessert.
 - **Admin**: Beschriftung der Spalten in der Buchungsübersicht von \"Asset\" zu \"Ressource\" geändert.
 - **Admin**: Schreibweise von \"Anstehend (ab Morgen)\" korrigiert.
 
