@@ -1,3 +1,4 @@
+import React from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { Booking, AppConfig } from '../types';
 import { downloadICS } from '../services/ics';

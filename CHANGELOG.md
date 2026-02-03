@@ -2,6 +2,10 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.10.1] - 2026-02-03
+### Behoben
+- **Build-Fix**: Fehlender React-Import in `Confirmation.tsx` hinzugefügt, der den GitHub Actions Build blockiert hat.
+
 ## [1.10.0] - 2026-02-03
 ### Hinzugefügt
 - **Automatisierte E-Mail-Bestätigung**: System verschickt nun automatisch Bestätigungs-Mails nach erfolgreicher Buchung.
