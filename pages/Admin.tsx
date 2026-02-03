@@ -679,16 +679,6 @@ export const Admin: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
-                      <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderEmail || ''}
-                        placeholder="z.B. max@firma.de"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
-                      />
-                    </div>
-                    <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
                       <input
                         type="text"
@@ -696,6 +686,16 @@ export const Admin: React.FC = () => {
                         value={config.placeholderDepartment || ''}
                         placeholder="z.B. IT, Vertrieb"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
+                      <input
+                        type="text"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderEmail || ''}
+                        placeholder="z.B. max@firma.de"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
                       />
                     </div>
                   </div>

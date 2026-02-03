@@ -120,7 +120,7 @@ export const BookingFlow: React.FC = () => {
         <ArrowLeft className="w-4 h-4 mr-2" /> Zurück zur Übersicht
       </button>
 
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
         {/* Main Form */}
         <div className="flex-1">
           <div className="bg-indigo-600 p-6 text-white">
@@ -138,7 +138,7 @@ export const BookingFlow: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Titel / Grund der Buchung</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel / Grund der Buchung</label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Type className="h-4 w-4 text-gray-400" />
@@ -147,7 +147,7 @@ export const BookingFlow: React.FC = () => {
                     type="text"
                     required
                     placeholder={appConfig?.placeholderTitle || "z.B. Team Meeting, Kundenbesuch"}
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                     value={formData.title}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, title: e.target.value })}
                   />
@@ -155,13 +155,13 @@ export const BookingFlow: React.FC = () => {
               </div>
 
               <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white pb-2 flex items-center">
                   <User className="w-5 h-5 mr-2 text-indigo-500" /> Ihre Daten
                 </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <User className="h-4 w-4 text-gray-400" />
@@ -170,7 +170,7 @@ export const BookingFlow: React.FC = () => {
                         type="text"
                         required
                         placeholder={appConfig?.placeholderName || ""}
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={formData.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                       />
@@ -195,7 +195,7 @@ export const BookingFlow: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">E-Mail Adresse</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-Mail Adresse</label>
                     <div className="mt-1 relative rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-4 w-4 text-gray-400" />
@@ -204,7 +204,7 @@ export const BookingFlow: React.FC = () => {
                         type="email"
                         required
                         placeholder={appConfig?.placeholderEmail || ""}
-                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md border p-2"
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={formData.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
                       />
@@ -214,17 +214,17 @@ export const BookingFlow: React.FC = () => {
               </div>
 
               <div className="border-t pt-4">
-                <h3 className="text-lg font-medium text-gray-900 pb-2 flex items-center">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white pb-2 flex items-center">
                   <Clock className="w-5 h-5 mr-2 text-indigo-500" /> Zeitwahl
                 </h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Datum</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Datum</label>
                   <input
                     type="date"
                     required
                     min={new Date().toISOString().split('T')[0]}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                     value={formData.date}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, date: e.target.value })}
                   />
@@ -232,11 +232,11 @@ export const BookingFlow: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Von</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Von</label>
                     <input
                       type="time"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.startTime}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const newStart = e.target.value;
@@ -270,11 +270,11 @@ export const BookingFlow: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Bis</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bis</label>
                     <input
                       type="time"
                       required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                       value={formData.endTime}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, endTime: e.target.value })}
                     />
@@ -301,7 +301,7 @@ export const BookingFlow: React.FC = () => {
         </div>
 
         {/* Availability Sidebar */}
-        <div className="bg-gray-50 border-t md:border-t-0 md:border-l border-gray-200 w-full md:w-72 p-6">
+        <div className="bg-gray-50 dark:bg-gray-700/50 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-600 w-full md:w-72 p-6">
           <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <Info className="w-4 h-4 mr-2" /> Belegung am {new Date(formData.date).toLocaleDateString()}
           </h3>
@@ -311,12 +311,12 @@ export const BookingFlow: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {bookingsForDate.map(b => (
-                <div key={b.id} className="bg-white p-3 rounded shadow-sm border border-gray-200">
+                <div key={b.id} className="bg-white dark:bg-gray-700 p-3 rounded shadow-sm border border-gray-200 dark:border-gray-600">
                   <div className="text-xs font-semibold text-indigo-600 mb-1">
                     {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                  <div className="text-sm font-medium text-gray-800 truncate" title={b.title}>{b.title}</div>
-                  <div className="text-xs text-gray-500 truncate">{b.userName}</div>
+                  <div className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate" title={b.title}>{b.title}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{b.userName}</div>
                 </div>
               ))}
             </div>

@@ -2,11 +2,16 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+
+## [v1.7.1] - 2026-02-03
+### Behoben
+- **Admin**: Reihenfolge der Platzhalter für E-Mail und Abteilung korrigiert.
+- **Booking Flow**: Dark Mode Styling für das Buchungsformular vervollständigt.
+
 ## [v1.7.0] - 2026-02-03
 ### Hinzugefügt
-- **Dark Mode**: Vollständiger Dark Mode Support für die gesamte Applikation (Admin, Booking, Confirmation).
+- **Dark Mode**: Vollständiger Dark Mode Support für die gesamte Applikation.
 - **Admin**: Styling-Anpassungen (Schatten, Farben) für eine bessere Konsistenz.
-- **Confirmation**: Dark Mode Support für die Bestätigungsseite.
 
 ## [v1.6.0] - 2026-02-03
 ### Hinzugefügt
