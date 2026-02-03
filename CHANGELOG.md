@@ -2,9 +2,17 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.10.2] - 2026-02-03
+### Geändert
+- **E-Mail-Bestätigung**: Betreff enthält nun Ressource und Zeitraum.
+- **E-Mail-Bestätigung**: Catering-Header auf "Zugebuchtes Catering / Arbeitsmittel" aktualisiert.
+- **Admin**: E-Mail-Einstellungen direkt hinter "Allgemein" verschoben.
+- **Admin**: Struktur- und Einrückungsfehler in den Einstellungen behoben.
+- **Frontend**: Bestätigungstext nach Buchung vereinfacht.
+
 ## [1.10.1] - 2026-02-03
 ### Behoben
-- **Build-Fix**: Fehlender React-Import in `Confirmation.tsx` hinzugefügt, der den GitHub Actions Build blockiert hat.
+- **Build-Fix**: Fehlender React-Import in `Confirmation.tsx` hinzugefügt.
 
 ## [1.10.0] - 2026-02-03
 ### Hinzugefügt
