@@ -8,6 +8,8 @@ export interface Asset {
   icon?: string; // Icon name from lucide-react
   sortOrder?: number;
   showKiosk?: boolean;
+  hasCatering?: boolean;
+  cateringOptions?: string[];
 }
 
 export interface Booking {
@@ -20,6 +22,7 @@ export interface Booking {
   userEmail: string;
   department?: string;
   createdAt: string;
+  catering?: Record<string, number>;
 }
 
 export interface AppConfig {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -66,7 +66,9 @@ export const Admin: React.FC = () => {
       color: getRandomColor(),
       is_maintenance: false,
       icon: '',
-      showKiosk: true
+      showKiosk: true,
+      hasCatering: false,
+      cateringOptions: []
     });
     setIsAssetModalOpen(true);
   };
@@ -229,7 +231,8 @@ export const Admin: React.FC = () => {
               endTime: b.endTime,
               userName: b.userName || 'Imported',
               userEmail: b.userEmail || 'imported@system',
-              department: b.department || ''
+              department: b.department || '',
+              catering: b.catering || {}
             });
             successCount++;
           } catch (err) {
@@ -484,6 +487,15 @@ export const Admin: React.FC = () => {
                                 <div className="font-bold">{b.title}</div>
                                 {b.userName} <span className="text-xs">({b.userEmail})</span>
                                 {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
+                                {b.catering && Object.entries(b.catering).length > 0 && (
+                                  <div className="mt-1 flex flex-wrap gap-1">
+                                    {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                      <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
+                                        <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -526,6 +538,15 @@ export const Admin: React.FC = () => {
                               <div className="text-indigo-700 dark:text-indigo-400">{b.title}</div>
                               {b.userName}
                               {b.department && <div className="text-xs text-gray-500 dark:text-gray-400">{b.department}</div>}
+                              {b.catering && Object.entries(b.catering).length > 0 && (
+                                <div className="mt-1 flex flex-wrap gap-1">
+                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                    <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
+                                      <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                               {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -566,6 +587,15 @@ export const Admin: React.FC = () => {
                               <div>{b.title}</div>
                               <span className="text-xs text-gray-500 dark:text-gray-400">{b.userName}</span>
                               {b.department && <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({b.department})</span>}
+                              {b.catering && Object.entries(b.catering).length > 0 && (
+                                <div className="mt-1 flex flex-wrap gap-1">
+                                  {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
+                                    <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
+                                      <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
@@ -881,6 +911,67 @@ export const Admin: React.FC = () => {
                             Kiosk-Ansicht?
                           </label>
                         </div>
+                      </div>
+
+                      {/* Catering Configuration */}
+                      <div className="border-t border-gray-200 pt-4">
+                        <div className="flex items-center mb-4">
+                          <input
+                            id="catering_toggle"
+                            type="checkbox"
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            checked={editingAsset.hasCatering || false}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
+                              ...editingAsset,
+                              hasCatering: e.target.checked,
+                              cateringOptions: e.target.checked ? (editingAsset.cateringOptions || ['']) : []
+                            })}
+                          />
+                          <label htmlFor="catering_toggle" className="ml-2 block text-sm font-medium text-gray-900">
+                            Catering oder Arbeitsmittel?
+                          </label>
+                        </div>
+
+                        {editingAsset.hasCatering && (
+                          <div className="space-y-3 ml-6">
+                            <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Hinzubuchbare Optionen</label>
+                            {(editingAsset.cateringOptions || []).map((option, idx) => (
+                              <div key={idx} className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="z.B. Kaffee, Flipchart..."
+                                  className="flex-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  value={option}
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const newOptions = [...(editingAsset.cateringOptions || [])];
+                                    newOptions[idx] = e.target.value;
+                                    setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newOptions = (editingAsset.cateringOptions || []).filter((_, i) => i !== idx);
+                                    setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => setEditingAsset({
+                                ...editingAsset,
+                                cateringOptions: [...(editingAsset.cateringOptions || []), '']
+                              })}
+                              className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                            >
+                              <Plus className="w-3 h-3 mr-1" /> Weiteres Feld hinzufügen
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       {/* Icon Picker */}

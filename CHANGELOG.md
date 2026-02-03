@@ -3,11 +3,18 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
+## [v1.8.0] - 2026-02-03
+### Hinzugefügt
+- **Catering / Arbeitsmittel**: Ressourcen können nun mit optionalen Catering-Optionen oder Arbeitsmitteln konfiguriert werden.
+- **Admin**: Neues Interface zum Definieren von Catering-Optionen pro Ressource.
+- **Booking Flow**: Nutzer können beim Buchen Catering-Optionen mit Mengenangaben (+/- Buttons) auswählen.
+- **Admin**: Anzeige der gebuchten Catering-Optionen (nur Mengen > 0) in der Tagesübersicht und den anstehenden Buchungen.
+
 ## [v1.7.3] - 2026-02-03
 ### Behoben
-- **Admin**: Kontrast der Zeitraum-Anzeige bei anstehenden Buchungen sowie die Überschrift \"Konfiguration\" im Dark Mode verbessert.
-- **Admin**: Beschriftung der Spalten in der Buchungsübersicht von \"Asset\" zu \"Ressource\" geändert.
-- **Admin**: Schreibweise von \"Anstehend (ab Morgen)\" korrigiert.
+- **Admin**: Kontrast der Zeitraum-Anzeige bei anstehenden Buchungen sowie die Überschrift "Konfiguration" im Dark Mode verbessert.
+- **Admin**: Beschriftung der Spalten in der Buchungsübersicht von "Asset" zu "Ressource" geändert.
+- **Admin**: Schreibweise von "Anstehend (ab Morgen)" korrigiert.
 
 ## [v1.7.2] - 2026-02-03
 ### Behoben
