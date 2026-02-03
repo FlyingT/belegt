@@ -3,7 +3,15 @@
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 
-## [v1.8.1] - 2026-02-03
+## [1.9.0] - 2026-02-03
+### Hinzugefügt
+- **Öffentliche Übersicht (`/info`)**: Eine passwortfreie, schreibgeschützte Übersicht aller Buchungen (Heute, Anstehend, Vergangen), erreichbar über einen neuen Button im Admin-Bereich oder direkt via `/info`.
+
+### Behoben
+- Admin: Kaffeetassen-Icon in der Catering-Spalte entfernt für einen cleanereren Look.
+- Admin: Zeitspalte (Zeitraum) zur Tabelle der vergangenen Buchungen hinzugefügt, um Konsistenz mit anderen Tabellen zu gewährleisten.
+
+## [1.8.1] - 2026-02-01
 ### Geändert
 - **Admin**: Beschriftung "Weiteres Feld hinzufügen" in Kleinschreibung geändert.
 - **Admin**: Tabellenüberschrift "Nutzung" in der Ressourcen-Liste zu "Gesamtnutzung" umbenannt.
@@ -14,7 +22,8 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 ## [v1.8.0] - 2026-02-03
 ### Hinzugefügt
-- **Catering / Arbeitsmittel**: Ressourcen können nun mit optionalen Catering-Optionen oder Arbeitsmitteln konfiguriert werden.
+- **Catering & Arbeitsmittel**: Optionale Zusatzleistungen pro Buchung mit Inventarverwaltung.
+- **E-Mail-Benachrichtigungen**: Automatische Bestätigungen für Nutzer.
 - **Admin**: Neues Interface zum Definieren von Catering-Optionen pro Ressource.
 - **Booking Flow**: Nutzer können beim Buchen Catering-Optionen mit Mengenangaben (+/- Buttons) auswählen.
 - **Admin**: Anzeige der gebuchten Catering-Optionen (nur Mengen > 0) in der Tagesübersicht und den anstehenden Buchungen.

@@ -442,6 +442,14 @@ export const Admin: React.FC = () => {
                 >
                   <Download className="w-4 h-4 mr-2" /> Exportieren
                 </button>
+                <a
+                  href="/info"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900/60 flex items-center transition-colors"
+                >
+                  <Layout className="w-4 h-4 mr-2" /> Öffentliche Übersicht
+                </a>
                 <div className="relative">
                   <input
                     type="file"
@@ -494,7 +502,7 @@ export const Admin: React.FC = () => {
                                   <div className="flex flex-wrap gap-1">
                                     {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                       <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
-                                        <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                        {item}: {qty as number}
                                       </span>
                                     ))}
                                   </div>
@@ -548,7 +556,7 @@ export const Admin: React.FC = () => {
                                 <div className="flex flex-wrap gap-1">
                                   {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border border-amber-200 dark:border-amber-800/50">
-                                      <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                      {item}: {qty as number}
                                     </span>
                                   ))}
                                 </div>
@@ -579,12 +587,13 @@ export const Admin: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ressource</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titel / Nutzer / Abteilung</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catering</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Zeit</th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aktion</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {pastBookings.length === 0 ? (
-                        <tr><td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
+                        <tr><td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">Keine vergangenen Buchungen.</td></tr>
                       ) : (
                         pastBookings.map(b => (
                           <tr key={b.id} className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
@@ -600,11 +609,14 @@ export const Admin: React.FC = () => {
                                 <div className="flex flex-wrap gap-1">
                                   {Object.entries(b.catering).filter(([_, qty]) => (qty as number) > 0).map(([item, qty]) => (
                                     <span key={item} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
-                                      <Coffee className="w-2.5 h-2.5 mr-1" /> {item}: {qty as number}
+                                      {item}: {qty as number}
                                     </span>
                                   ))}
                                 </div>
                               )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                              {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button onClick={() => deleteBooking(b.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-5 h-5" /></button>
