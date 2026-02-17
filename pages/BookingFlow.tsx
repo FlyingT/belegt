@@ -292,66 +292,75 @@ export const BookingFlow: React.FC = () => {
                 </div>
               </div>
 
-              {/* Catering / Arbeitsmittel Section */}
-              {asset.hasCatering && asset.cateringOptions && asset.cateringOptions.length > 0 && (
-                <div className="border-t pt-4">
-                  <div className="flex items-center">
-                    <label htmlFor="catering_toggle" className="mr-6 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
-                      <Coffee className="w-5 h-5 mr-2 text-indigo-500" /> Catering / Arbeitsmittel?
-                    </label>
-                    <input
-                      id="catering_toggle"
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
-                      checked={showCatering}
-                      onChange={(e) => setShowCatering(e.target.checked)}
-                    />
-                  </div>
+              {/* Options Section */}
+              {(asset.hasCatering || (asset.doorExtensionOffered && appConfig?.doorExtensionEnabled)) && (
+                <div className="border-t pt-4 space-y-4">
+                  {/* Catering / Arbeitsmittel */}
+                  {asset.hasCatering && asset.cateringOptions && asset.cateringOptions.length > 0 && (
+                    <>
+                      <div className="flex items-center">
+                        <label htmlFor="catering_toggle" className="w-72 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
+                          <Coffee className="w-5 h-5 mr-2 text-indigo-500" /> Catering / Arbeitsmittel?
+                        </label>
+                        <input
+                          id="catering_toggle"
+                          type="checkbox"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                          checked={showCatering}
+                          onChange={(e) => setShowCatering(e.target.checked)}
+                        />
+                      </div>
 
-                  {showCatering && (
-                    <div className="mt-4 ml-6 space-y-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
-                      {asset.cateringOptions.map((option) => (
-                        <div key={option} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600 last:border-0">
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{option}</span>
-                          <div className="flex items-center space-x-3">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const current = cateringSelection[option] || 0;
-                                setCateringSelection({ ...cateringSelection, [option]: Math.max(0, current - 1) });
-                              }}
-                              className="p-1 rounded-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <input
-                              type="number"
-                              min="0"
-                              className="w-12 text-center bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-900 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              value={cateringSelection[option] || 0}
-                              onChange={(e) => {
-                                const val = parseInt(e.target.value) || 0;
-                                setCateringSelection({ ...cateringSelection, [option]: Math.max(0, val) });
-                              }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const current = cateringSelection[option] || 0;
-                                setCateringSelection({ ...cateringSelection, [option]: current + 1 });
-                              }}
-                              className="p-1 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                          </div>
+                      {showCatering && (
+                        <div className="mt-4 ml-6 space-y-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
+                          {asset.cateringOptions.map((option) => (
+                            <div key={option} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600 last:border-0">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{option}</span>
+                              <div className="flex items-center space-x-3">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const current = cateringSelection[option] || 0;
+                                    setCateringSelection({ ...cateringSelection, [option]: Math.max(0, current - 1) });
+                                  }}
+                                  className="p-1 rounded-full bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className="w-12 text-center bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-900 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  value={cateringSelection[option] || 0}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value) || 0;
+                                    setCateringSelection({ ...cateringSelection, [option]: Math.max(0, val) });
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const current = cateringSelection[option] || 0;
+                                    setCateringSelection({ ...cateringSelection, [option]: current + 1 });
+                                  }}
+                                  className="p-1 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   )}
 
+                  {/* Türöffnung */}
                   {asset.doorExtensionOffered && appConfig?.doorExtensionEnabled && (
-                    <div className="mt-4 ml-6 flex items-center bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900/30">
+                    <div className="flex items-center">
+                      <label htmlFor="door_extension_toggle" className="w-72 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
+                        <DoorOpen className="w-5 h-5 mr-2 text-indigo-500" /> Türöffnung nötig?
+                      </label>
                       <input
                         id="door_extension_toggle"
                         type="checkbox"
@@ -359,9 +368,6 @@ export const BookingFlow: React.FC = () => {
                         checked={doorOpeningNeeded}
                         onChange={(e) => setDoorOpeningNeeded(e.target.checked)}
                       />
-                      <label htmlFor="door_extension_toggle" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center cursor-pointer">
-                        <DoorOpen className="w-4 h-4 mr-2 text-indigo-500" /> Türöffnung nötig?
-                      </label>
                     </div>
                   )}
                 </div>

@@ -1,6 +1,17 @@
 # Changelog
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.12.0] - 2026-02-17
+### Hinzugefügt
+- **Admin**: Sticky Save-Button auf der rechten Seite der Einstellungen.
+
+### Behoben
+- **Admin**: Pfeile vom SMTP Port Eingabefeld entfernt.
+- **Admin**: Test-Mail Sektion wieder in die E-Mail Benachrichtigungen Box verschoben.
+- **Admin**: Bezeichnung "Mail an" in "Anfrage an" korrigiert.
+- **Admin**: Alle Speichern-Buttons auf "Speichern & Neuladen" vereinheitlicht.
+- **Booking Flow**: Ausrichtung der Checkboxen für Catering und Türöffnung vereinheitlicht.
+
 ## [1.11.1] - 2026-02-17
 ### Hinzugefügt
 - **Info**: Die Buchungsübersicht (`/info`) aktualisiert sich nun alle 60 Sekunden automatisch.

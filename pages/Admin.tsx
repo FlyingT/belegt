@@ -768,7 +768,7 @@ export const Admin: React.FC = () => {
                             <input
                               type="number"
                               placeholder="587"
-                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               value={config.mailPort || 587}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPort: parseInt(e.target.value) })}
                             />
