@@ -6,10 +6,12 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 - **Info**: Die Buchungsübersicht (`/info`) aktualisiert sich nun alle 60 Sekunden automatisch.
 
 ### Behoben
-- **Admin/Info**: Sichtbarkeit der Kostenstelle in der Buchungsübersicht (`/info`).
 - **E-Mail**: Kostenstelle wird nun in der Buchungsbestätigung an den Nutzer aufgeführt.
-- **UI**: Abstand zwischen "Catering / Arbeitsmittel?" Label und der Auswahlbox im Buchungsformular vergrößert.
+- **Admin/Info**: Sichtbarkeit der Kostenstelle in der Buchungsübersicht (`/info`).
 - **UI**: Countdown-Timer für den Auto-Refresh auf der Buchungsübersicht (`/info`) hinzugefügt.
+- **UI**: Icon und "Zurück zur Buchung" Button von der Buchungsübersicht (`/info`) entfernt.
+- **UI**: Abstand zwischen "Catering / Arbeitsmittel?" Label und der Auswahlbox im Buchungsformular vergrößert.
+
 
 ## [1.11.0] - 2026-02-17
 ### Hinzugefügt

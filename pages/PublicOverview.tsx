@@ -73,15 +73,9 @@ export default function PublicOverview() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center">
-                        <Layout className="w-8 h-8 text-indigo-600 mr-3" />
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Buchungsübersicht</h1>
                     </div>
-                    <Link
-                        to="/"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" /> Zurück zur Buchung
-                    </Link>
+
                 </div>
 
                 <div className="space-y-12">
