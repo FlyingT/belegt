@@ -670,365 +670,354 @@ export const Admin: React.FC = () => {
           )}
 
           {activeTab === 'settings' && (
-            <div className="max-w-4xl">
-              <form onSubmit={saveSettings} className="space-y-8">
+            <form onSubmit={saveSettings} className="max-w-6xl mx-auto">
+              <div className="flex flex-col lg:flex-row gap-8 items-start">
+                <div className="flex-1 space-y-8 w-full">
 
-                {/* General */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Allgemein</h4>
-                  <div className="space-y-4 max-w-md">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">System Name (Header Text)</label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Settings className="h-4 w-4 text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                          value={config.headerText}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, headerText: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Seitentitel (Browser Tab)</label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Settings className="h-4 w-4 text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                          value={config.siteTitle || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, siteTitle: e.target.value })}
-                          placeholder="Belegt"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Akzentfarbe (Titel & Buttons)</label>
-                      <div className="flex gap-2 items-center mt-1">
-                        <input
-                          type="color"
-                          className="h-10 w-44 p-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm cursor-pointer bg-white dark:bg-gray-700"
-                          value={config.accentColor || '#3b82f6'}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, accentColor: e.target.value })}
-                        />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{config.accentColor || '#3b82f6'}</span>
-                        <button
-                          type="button"
-                          onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
-                          className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 ml-2"
-                        >
-                          Reset
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={saveSettings}
-                      disabled={savingConfig}
-                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Speichern & Neuladen
-                    </button>
-                  </div>
-                </div>
-
-                {/* E-Mail Notifications */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="font-medium text-gray-700 dark:text-gray-200">E-Mail Benachrichtigungen</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Versenden Sie automatische Bestätigungs-Mails nach jeder Buchung.</p>
-                    </div>
-                    <div className="flex items-center">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={config.mailEnabled || false}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailEnabled: e.target.checked })}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.mailEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {config.mailEnabled && (
-                    <div className="space-y-4 max-w-2xl mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Host</label>
+                  {/* General */}
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Allgemein</h4>
+                    <div className="space-y-4 max-w-md">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">System Name (Header Text)</label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Settings className="h-4 w-4 text-gray-400" />
+                          </div>
                           <input
                             type="text"
-                            placeholder="smtp.example.com"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={config.mailHost || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailHost: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Port</label>
-                          <input
-                            type="number"
-                            placeholder="587"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={config.mailPort || 587}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPort: parseInt(e.target.value) })}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Benutzer</label>
-                          <input
-                            type="text"
-                            placeholder="benutzer@example.com"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={config.mailUser || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailUser: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Passwort</label>
-                          <input
-                            type="password"
-                            placeholder="••••••••"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={config.mailPass || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPass: e.target.value })}
+                            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.headerText}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, headerText: e.target.value })}
                           />
                         </div>
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Seitentitel (Browser Tab)</label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Settings className="h-4 w-4 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.siteTitle || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, siteTitle: e.target.value })}
+                            placeholder="Belegt"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Akzentfarbe (Titel & Buttons)</label>
+                        <div className="flex gap-2 items-center mt-1">
+                          <input
+                            type="color"
+                            className="h-10 w-44 p-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm cursor-pointer bg-white dark:bg-gray-700"
+                            value={config.accentColor || '#3b82f6'}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, accentColor: e.target.value })}
+                          />
+                          <span className="text-sm text-gray-500 dark:text-gray-400">{config.accentColor || '#3b82f6'}</span>
+                          <button
+                            type="button"
+                            onClick={() => setConfig({ ...config, accentColor: '#3b82f6' })}
+                            className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 ml-2"
+                          >
+                            Reset
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                  </div>
 
-                  <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-600">
-                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">E-Mail Einstellungen testen</h4>
-                    <div className="flex gap-2">
-                      <input
-                        type="email"
-                        placeholder="Empfänger für Test-Mail"
-                        className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={testRecipient}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleTestMail}
-                        disabled={testLoading}
-                        className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
-                      >
-                        {testLoading ? 'Sende...' : 'Test-Mail senden'}
-                        {!testLoading && <Mail className="ml-2 w-4 h-4" />}
-                      </button>
+                  {/* E-Mail Notifications */}
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h4 className="font-medium text-gray-700 dark:text-gray-200">E-Mail Benachrichtigungen</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Versenden Sie automatische Bestätigungs-Mails nach jeder Buchung.</p>
+                      </div>
+                      <div className="flex items-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={config.mailEnabled || false}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailEnabled: e.target.checked })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.mailEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
+                        </label>
+                      </div>
                     </div>
-                    {testStatus && (
-                      <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                        {testStatus.message}
+
+                    {config.mailEnabled && (
+                      <div className="space-y-4 max-w-2xl mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Host</label>
+                            <input
+                              type="text"
+                              placeholder="smtp.example.com"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              value={config.mailHost || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailHost: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Port</label>
+                            <input
+                              type="number"
+                              placeholder="587"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              value={config.mailPort || 587}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPort: parseInt(e.target.value) })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Benutzer</label>
+                            <input
+                              type="text"
+                              placeholder="benutzer@example.com"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              value={config.mailUser || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailUser: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Passwort</label>
+                            <input
+                              type="password"
+                              placeholder="••••••••"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              value={config.mailPass || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPass: e.target.value })}
+                            />
+                          </div>
+                        </div>
                       </div>
                     )}
-                  </div>
-                </div>
 
-                {/* Opening Hours Extension */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="font-medium text-gray-700 dark:text-gray-200">Öffnungszeiten-Erweiterung</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Ermöglichen Sie Nutzern, eine Türöffnung außerhalb der regulären Zeiten anzufragen.</p>
-                    </div>
-                    <div className="flex items-center">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={config.doorExtensionEnabled || false}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionEnabled: e.target.checked })}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.doorExtensionEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {config.doorExtensionEnabled && (
-                    <div className="space-y-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-                      <div className="max-w-md">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Anfrage an</label>
+                    <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-600">
+                      <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">E-Mail Einstellungen testen</h4>
+                      <div className="flex gap-2">
                         <input
                           type="email"
-                          placeholder="pforte@example.com"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                          value={config.doorExtensionMail || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionMail: e.target.value })}
+                          placeholder="Empfänger für Test-Mail"
+                          className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={testRecipient}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
                         />
+                        <button
+                          type="button"
+                          onClick={handleTestMail}
+                          disabled={testLoading}
+                          className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
+                        >
+                          {testLoading ? 'Sende...' : 'Test-Mail senden'}
+                          {!testLoading && <Mail className="ml-2 w-4 h-4" />}
+                        </button>
                       </div>
-
-                      <div className="space-y-3">
-                        <h5 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Erweiterte Türöffnung anbieten?</h5>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {assets.filter(a => a.type === 'Room').map(asset => (
-                            <div key={asset.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mr-2">{asset.name}</span>
-                              <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
-                                <input
-                                  type="checkbox"
-                                  className="sr-only peer"
-                                  checked={asset.doorExtensionOffered || false}
-                                  onChange={async (e) => {
-                                    const updatedAsset = { ...asset, doorExtensionOffered: e.target.checked };
-                                    setAssets(assets.map(a => a.id === asset.id ? updatedAsset : a));
-                                    await api.updateAsset(updatedAsset);
-                                  }}
-                                />
-                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                              </label>
-                            </div>
-                          ))}
+                      {testStatus && (
+                        <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
+                          {testStatus.message}
                         </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Placeholders */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel der Buchung</label>
-                      <input
-                        type="text"
-                        placeholder="z.B. Team-Meeting"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderTitle || ''}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name des Nutzers</label>
-                      <input
-                        type="text"
-                        placeholder="z.B. Max Mustermann"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderName || ''}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-Mail Adresse</label>
-                      <input
-                        type="email"
-                        placeholder="z.B. max@firma.de"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderEmail || ''}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung / Team</label>
-                      <input
-                        type="text"
-                        placeholder="z.B. Marketing"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderDepartment || ''}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
-                      />
+                      )}
                     </div>
                   </div>
-                </div>
 
+                  {/* Opening Hours Extension */}
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h4 className="font-medium text-gray-700 dark:text-gray-200">Öffnungszeiten-Erweiterung</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Ermöglichen Sie Nutzern, eine Türöffnung außerhalb der regulären Zeiten anzufragen.</p>
+                      </div>
+                      <div className="flex items-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={config.doorExtensionEnabled || false}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionEnabled: e.target.checked })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.doorExtensionEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
+                        </label>
+                      </div>
+                    </div>
 
-                <div className="flex justify-end pt-5">
-                  <button
-                    type="submit"
-                    disabled={savingConfig}
-                    className={`inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
-                  </button>
-                </div>
+                    {config.doorExtensionEnabled && (
+                      <div className="space-y-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <div className="max-w-md">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Anfrage an</label>
+                          <input
+                            type="email"
+                            placeholder="pforte@example.com"
+                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                            value={config.doorExtensionMail || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionMail: e.target.value })}
+                          />
+                        </div>
 
-                {/* Category Icons */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600 mt-8">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-
-                  <div className="space-y-8">
-                    {Object.entries(categoryLabels).map(([type, label]) => {
-                      const currentIcon = config.categoryIcons?.[type];
-                      const activeIcon = currentIcon || defaultIcons[type];
-
-                      return (
-                        <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
-                                Aktives Icon:
-                                <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
-                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
-                                  {activeIcon}
-                                </span>
-                                {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
+                        <div className="space-y-3">
+                          <h5 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Erweiterte Türöffnung anbieten?</h5>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {assets.filter(a => a.type === 'Room').map(asset => (
+                              <div key={asset.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mr-2">{asset.name}</span>
+                                <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                                  <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={asset.doorExtensionOffered || false}
+                                    onChange={async (e) => {
+                                      const updatedAsset = { ...asset, doorExtensionOffered: e.target.checked };
+                                      setAssets(assets.map(a => a.id === asset.id ? updatedAsset : a));
+                                      await api.updateAsset(updatedAsset);
+                                    }}
+                                  />
+                                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                </label>
                               </div>
-                            </div>
-                            {currentIcon && (
-                              <button
-                                type="button"
-                                onClick={() => resetCategoryIcon(type)}
-                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
-                              >
-                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
-                            {Object.keys(ICON_MAP).map((iconName: string) => (
-                              <button
-                                key={iconName}
-                                type="button"
-                                onClick={() => handleCategoryIconChange(type, iconName)}
-                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
-                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
-                                  : (!currentIcon && iconName === defaultIcons[type])
-                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
-                                    : ''
-                                  }`}
-                                title={iconName}
-                              >
-                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
-                              </button>
                             ))}
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Placeholders */}
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel der Buchung</label>
+                        <input
+                          type="text"
+                          placeholder="z.B. Team-Meeting"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={config.placeholderTitle || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name des Nutzers</label>
+                        <input
+                          type="text"
+                          placeholder="z.B. Max Mustermann"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={config.placeholderName || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-Mail Adresse</label>
+                        <input
+                          type="email"
+                          placeholder="z.B. max@firma.de"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={config.placeholderEmail || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung / Team</label>
+                        <input
+                          type="text"
+                          placeholder="z.B. Marketing"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={config.placeholderDepartment || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  {/* Category Icons */}
+                  <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600 mt-8">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+
+                    <div className="space-y-8">
+                      {Object.entries(categoryLabels).map(([type, label]) => {
+                        const currentIcon = config.categoryIcons?.[type];
+                        const activeIcon = currentIcon || defaultIcons[type];
+
+                        return (
+                          <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
+                                  Aktives Icon:
+                                  <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
+                                    <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
+                                    {activeIcon}
+                                  </span>
+                                  {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
+                                </div>
+                              </div>
+                              {currentIcon && (
+                                <button
+                                  type="button"
+                                  onClick={() => resetCategoryIcon(type)}
+                                  className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                  <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
+                                </button>
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                              {Object.keys(ICON_MAP).map((iconName: string) => (
+                                <button
+                                  key={iconName}
+                                  type="button"
+                                  onClick={() => handleCategoryIconChange(type, iconName)}
+                                  className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                                    ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                                    : (!currentIcon && iconName === defaultIcons[type])
+                                      ? 'bg-gray-100 border border-gray-300 opacity-75'
+                                      : ''
+                                    }`}
+                                  title={iconName}
+                                >
+                                  <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                 </div>
 
-                <div className="flex justify-end pt-8">
-                  <button
-                    type="submit"
-                    disabled={savingConfig}
-                    className={`inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
-                  </button>
+                <div className="w-full lg:w-72 sticky top-4 z-10">
+                  <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4 flex items-center">
+                      <Save className="w-4 h-4 mr-2 text-indigo-500" />
+                      Einstellungen
+                    </h4>
+                    <button
+                      type="submit"
+                      disabled={savingConfig}
+                      className={`w-full inline-flex justify-center items-center py-3 px-4 border border-transparent shadow-sm text-sm font-bold rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors`}
+                    >
+                      {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
+                    </button>
+                    <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                      Alle Änderungen werden für das gesamte System übernommen.
+                    </p>
+                  </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           )}
 
 
