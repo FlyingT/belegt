@@ -16,6 +16,7 @@ Alles dabei:
 - **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
 - **Catering & Arbeitsmittel**: Optionale Zusatzleistungen (z.B. Kaffee, Technik) pro Ressource konfigurierbar.
 - **Kostenstellen**: Optionales Pflichtfeld für Kostenstelle bei Catering-Buchungen.
+- **Öffnungszeiten-Erweiterung**: Optionale Türöffnung außerhalb der regulären Zeiten anfragbar (mit separater E-Mail-Benachrichtigung).
 - **Automatisierte E-Mail-Bestätigung**: Professionelle Email-Bestatigung nach erfolgreicher Buchung (SMTP Konfiguration im Admin-Bereich).
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
 
@@ -66,6 +67,9 @@ Texte, Labels und Seitentitel (Browsertab) konfigurieren
 ### E-Mail & SMTP
 Konfiguration der SMTP-Schnittstelle direkt im Admin-Panel inklusive Test-Versand.
 
+### Öffnungszeiten-Erweiterung
+Spezielle Räume können für eine erweiterte Türöffnung markiert werden. Bei Buchung wird eine separate E-Mail an eine konfigurierbare Adresse (z.B. Pforte/Sicherheitsdienst) gesendet.
+
 ---
 
 ## Deployment (Docker Compose)
@@ -113,4 +117,4 @@ Nachfolgende Variablen werden über die `.env` gesteuert.
 
 ---
 
-**Release v1.11.1** - Cost Center Fixes & Docker Readiness 🚀
+**Release v1.12.0** - Opening Hours Extension & UI Refinement 🚀
