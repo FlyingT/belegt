@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { ArrowLeft, Calendar as CalendarIcon, Clock, User, Mail, AlertCircle, Type, Info, Plus, Minus, Coffee } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, Clock, User, Mail, AlertCircle, Type, Info, Plus, Minus, Coffee, DoorOpen } from 'lucide-react';
 
 export const BookingFlow: React.FC = () => {
   const { assetId } = useParams<{ assetId: string }>();
@@ -45,6 +45,7 @@ export const BookingFlow: React.FC = () => {
   });
 
   const [showCatering, setShowCatering] = useState(false);
+  const [doorOpeningNeeded, setDoorOpeningNeeded] = useState(false);
   const [cateringSelection, setCateringSelection] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -98,7 +99,8 @@ export const BookingFlow: React.FC = () => {
         catering: showCatering ? Object.fromEntries(
           Object.entries(cateringSelection).filter(([_, qty]) => (qty as number) > 0)
         ) as Record<string, number> : undefined,
-        costCenter: formData.costCenter
+        costCenter: formData.costCenter,
+        doorOpening: doorOpeningNeeded
       });
 
       // Navigate to confirmation with state
@@ -345,6 +347,21 @@ export const BookingFlow: React.FC = () => {
                           </div>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {asset.doorExtensionOffered && appConfig?.doorExtensionEnabled && (
+                    <div className="mt-4 ml-6 flex items-center bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900/30">
+                      <input
+                        id="door_extension_toggle"
+                        type="checkbox"
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                        checked={doorOpeningNeeded}
+                        onChange={(e) => setDoorOpeningNeeded(e.target.checked)}
+                      />
+                      <label htmlFor="door_extension_toggle" className="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center cursor-pointer">
+                        <DoorOpen className="w-4 h-4 mr-2 text-indigo-500" /> Türöffnung nötig?
+                      </label>
                     </div>
                   )}
                 </div>

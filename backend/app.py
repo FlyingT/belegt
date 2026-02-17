@@ -45,6 +45,7 @@ class Asset(db.Model):
     has_catering = db.Column(db.Boolean, default=False)
     cost_center_required = db.Column(db.Boolean, default=False)
     catering_options_json = db.Column(db.String(1000), default='[]')
+    door_extension_offered = db.Column(db.Boolean, default=False)
 
     def to_dict(self):
         return {
@@ -60,7 +61,8 @@ class Asset(db.Model):
             'showKiosk': self.show_kiosk,
             'hasCatering': self.has_catering,
             'costCenterRequired': self.cost_center_required,
-            'cateringOptions': json.loads(self.catering_options_json) if self.catering_options_json else []
+            'cateringOptions': json.loads(self.catering_options_json) if self.catering_options_json else [],
+            'doorExtensionOffered': self.door_extension_offered
         }
 
 class Booking(db.Model):
@@ -109,6 +111,8 @@ class AppConfig(db.Model):
     mail_pass = db.Column(db.String(100), default='')
     mail_from = db.Column(db.String(100), default='')
     mail_secure = db.Column(db.Boolean, default=True)
+    door_extension_enabled = db.Column(db.Boolean, default=False)
+    door_extension_mail = db.Column(db.String(100), default='')
 
     def to_dict(self):
         return {
@@ -126,7 +130,9 @@ class AppConfig(db.Model):
             'mailUser': self.mail_user,
             'mailPass': self.mail_pass,
             'mailFrom': self.mail_from,
-            'mailSecure': self.mail_secure
+            'mailSecure': self.mail_secure,
+            'doorExtensionEnabled': self.door_extension_enabled,
+            'doorExtensionMail': self.door_extension_mail
         }
 
 # --- Email Helper ---
@@ -288,6 +294,25 @@ def init_db():
                 conn.execute(text("ALTER TABLE asset ADD COLUMN cost_center_required BOOLEAN DEFAULT 0"))
                 conn.commit()
 
+        # Migrations for Door Extension
+        with db.engine.connect() as conn:
+            # Check for door_extension_enabled in app_config
+            try:
+                conn.execute(text("SELECT door_extension_enabled FROM app_config LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding door extension fields to app_config")
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN door_extension_enabled BOOLEAN DEFAULT 0"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN door_extension_mail VARCHAR(100) DEFAULT ''"))
+                conn.commit()
+
+            # Check for door_extension_offered in asset
+            try:
+                conn.execute(text("SELECT door_extension_offered FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding door_extension_offered to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN door_extension_offered BOOLEAN DEFAULT 0"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -343,7 +368,8 @@ def create_asset():
         show_kiosk=data.get('showKiosk', True),
         has_catering=data.get('hasCatering', False),
         cost_center_required=data.get('costCenterRequired', False),
-        catering_options_json=json.dumps(data.get('cateringOptions', []))
+        catering_options_json=json.dumps(data.get('cateringOptions', [])),
+        door_extension_offered=data.get('doorExtensionOffered', False)
     )
     db.session.add(new_asset)
     db.session.commit()
@@ -382,6 +408,8 @@ def update_asset(id):
         asset.cost_center_required = data['costCenterRequired']
     if 'cateringOptions' in data:
         asset.catering_options_json = json.dumps(data['cateringOptions'])
+    if 'doorExtensionOffered' in data:
+        asset.door_extension_offered = data['doorExtensionOffered']
     
     db.session.commit()
     return jsonify(asset.to_dict())
@@ -473,6 +501,42 @@ def create_booking():
         
         send_email(config, new_booking.user_email, subject, body)
     
+    # Door Opening Notification Email
+    if config and config.door_extension_enabled and data.get('doorOpening'):
+         asset = Asset.query.get(asset_id)
+         if asset and asset.door_extension_offered and config.door_extension_mail:
+             asset_name = asset.name if asset else "Ressource"
+             date_str = new_booking.start_time.strftime('%d.%m.%Y')
+             time_range = f"{new_booking.start_time.strftime('%H:%M')} - {new_booking.end_time.strftime('%H:%M')}"
+             
+             subject = f"Türöffnungs-Anfrage: {new_booking.title}, {asset_name}, {date_str} {time_range}"
+             
+             # Modify body for door opening request
+             door_body = f"Für diesen Termin wurde eine erweiterte Türöffnung angefragt:\n\n"
+             door_body += f"Ressource: {asset_name}\n"
+             door_body += f"Titel: {new_booking.title}\n"
+             door_body += f"Datum: {date_str}\n"
+             door_body += f"Zeit: {time_range} Uhr\n"
+             
+             if new_booking.department:
+                 door_body += f"Abteilung: {new_booking.department}\n"
+             
+             if new_booking.cost_center:
+                 door_body += f"Kostenstelle: {new_booking.cost_center}\n"
+             
+             door_body += f"Nutzer: {new_booking.user_name} ({new_booking.user_email})\n"
+             
+             catering = json.loads(new_booking.catering_json)
+             if catering:
+                 has_catering = any(qty > 0 for qty in catering.values())
+                 if has_catering:
+                     door_body += "\nZugebuchtes Catering / Arbeitsmittel:\n"
+                     for item, qty in catering.items():
+                         if qty > 0:
+                             door_body += f"- {item}: {qty}\n"
+
+             send_email(config, config.door_extension_mail, subject, door_body)
+
     return jsonify(new_booking.to_dict()), 201
 
 @app.route('/api/bookings/<int:id>', methods=['DELETE'])
@@ -525,6 +589,10 @@ def update_config():
         config.mail_from = data['mailFrom']
     if 'mailSecure' in data:
         config.mail_secure = data['mailSecure']
+    if 'doorExtensionEnabled' in data:
+        config.door_extension_enabled = data['doorExtensionEnabled']
+    if 'doorExtensionMail' in data:
+        config.door_extension_mail = data['doorExtensionMail']
         
     db.session.commit()
     return jsonify(config.to_dict())

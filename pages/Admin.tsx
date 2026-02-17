@@ -671,7 +671,6 @@ export const Admin: React.FC = () => {
 
           {activeTab === 'settings' && (
             <div className="max-w-4xl">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Konfiguration</h3>
               <form onSubmit={saveSettings} className="space-y-8">
 
                 {/* General */}
@@ -805,412 +804,497 @@ export const Admin: React.FC = () => {
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPass: e.target.value })}
                           />
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Absender-E-Mail</label>
-                          <input
-                            type="email"
-                            placeholder="buchung@firma.de"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={config.mailFrom || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailFrom: e.target.value })}
-                          />
-                        </div>
-                        <div className="flex items-end pb-2">
-                          <label className="flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                              checked={config.mailSecure !== false}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailSecure: e.target.checked })}
-                            />
-                            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">SSL/TLS verschlüsselt</span>
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Test Mail Section */}
-                      <div className="mt-8 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Einstellungen testen</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="email"
-                            placeholder="Empfänger für Test-Mail"
-                            className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                            value={testRecipient}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
-                          />
-                          <button
-                            type="button"
-                            onClick={handleTestMail}
-                            disabled={testLoading}
-                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
-                          >
-                            {testLoading ? 'Sende...' : 'Test-Mail senden'}
-                            {!testLoading && <Mail className="ml-2 w-4 h-4" />}
-                          </button>
-                        </div>
-                        {testStatus && (
-                          <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                            {testStatus.message}
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
+                </div>
 
-                  <div className="mt-6 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={saveSettings}
-                      disabled={savingConfig}
-                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Speichern & Neuladen
-                    </button>
+                {/* Opening Hours Extension */}
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="font-medium text-gray-700 dark:text-gray-200">Öffnungszeiten-Erweiterung</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Ermöglichen Sie Nutzern, eine Türöffnung außerhalb der regulären Zeiten anzufragen.</p>
+                    </div>
+                    <div className="flex items-center">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={config.doorExtensionEnabled || false}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionEnabled: e.target.checked })}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{config.doorExtensionEnabled ? 'Aktiviert' : 'Deaktiviert'}</span>
+                      </label>
+                    </div>
                   </div>
+
+                  {config.doorExtensionEnabled && (
+                    <div className="space-y-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                      <div className="max-w-md">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mail an</label>
+                        <input
+                          type="email"
+                          placeholder="pforte@example.com"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                          value={config.doorExtensionMail || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, doorExtensionMail: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <h5 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Erweiterte Türöffnung anbieten?</h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {assets.filter(a => a.type === 'Room').map(asset => (
+                            <div key={asset.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate mr-2">{asset.name}</span>
+                              <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                                <input
+                                  type="checkbox"
+                                  className="sr-only peer"
+                                  checked={asset.doorExtensionOffered || false}
+                                  onChange={async (e) => {
+                                    const updatedAsset = { ...asset, doorExtensionOffered: e.target.checked };
+                                    setAssets(assets.map(a => a.id === asset.id ? updatedAsset : a));
+                                    await api.updateAsset(updatedAsset);
+                                  }}
+                                />
+                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Placeholders */}
                 <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                   <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Buchungsformular: Platzhalter</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Definieren Sie, was als Platzhalter in den Eingabefeldern der Buchungsmaske angezeigt werden soll.</p>
-
-                  <div className="space-y-4 max-w-md">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Titel / Grund"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Titel der Buchung</label>
                       <input
                         type="text"
+                        placeholder="z.B. Team-Meeting"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderTitle || ''}
-                        placeholder="z.B. Team Meeting, Kundenbesuch"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Name"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name des Nutzers</label>
                       <input
                         type="text"
+                        placeholder="z.B. Max Mustermann"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderName || ''}
-                        placeholder="z.B. Max Mustermann"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-Mail Adresse</label>
                       <input
-                        type="text"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                        value={config.placeholderDepartment || ''}
-                        placeholder="z.B. IT, Vertrieb"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
-                      <input
-                        type="text"
+                        type="email"
+                        placeholder="z.B. max@firma.de"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
                         value={config.placeholderEmail || ''}
-                        placeholder="z.B. max@firma.de"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Abteilung / Team</label>
+                      <input
+                        type="text"
+                        placeholder="z.B. Marketing"
+                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={config.placeholderDepartment || ''}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-6 flex justify-end">
+                </div>
+
+                {/* Test Mail Section */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">E-Mail Einstellungen testen</h4>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="Empfänger für Test-Mail"
+                      className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                      value={testRecipient}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
+                    />
                     <button
                       type="button"
-                      onClick={saveSettings}
-                      disabled={savingConfig}
-                      className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
-                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                      onClick={handleTestMail}
+                      disabled={testLoading}
+                      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
                     >
-                      <Save className="w-4 h-4 mr-2" />
-                      Speichern & Neuladen
+                      {testLoading ? 'Sende...' : 'Test-Mail senden'}
+                      {!testLoading && <Mail className="ml-2 w-4 h-4" />}
                     </button>
                   </div>
+                  {testStatus && (
+                    <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
+                      {testStatus.message}
+                    </div>
+                  )}
                 </div>
 
-                {/* Category Icons */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
-
-                  <div className="space-y-8">
-                    {Object.entries(categoryLabels).map(([type, label]) => {
-                      const currentIcon = config.categoryIcons?.[type];
-                      const activeIcon = currentIcon || defaultIcons[type];
-
-                      return (
-                        <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
-                          <div className="flex items-center justify-between mb-3">
-                            <div>
-                              <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
-                                Aktives Icon:
-                                <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
-                                  <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
-                                  {activeIcon}
-                                </span>
-                                {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
-                              </div>
-                            </div>
-                            {currentIcon && (
-                              <button
-                                type="button"
-                                onClick={() => resetCategoryIcon(type)}
-                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
-                              >
-                                <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
-                              </button>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
-                            {Object.keys(ICON_MAP).map((iconName: string) => (
-                              <button
-                                key={iconName}
-                                type="button"
-                                onClick={() => handleCategoryIconChange(type, iconName)}
-                                className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
-                                  ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
-                                  : (!currentIcon && iconName === defaultIcons[type])
-                                    ? 'bg-gray-100 border border-gray-300 opacity-75'
-                                    : ''
-                                  }`}
-                                title={iconName}
-                              >
-                                <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                <div className="flex justify-end pt-5">
+                  <button
+                    type="submit"
+                    disabled={savingConfig}
+                    className={`inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {savingConfig ? 'Speichere...' : 'Einstellungen speichern & Neuladen'}
+                  </button>
                 </div>
-
               </form>
             </div>
           )}
 
+          <div className="space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Titel / Grund"</label>
+              <input
+                type="text"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                value={config.placeholderTitle || ''}
+                placeholder="z.B. Team Meeting, Kundenbesuch"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderTitle: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Name"</label>
+              <input
+                type="text"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                value={config.placeholderName || ''}
+                placeholder="z.B. Max Mustermann"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderName: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "Abteilung"</label>
+              <input
+                type="text"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                value={config.placeholderDepartment || ''}
+                placeholder="z.B. IT, Vertrieb"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderDepartment: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Platzhalter für "E-Mail"</label>
+              <input
+                type="text"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                value={config.placeholderEmail || ''}
+                placeholder="z.B. max@firma.de"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, placeholderEmail: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end">
+            <button
+              type="button"
+              onClick={saveSettings}
+              disabled={savingConfig}
+              className={`inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Speichern & Neuladen
+            </button>
+          </div>
+        </div>
 
-          {/* Asset Modal */}
-          {
-            isAssetModalOpen && (
-              <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                  <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
-                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <div className="absolute top-0 right-0 pt-4 pr-4">
+        {/* Category Icons */}
+        <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Kategorie Icons</h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Wählen Sie Standard-Icons für die verschiedenen Ressourcentypen.</p>
+
+          <div className="space-y-8">
+            {Object.entries(categoryLabels).map(([type, label]) => {
+              const currentIcon = config.categoryIcons?.[type];
+              const activeIcon = currentIcon || defaultIcons[type];
+
+              return (
+                <div key={type} className="border-b border-gray-200 dark:border-gray-600 pb-6 last:border-0 last:pb-0">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <label className="text-base font-semibold text-gray-800 dark:text-gray-200">{label}</label>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center">
+                        Aktives Icon:
+                        <span className="inline-flex items-center ml-2 bg-white dark:bg-gray-600 px-2 py-0.5 rounded border border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100">
+                          <DynamicIcon name={activeIcon} className="w-4 h-4 mr-1.5 text-indigo-600 dark:text-indigo-400" />
+                          {activeIcon}
+                        </span>
+                        {!currentIcon && <span className="ml-2 text-gray-400 dark:text-gray-500 italic">(Standard)</span>}
+                      </div>
+                    </div>
+                    {currentIcon && (
                       <button
                         type="button"
-                        className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
-                        onClick={() => setIsAssetModalOpen(false)}
+                        onClick={() => resetCategoryIcon(type)}
+                        className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-500 px-2 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <span className="sr-only">Schließen</span>
-                        <X className="h-6 w-6" />
+                        <RotateCcw className="w-3 h-3 mr-1" /> Zurücksetzen
                       </button>
-                    </div>
+                    )}
+                  </div>
 
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                      {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
-                    </h3>
-
-                    <form onSubmit={saveAsset} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input
-                          type="text"
-                          required
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          value={editingAsset.name || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, name: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Typ</label>
-                        <select
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                          value={editingAsset.type || 'Room'}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditingAsset({ ...editingAsset, type: e.target.value })}
-                        >
-                          <option value="Room">Raum</option>
-                          <option value="Vehicle">Fahrzeug</option>
-                          <option value="Equipment">Ausrüstung</option>
-                          <option value="Other">Sonstiges</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
-                        <textarea
-                          rows={3}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          value={editingAsset.description || ''}
-                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditingAsset({ ...editingAsset, description: e.target.value })}
-                        />
-                      </div>
-
-                      {/* Color & Maintenance */}
-                      <div className="flex gap-4 items-end">
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Farbe
-                            <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
-                          </label>
-                          <input
-                            type="color"
-                            className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                            value={editingAsset.color || '#3b82f6'}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, color: e.target.value })}
-                          />
-                        </div>
-                        <div className="flex items-center h-10 pb-3">
-                          <input
-                            id="maintenance_toggle"
-                            type="checkbox"
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            checked={editingAsset.is_maintenance || false}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
-                          />
-                          <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
-                            In Wartung?
-                          </label>
-                        </div>
-                        <div className="flex items-center h-10 pb-3 ml-4">
-                          <input
-                            id="kiosk_toggle"
-                            type="checkbox"
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            checked={editingAsset.showKiosk !== false} // Default true
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, showKiosk: e.target.checked })}
-                          />
-                          <label htmlFor="kiosk_toggle" className="ml-2 block text-sm text-gray-900">
-                            Kiosk-Ansicht?
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Catering Configuration */}
-                      <div className="border-t border-gray-200 pt-4">
-                        <div className="flex items-center mb-4">
-                          <input
-                            id="catering_toggle"
-                            type="checkbox"
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            checked={editingAsset.hasCatering || false}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
-                              ...editingAsset,
-                              hasCatering: e.target.checked,
-                              cateringOptions: e.target.checked ? (editingAsset.cateringOptions || ['']) : []
-                            })}
-                          />
-                          <label htmlFor="catering_toggle" className="ml-2 block text-sm font-medium text-gray-900">
-                            Catering oder Arbeitsmittel?
-                          </label>
-                        </div>
-
-                        {editingAsset.hasCatering && (
-                          <div className="space-y-3 ml-6">
-                            <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Hinzubuchbare Optionen</label>
-                            {(editingAsset.cateringOptions || []).map((option, idx) => (
-                              <div key={idx} className="flex gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="z.B. Kaffee, Flipchart..."
-                                  className="flex-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                  value={option}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const newOptions = [...(editingAsset.cateringOptions || [])];
-                                    newOptions[idx] = e.target.value;
-                                    setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
-                                  }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newOptions = (editingAsset.cateringOptions || []).filter((_, i) => i !== idx);
-                                    setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
-                                  }}
-                                  className="text-red-500 hover:text-red-700 p-1"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ))}
-                            <button
-                              type="button"
-                              onClick={() => setEditingAsset({
-                                ...editingAsset,
-                                cateringOptions: [...(editingAsset.cateringOptions || []), '']
-                              })}
-                              className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
-                            >
-                              <Plus className="w-3 h-3 mr-1" /> weiteres Feld hinzufügen
-                            </button>
-
-                            <div className="mt-4 flex items-center pt-2 border-t border-gray-100">
-                              <input
-                                id="cost_center_toggle"
-                                type="checkbox"
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                checked={editingAsset.costCenterRequired || false}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
-                                  ...editingAsset,
-                                  costCenterRequired: e.target.checked
-                                })}
-                              />
-                              <label htmlFor="cost_center_toggle" className="ml-2 block text-sm text-gray-700">
-                                Kostenstelle nötig?
-                              </label>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Icon Picker */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
-                        <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
-                          {Object.keys(ICON_MAP).map(iconName => (
-                            <button
-                              key={iconName}
-                              type="button"
-                              onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
-                              className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
-                              title={iconName}
-                            >
-                              <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
-                            </button>
-                          ))}
-                        </div>
-                        {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
-                      </div>
-
-                      <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                        <button
-                          type="submit"
-                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                        >
-                          Speichern
-                        </button>
-                        <button
-                          type="button"
-                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                          onClick={() => setIsAssetModalOpen(false)}
-                        >
-                          Abbrechen
-                        </button>
-                      </div>
-                    </form>
+                  <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2 max-h-48 overflow-y-auto border p-3 rounded-md bg-white">
+                    {Object.keys(ICON_MAP).map((iconName: string) => (
+                      <button
+                        key={iconName}
+                        type="button"
+                        onClick={() => handleCategoryIconChange(type, iconName)}
+                        className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 transition-colors ${currentIcon === iconName
+                          ? 'bg-indigo-100 border border-indigo-500 ring-1 ring-indigo-500'
+                          : (!currentIcon && iconName === defaultIcons[type])
+                            ? 'bg-gray-100 border border-gray-300 opacity-75'
+                            : ''
+                          }`}
+                        title={iconName}
+                      >
+                        <DynamicIcon name={iconName} className={`w-5 h-5 ${currentIcon === iconName ? 'text-indigo-700' : 'text-gray-600'}`} />
+                      </button>
+                    ))}
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        </div>
+
+      </form >
+    </div >
+  )
+}
+
+
+{/* Asset Modal */ }
+{
+  isAssetModalOpen && (
+    <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsAssetModalOpen(false)}></div>
+        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+          <div className="absolute top-0 right-0 pt-4 pr-4">
+            <button
+              type="button"
+              className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+              onClick={() => setIsAssetModalOpen(false)}
+            >
+              <span className="sr-only">Schließen</span>
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+            {editingAsset.id ? 'Ressource bearbeiten' : 'Neue Ressource anlegen'}
+          </h3>
+
+          <form onSubmit={saveAsset} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={editingAsset.name || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Typ</label>
+              <select
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                value={editingAsset.type || 'Room'}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditingAsset({ ...editingAsset, type: e.target.value })}
+              >
+                <option value="Room">Raum</option>
+                <option value="Vehicle">Fahrzeug</option>
+                <option value="Equipment">Ausrüstung</option>
+                <option value="Other">Sonstiges</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
+              <textarea
+                rows={3}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={editingAsset.description || ''}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditingAsset({ ...editingAsset, description: e.target.value })}
+              />
+            </div>
+
+            {/* Color & Maintenance */}
+            <div className="flex gap-4 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Farbe
+                  <button type="button" onClick={() => setEditingAsset({ ...editingAsset, color: getRandomColor() })} className="ml-2 text-xs text-indigo-600 hover:underline"><RefreshCw className="inline w-3 h-3" /> Zufall</button>
+                </label>
+                <input
+                  type="color"
+                  className="block w-full h-10 p-0 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={editingAsset.color || '#3b82f6'}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, color: e.target.value })}
+                />
               </div>
-            )
-          }
+              <div className="flex items-center h-10 pb-3">
+                <input
+                  id="maintenance_toggle"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  checked={editingAsset.is_maintenance || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, is_maintenance: e.target.checked })}
+                />
+                <label htmlFor="maintenance_toggle" className="ml-2 block text-sm text-gray-900">
+                  In Wartung?
+                </label>
+              </div>
+              <div className="flex items-center h-10 pb-3 ml-4">
+                <input
+                  id="kiosk_toggle"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  checked={editingAsset.showKiosk !== false} // Default true
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({ ...editingAsset, showKiosk: e.target.checked })}
+                />
+                <label htmlFor="kiosk_toggle" className="ml-2 block text-sm text-gray-900">
+                  Kiosk-Ansicht?
+                </label>
+              </div>
+            </div>
+
+            {/* Catering Configuration */}
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex items-center mb-4">
+                <input
+                  id="catering_toggle"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  checked={editingAsset.hasCatering || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
+                    ...editingAsset,
+                    hasCatering: e.target.checked,
+                    cateringOptions: e.target.checked ? (editingAsset.cateringOptions || ['']) : []
+                  })}
+                />
+                <label htmlFor="catering_toggle" className="ml-2 block text-sm font-medium text-gray-900">
+                  Catering oder Arbeitsmittel?
+                </label>
+              </div>
+
+              {editingAsset.hasCatering && (
+                <div className="space-y-3 ml-6">
+                  <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Hinzubuchbare Optionen</label>
+                  {(editingAsset.cateringOptions || []).map((option, idx) => (
+                    <div key={idx} className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="z.B. Kaffee, Flipchart..."
+                        className="flex-1 block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={option}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const newOptions = [...(editingAsset.cateringOptions || [])];
+                          newOptions[idx] = e.target.value;
+                          setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newOptions = (editingAsset.cateringOptions || []).filter((_, i) => i !== idx);
+                          setEditingAsset({ ...editingAsset, cateringOptions: newOptions });
+                        }}
+                        className="text-red-500 hover:text-red-700 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setEditingAsset({
+                      ...editingAsset,
+                      cateringOptions: [...(editingAsset.cateringOptions || []), '']
+                    })}
+                    className="inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> weiteres Feld hinzufügen
+                  </button>
+
+                  <div className="mt-4 flex items-center pt-2 border-t border-gray-100">
+                    <input
+                      id="cost_center_toggle"
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={editingAsset.costCenterRequired || false}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
+                        ...editingAsset,
+                        costCenterRequired: e.target.checked
+                      })}
+                    />
+                    <label htmlFor="cost_center_toggle" className="ml-2 block text-sm text-gray-700">
+                      Kostenstelle nötig?
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Icon Picker */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Symbol</label>
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-40 overflow-y-auto border p-2 rounded-md">
+                {Object.keys(ICON_MAP).map(iconName => (
+                  <button
+                    key={iconName}
+                    type="button"
+                    onClick={() => setEditingAsset({ ...editingAsset, icon: iconName })}
+                    className={`p-2 rounded flex flex-col items-center justify-center hover:bg-gray-100 ${editingAsset.icon === iconName ? 'bg-indigo-100 border border-indigo-500' : ''}`}
+                    title={iconName}
+                  >
+                    <DynamicIcon name={iconName} className="w-5 h-5 text-gray-700" />
+                  </button>
+                ))}
+              </div>
+              {editingAsset.icon && <div className="text-xs text-gray-500 mt-1">Ausgewählt: {editingAsset.icon}</div>}
+            </div>
+
+            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Speichern
+              </button>
+              <button
+                type="button"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                onClick={() => setIsAssetModalOpen(false)}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
         </div >
       </div >
     </div >

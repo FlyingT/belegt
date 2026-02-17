@@ -11,6 +11,7 @@ export interface Asset {
   hasCatering?: boolean;
   costCenterRequired?: boolean;
   cateringOptions?: string[];
+  doorExtensionOffered?: boolean;
 }
 
 export interface Booking {
@@ -25,6 +26,7 @@ export interface Booking {
   costCenter?: string;
   createdAt: string;
   catering?: Record<string, number>;
+  doorOpening?: boolean;
 }
 
 export interface AppConfig {
@@ -43,6 +45,8 @@ export interface AppConfig {
   mailPass?: string;
   mailFrom?: string;
   mailSecure?: boolean;
+  doorExtensionEnabled?: boolean;
+  doorExtensionMail?: string;
 }
 
 export interface AdminState {
