@@ -344,7 +344,7 @@ export const Admin: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700 flex">
           <button
@@ -998,7 +998,7 @@ export const Admin: React.FC = () => {
 
                 </div>
 
-                <div className="w-full lg:w-72 sticky top-4 z-10">
+                <div className="w-full lg:w-72 sticky top-20 z-10">
                   <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg">
                     <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4 flex items-center">
                       <Save className="w-4 h-4 mr-2 text-indigo-500" />
