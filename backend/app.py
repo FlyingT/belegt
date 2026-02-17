@@ -1,7 +1,9 @@
 import os
 import json
+import secrets
 from datetime import datetime
-from flask import Flask, request, jsonify
+from functools import wraps
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dateutil import parser
@@ -9,9 +11,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 from sqlalchemy import text
+from cryptography.fernet import Fernet, InvalidToken
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Database Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -23,10 +26,70 @@ try:
 except OSError:
     pass
 
+# --- Key Management ---
+
+def _load_or_create_key(filepath):
+    """Load a key from file, or generate and persist a new one."""
+    if os.path.exists(filepath):
+        with open(filepath, 'rb') as f:
+            return f.read().strip()
+    key = secrets.token_hex(32) if 'secret' in filepath else Fernet.generate_key().decode()
+    with open(filepath, 'w') as f:
+        f.write(key)
+    return key
+
+# Flask Session Secret Key
+secret_key_from_env = os.environ.get('SECRET_KEY')
+if secret_key_from_env:
+    app.config['SECRET_KEY'] = secret_key_from_env
+else:
+    app.config['SECRET_KEY'] = _load_or_create_key(os.path.join(instance_path, 'secret.key'))
+
+# Fernet Encryption Key for SMTP password
+_encryption_key = _load_or_create_key(os.path.join(instance_path, 'encryption.key'))
+_fernet = Fernet(_encryption_key if isinstance(_encryption_key, bytes) else _encryption_key.encode())
+
+# Session cookie config
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Admin Credentials from environment
+ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'belegt')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_path, "app.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+# --- Encryption Helpers ---
+
+def encrypt_value(plaintext):
+    """Encrypt a plaintext string with Fernet."""
+    if not plaintext:
+        return ''
+    return _fernet.encrypt(plaintext.encode()).decode()
+
+def decrypt_value(ciphertext):
+    """Decrypt a Fernet-encrypted string. Returns empty string on failure."""
+    if not ciphertext:
+        return ''
+    try:
+        return _fernet.decrypt(ciphertext.encode()).decode()
+    except (InvalidToken, Exception):
+        # Might be a legacy plaintext value — return as-is for migration
+        return ciphertext
+
+# --- Auth Decorator ---
+
+def admin_required(f):
+    """Decorator that protects admin-only endpoints."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            return jsonify({'error': 'Authentifizierung erforderlich.'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
 
 # --- Models ---
 
@@ -39,8 +102,6 @@ class Asset(db.Model):
     is_maintenance = db.Column(db.Boolean, default=False)
     icon = db.Column(db.String(50), nullable=True)
     sort_order = db.Column(db.Integer, default=0)
-    show_kiosk = db.Column(db.Boolean, default=True)
-    has_catering = db.Column(db.Boolean, default=False)
     show_kiosk = db.Column(db.Boolean, default=True)
     has_catering = db.Column(db.Boolean, default=False)
     cost_center_required = db.Column(db.Boolean, default=False)
@@ -57,7 +118,6 @@ class Asset(db.Model):
             'is_maintenance': self.is_maintenance,
             'icon': self.icon,
             'sortOrder': self.sort_order,
-            'showKiosk': self.show_kiosk,
             'showKiosk': self.show_kiosk,
             'hasCatering': self.has_catering,
             'costCenterRequired': self.cost_center_required,
@@ -108,13 +168,14 @@ class AppConfig(db.Model):
     mail_host = db.Column(db.String(100), default='')
     mail_port = db.Column(db.Integer, default=587)
     mail_user = db.Column(db.String(100), default='')
-    mail_pass = db.Column(db.String(100), default='')
+    mail_pass = db.Column(db.String(500), default='')
     mail_from = db.Column(db.String(100), default='')
     mail_secure = db.Column(db.Boolean, default=True)
     door_extension_enabled = db.Column(db.Boolean, default=False)
     door_extension_mail = db.Column(db.String(100), default='')
 
     def to_dict(self):
+        """Public config representation — SMTP password is always masked."""
         return {
             'headerText': self.header_text,
             'siteTitle': self.site_title,
@@ -128,12 +189,16 @@ class AppConfig(db.Model):
             'mailHost': self.mail_host,
             'mailPort': self.mail_port,
             'mailUser': self.mail_user,
-            'mailPass': self.mail_pass,
+            'mailPass': '********' if self.mail_pass else '',
             'mailFrom': self.mail_from,
             'mailSecure': self.mail_secure,
             'doorExtensionEnabled': self.door_extension_enabled,
             'doorExtensionMail': self.door_extension_mail
         }
+
+    def get_decrypted_password(self):
+        """Return the actual SMTP password (decrypted)."""
+        return decrypt_value(self.mail_pass)
 
 # --- Email Helper ---
 def send_email(config, recipient, subject, body):
@@ -152,8 +217,9 @@ def send_email(config, recipient, subject, body):
             server = smtplib.SMTP(config.mail_host, config.mail_port)
             server.starttls()
         
-        if config.mail_user and config.mail_pass:
-            server.login(config.mail_user, config.mail_pass)
+        actual_password = config.get_decrypted_password()
+        if config.mail_user and actual_password:
+            server.login(config.mail_user, actual_password)
         
         server.sendmail(config.mail_from, [recipient], msg.as_string())
         server.quit()
@@ -207,7 +273,6 @@ def init_db():
             except Exception:
                 print("Migrating: Adding placeholder fields to app_config")
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_title VARCHAR(100) DEFAULT 'z.B. Team Meeting, Kundenbesuch'"))
-                conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_name VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_email VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN placeholder_department VARCHAR(100) DEFAULT ''"))
@@ -271,7 +336,7 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_host VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_port INTEGER DEFAULT 587"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_user VARCHAR(100) DEFAULT ''"))
-                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_pass VARCHAR(100) DEFAULT ''"))
+                conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_pass VARCHAR(500) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_from VARCHAR(100) DEFAULT ''"))
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_secure BOOLEAN DEFAULT 1"))
                 conn.commit()
@@ -340,8 +405,45 @@ def init_db():
             db.session.add_all(defaults)
             db.session.commit()
 
+        # Migrate: Encrypt any existing plaintext SMTP passwords
+        config = AppConfig.query.first()
+        if config and config.mail_pass:
+            try:
+                # Try to decrypt — if it works, it's already encrypted
+                _fernet.decrypt(config.mail_pass.encode())
+            except Exception:
+                # It's plaintext — encrypt it now
+                print("Migrating: Encrypting existing SMTP password")
+                config.mail_pass = encrypt_value(config.mail_pass)
+                db.session.commit()
+
 # Initialize DB
 init_db()
+
+# --- Auth Routes ---
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username', '')
+    password = data.get('password', '')
+
+    if username == ADMIN_USER and password == ADMIN_PASSWORD:
+        session['is_admin'] = True
+        return jsonify({'message': 'Anmeldung erfolgreich.'}), 200
+    
+    return jsonify({'error': 'Falsche Zugangsdaten.'}), 401
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({'message': 'Abmeldung erfolgreich.'}), 200
+
+@app.route('/api/auth/check', methods=['GET'])
+def check_auth():
+    if session.get('is_admin'):
+        return jsonify({'authenticated': True}), 200
+    return jsonify({'authenticated': False}), 200
 
 # --- Routes ---
 
@@ -352,6 +454,7 @@ def get_assets():
     return jsonify([a.to_dict() for a in assets])
 
 @app.route('/api/assets', methods=['POST'])
+@admin_required
 def create_asset():
     data = request.json
     # Assign new asset to the end of the list
@@ -376,6 +479,7 @@ def create_asset():
     return jsonify(new_asset.to_dict()), 201
 
 @app.route('/api/assets/reorder', methods=['POST'])
+@admin_required
 def reorder_assets():
     # Expects list of objects: [{id: 1, sortOrder: 0}, {id: 2, sortOrder: 1}]
     data = request.json
@@ -390,6 +494,7 @@ def reorder_assets():
     return '', 204
 
 @app.route('/api/assets/<int:id>', methods=['PUT'])
+@admin_required
 def update_asset(id):
     asset = Asset.query.get_or_404(id)
     data = request.json
@@ -415,6 +520,7 @@ def update_asset(id):
     return jsonify(asset.to_dict())
 
 @app.route('/api/assets/<int:id>', methods=['DELETE'])
+@admin_required
 def delete_asset(id):
     asset = Asset.query.get_or_404(id)
     db.session.delete(asset)
@@ -540,6 +646,7 @@ def create_booking():
     return jsonify(new_booking.to_dict()), 201
 
 @app.route('/api/bookings/<int:id>', methods=['DELETE'])
+@admin_required
 def delete_booking(id):
     booking = Booking.query.get_or_404(id)
     db.session.delete(booking)
@@ -552,6 +659,7 @@ def get_config():
     return jsonify(config.to_dict() if config else {'headerText': 'Buchungssystem', 'siteTitle': 'Belegt', 'accentColor': '#3b82f6', 'categoryIcons': {}})
 
 @app.route('/api/config', methods=['POST'])
+@admin_required
 def update_config():
     data = request.json
     config = AppConfig.query.first()
@@ -584,7 +692,10 @@ def update_config():
     if 'mailUser' in data:
         config.mail_user = data['mailUser']
     if 'mailPass' in data:
-        config.mail_pass = data['mailPass']
+        new_pass = data['mailPass']
+        # Only update if the user actually changed the password (not the masked placeholder)
+        if new_pass and new_pass != '********':
+            config.mail_pass = encrypt_value(new_pass)
     if 'mailFrom' in data:
         config.mail_from = data['mailFrom']
     if 'mailSecure' in data:
@@ -598,15 +709,24 @@ def update_config():
     return jsonify(config.to_dict())
 
 @app.route('/api/config/test-mail', methods=['POST'])
+@admin_required
 def test_mail():
     data = request.json
+    
+    # For test-mail: if password is masked, use the stored one
+    test_password = data.get('mailPass', '')
+    if test_password == '********':
+        stored_config = AppConfig.query.first()
+        if stored_config:
+            test_password = stored_config.get_decrypted_password()
+    
     # Create a temporary config object from the provided data to test without saving
     temp_config = AppConfig(
         mail_enabled=True,
         mail_host=data.get('mailHost'),
         mail_port=data.get('mailPort'),
         mail_user=data.get('mailUser'),
-        mail_pass=data.get('mailPass'),
+        mail_pass=encrypt_value(test_password),
         mail_from=data.get('mailFrom'),
         mail_secure=data.get('mailSecure', True),
         site_title=data.get('siteTitle', 'Belegt Test')

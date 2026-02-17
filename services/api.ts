@@ -1,6 +1,39 @@
 import { Asset, Booking, AppConfig } from '../types';
 
 export const api = {
+  // --- Auth ---
+  login: async (username: string, password: string): Promise<void> => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Login fehlgeschlagen');
+    }
+  },
+
+  logout: async (): Promise<void> => {
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+  },
+
+  checkAuth: async (): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/auth/check', { credentials: 'include' });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.authenticated === true;
+    } catch {
+      return false;
+    }
+  },
+
+  // --- Assets ---
   getAssets: async (): Promise<Asset[]> => {
     const res = await fetch('/api/assets');
     if (!res.ok) throw new Error('Failed to fetch assets');
@@ -16,6 +49,7 @@ export const api = {
     const res = await fetch('/api/assets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(assetData),
     });
     if (!res.ok) throw new Error('Failed to create asset');
@@ -26,6 +60,7 @@ export const api = {
     await fetch(`/api/assets/${asset.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(asset),
     });
   },
@@ -36,22 +71,25 @@ export const api = {
     await fetch('/api/assets/reorder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(payload),
     });
   },
 
   deleteAsset: async (id: string): Promise<void> => {
-    await fetch(`/api/assets/${id}`, { method: 'DELETE' });
+    await fetch(`/api/assets/${id}`, { method: 'DELETE', credentials: 'include' });
   },
 
   toggleMaintenance: async (id: string, isMaintenance: boolean): Promise<void> => {
     await fetch(`/api/assets/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ is_maintenance: isMaintenance }),
     });
   },
 
+  // --- Bookings ---
   getBookings: async (): Promise<Booking[]> => {
     const res = await fetch('/api/bookings');
     if (!res.ok) throw new Error('Failed to fetch bookings');
@@ -75,9 +113,10 @@ export const api = {
   },
 
   deleteBooking: async (id: string): Promise<void> => {
-    await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
+    await fetch(`/api/bookings/${id}`, { method: 'DELETE', credentials: 'include' });
   },
 
+  // --- Config ---
   getAppConfig: async (): Promise<AppConfig> => {
     const res = await fetch('/api/config');
     if (!res.ok) return { headerText: 'Buchungssystem' };
@@ -88,6 +127,7 @@ export const api = {
     await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(config),
     });
   },
@@ -96,6 +136,7 @@ export const api = {
     const res = await fetch('/api/config/test-mail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(config),
     });
     if (!res.ok) {

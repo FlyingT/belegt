@@ -3,9 +3,12 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 ## [1.12.0] - 2026-02-17
 ### Hinzugefügt
-- **Admin**: Sticky Save-Button auf der rechten Seite der Einstellungen.
+- **Admin**: Türöffnungs-Option pro Ressource.
+- **Admin**: Türöffnungs-Option in der Buchungsübersicht (`/info`).
+- **Booking Flow**: Türöffnungs-Option im Buchungsformular. 
 
 ### Behoben
+- **Admin**: Sticky Save-Button auf der rechten Seite der Einstellungen.
 - **Admin**: Pfeile vom SMTP Port Eingabefeld entfernt.
 - **Admin**: Test-Mail Sektion wieder in die E-Mail Benachrichtigungen Box verschoben.
 - **Admin**: Bezeichnung "Mail an" in "Anfrage an" korrigiert.

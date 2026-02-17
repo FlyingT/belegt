@@ -6,8 +6,10 @@ import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   // Data State
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -29,16 +31,26 @@ export const Admin: React.FC = () => {
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const envUser = ((window as any)._env_ && (window as any)._env_.ADMIN_USER) || 'admin';
-    const envPass = ((window as any)._env_ && (window as any)._env_.ADMIN_PASSWORD) || 'belegt';
+  // Check for existing session on mount
+  useEffect(() => {
+    api.checkAuth().then(authenticated => {
+      if (authenticated) {
+        setIsAuthenticated(true);
+        loadData();
+      }
+      setAuthChecking(false);
+    });
+  }, []);
 
-    if (username === envUser && password === envPass) {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    try {
+      await api.login(username, password);
       setIsAuthenticated(true);
       loadData();
-    } else {
-      alert('Falsche Zugangsdaten');
+    } catch (err: any) {
+      setLoginError(err.message || 'Falsche Zugangsdaten');
     }
   };
 
@@ -301,11 +313,18 @@ export const Admin: React.FC = () => {
     return 'text-gray-900 dark:text-gray-300'; // Future
   };
 
+  if (authChecking) {
+    return <div className="flex items-center justify-center min-h-[80vh]"><div className="text-gray-500 dark:text-gray-400">Prüfe Sitzung...</div></div>;
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md border dark:border-gray-700">
           <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Admin Anmeldung</h2>
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md text-sm text-red-700 dark:text-red-300">{loginError}</div>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Benutzername</label>
@@ -337,7 +356,7 @@ export const Admin: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verwaltung</h1>
         <button
-          onClick={() => setIsAuthenticated(false)}
+          onClick={async () => { await api.logout(); setIsAuthenticated(false); }}
           className="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
         >
           <LogOut className="w-5 h-5 mr-2" /> Abmelden

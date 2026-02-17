@@ -7,6 +7,9 @@ services:
     container_name: belegt-backend
     expose:
       - "5000"
+    environment:
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-belegt}
     volumes:
       - backend_data:/app/instance
     restart: unless-stopped
@@ -19,9 +22,6 @@ services:
     container_name: belegt-frontend
     ports:
       - "${APP_PORT:-8080}:80"
-    environment:
-      - ADMIN_USER=${ADMIN_USER:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-belegt}
     depends_on:
       - backend
     restart: unless-stopped
