@@ -1,4 +1,5 @@
 # Changelog
+Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 ## [1.11.1] - 2026-02-17
 ### Hinzugefügt
@@ -8,9 +9,6 @@
 - **Admin/Info**: Sichtbarkeit der Kostenstelle in der Buchungsübersicht (`/info`).
 - **E-Mail**: Kostenstelle wird nun in der Buchungsbestätigung an den Nutzer aufgeführt.
 - **UI**: Abstand zwischen "Catering / Arbeitsmittel?" Label und der Auswahlbox im Buchungsformular vergrößert.
-
-
-Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
 ## [1.11.0] - 2026-02-17
 ### Hinzugefügt

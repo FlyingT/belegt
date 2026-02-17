@@ -1,4 +1,4 @@
-# Belegt? - Das Raum- & Ressourcenbuchungssystem (v1.11.1)
+# Belegt? - Das Raum- & Ressourcenbuchungssystem
 
 "Belegt?" ist ein Web-Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment, bereitstellbar via Docker. 
 Vibe-Coded mit Gemini Antigravity und Google Deepmind (Advanced Agentic Coding).
