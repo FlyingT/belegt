@@ -2,6 +2,12 @@
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.11.0] - 2026-02-17
+### Hinzugefügt
+- **Admin**: Option "Kostenstelle nötig?" pro Ressource (für Catering/Equipment).
+- **Booking Flow**: Abfrage der Kostenstelle, falls für die Ressource aktiviert und Catering ausgewählt wurde.
+- **Listen**: Anzeige der Kostenstelle in Admin-Buchungslisten und der öffentlichen Übersicht (`/info`).
+
 ## [1.10.2] - 2026-02-03
 ### Geändert
 - **E-Mail-Bestätigung**: Betreff enthält nun Ressource und Zeitraum.

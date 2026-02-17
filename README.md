@@ -1,4 +1,4 @@
-# Belegt - Das Raum- & Ressourcenbuchungssystem (v1.10.2)
+# Belegt - Das Raum- & Ressourcenbuchungssystem (v1.11.0)
 
 "Belegt?" ist dein Tool für die einfache Verwaltung und Buchung von Firmenressourcen wie Konferenzräumen, Firmenfahrzeugen oder technischem Equipment. 
 Vibe-Coded mit Gemini Antigravity und Google Deepmind (Advanced Agentic Coding).
@@ -15,6 +15,7 @@ Alles dabei:
 - **Anpassbarkeit**: Systemname, Akzentfarbe und Kategorie-Icons direkt über die Oberfläche änderbar.
 - **Ressourcen-Sortierung**: Individuelle Reihenfolge per Drag & Drop im Admin-Bereich.
 - **Catering & Arbeitsmittel**: Optionale Zusatzleistungen (z.B. Kaffee, Technik) pro Ressource konfigurierbar.
+- **Kostenstellen**: Optionales Pflichtfeld für Kostenstelle bei Catering-Buchungen.
 - **Automatisierte E-Mail-Bestätigung**: Professionelle Email-Bestatigung nach erfolgreicher Buchung (SMTP Konfiguration im Admin-Bereich).
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
 
@@ -112,4 +113,4 @@ Nachfolgende Variablen werden über die `.env` gesteuert.
 
 ---
 
-**Release v1.10.2** - Polishing & Fixes 🚀
+**Release v1.11.0** - Cost Center Feature 🚀

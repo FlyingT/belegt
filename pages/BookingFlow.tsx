@@ -40,7 +40,8 @@ export const BookingFlow: React.FC = () => {
     title: '',
     name: '',
     email: '',
-    department: ''
+    department: '',
+    costCenter: ''
   });
 
   const [showCatering, setShowCatering] = useState(false);
@@ -96,7 +97,8 @@ export const BookingFlow: React.FC = () => {
         department: formData.department,
         catering: showCatering ? Object.fromEntries(
           Object.entries(cateringSelection).filter(([_, qty]) => (qty as number) > 0)
-        ) as Record<string, number> : undefined
+        ) as Record<string, number> : undefined,
+        costCenter: formData.costCenter
       });
 
       // Navigate to confirmation with state
@@ -345,6 +347,21 @@ export const BookingFlow: React.FC = () => {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Cost Center Input */}
+              {showCatering && asset.costCenterRequired && (
+                <div className="border-t pt-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kostenstelle</label>
+                  <input
+                    type="text"
+                    required
+                    className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    value={formData.costCenter}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, costCenter: e.target.value })}
+                    placeholder="Kostenstelle eingeben"
+                  />
                 </div>
               )}
             </div>

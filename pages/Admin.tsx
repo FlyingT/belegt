@@ -528,6 +528,11 @@ export const Admin: React.FC = () => {
                                         {item}: {qty as number}
                                       </span>
                                     ))}
+                                    {b.costCenter && (
+                                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800/50">
+                                        Kostenstelle: {b.costCenter}
+                                      </span>
+                                    )}
                                   </div>
                                 )}
                               </td>
@@ -582,6 +587,11 @@ export const Admin: React.FC = () => {
                                       {item}: {qty as number}
                                     </span>
                                   ))}
+                                  {b.costCenter && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800/50">
+                                      Kostenstelle: {b.costCenter}
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </td>
@@ -635,6 +645,11 @@ export const Admin: React.FC = () => {
                                       {item}: {qty as number}
                                     </span>
                                   ))}
+                                  {b.costCenter && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
+                                      Kostenstelle: {b.costCenter}
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </td>
@@ -1136,6 +1151,22 @@ export const Admin: React.FC = () => {
                             >
                               <Plus className="w-3 h-3 mr-1" /> weiteres Feld hinzufügen
                             </button>
+
+                            <div className="mt-4 flex items-center pt-2 border-t border-gray-100">
+                              <input
+                                id="cost_center_toggle"
+                                type="checkbox"
+                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                checked={editingAsset.costCenterRequired || false}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingAsset({
+                                  ...editingAsset,
+                                  costCenterRequired: e.target.checked
+                                })}
+                              />
+                              <label htmlFor="cost_center_toggle" className="ml-2 block text-sm text-gray-700">
+                                Kostenstelle nötig?
+                              </label>
+                            </div>
                           </div>
                         )}
                       </div>

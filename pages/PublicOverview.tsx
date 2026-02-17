@@ -111,6 +111,13 @@ export default function PublicOverview() {
                                                             ))}
                                                         </div>
                                                     )}
+                                                    {b.costCenter && (
+                                                        <div className="mt-1">
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800/50">
+                                                                KSt: {b.costCenter}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                                                     {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -161,6 +168,13 @@ export default function PublicOverview() {
                                                             ))}
                                                         </div>
                                                     )}
+                                                    {b.costCenter && (
+                                                        <div className="mt-1">
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800/50">
+                                                                KSt: {b.costCenter}
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                     {new Date(b.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(b.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -209,6 +223,13 @@ export default function PublicOverview() {
                                                                     {item}: {qty as number}
                                                                 </span>
                                                             ))}
+                                                        </div>
+                                                    )}
+                                                    {b.costCenter && (
+                                                        <div className="mt-1">
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
+                                                                KSt: {b.costCenter}
+                                                            </span>
                                                         </div>
                                                     )}
                                                 </td>

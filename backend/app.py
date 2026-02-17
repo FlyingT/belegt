@@ -41,6 +41,9 @@ class Asset(db.Model):
     sort_order = db.Column(db.Integer, default=0)
     show_kiosk = db.Column(db.Boolean, default=True)
     has_catering = db.Column(db.Boolean, default=False)
+    show_kiosk = db.Column(db.Boolean, default=True)
+    has_catering = db.Column(db.Boolean, default=False)
+    cost_center_required = db.Column(db.Boolean, default=False)
     catering_options_json = db.Column(db.String(1000), default='[]')
 
     def to_dict(self):
@@ -54,7 +57,9 @@ class Asset(db.Model):
             'icon': self.icon,
             'sortOrder': self.sort_order,
             'showKiosk': self.show_kiosk,
+            'showKiosk': self.show_kiosk,
             'hasCatering': self.has_catering,
+            'costCenterRequired': self.cost_center_required,
             'cateringOptions': json.loads(self.catering_options_json) if self.catering_options_json else []
         }
 
@@ -67,6 +72,7 @@ class Booking(db.Model):
     user_name = db.Column(db.String(100), nullable=False)
     user_email = db.Column(db.String(100), nullable=False)
     department = db.Column(db.String(100), nullable=False, default="")
+    cost_center = db.Column(db.String(100), default='')
     catering_json = db.Column(db.String(500), default='{}')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -80,6 +86,7 @@ class Booking(db.Model):
             'userName': self.user_name,
             'userEmail': self.user_email,
             'department': self.department,
+            'costCenter': self.cost_center,
             'catering': json.loads(self.catering_json) if self.catering_json else {},
             'createdAt': self.created_at.isoformat()
         }
@@ -263,6 +270,24 @@ def init_db():
                 conn.execute(text("ALTER TABLE app_config ADD COLUMN mail_secure BOOLEAN DEFAULT 1"))
                 conn.commit()
 
+        # Migrations for Cost Center
+        with db.engine.connect() as conn:
+            # Check for cost_center in booking
+            try:
+                conn.execute(text("SELECT cost_center FROM booking LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding cost_center to booking")
+                conn.execute(text("ALTER TABLE booking ADD COLUMN cost_center VARCHAR(100) DEFAULT ''"))
+                conn.commit()
+
+            # Check for cost_center_required in asset
+            try:
+                conn.execute(text("SELECT cost_center_required FROM asset LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding cost_center_required to asset")
+                conn.execute(text("ALTER TABLE asset ADD COLUMN cost_center_required BOOLEAN DEFAULT 0"))
+                conn.commit()
+
         # Create default config if not exists
         if not AppConfig.query.first():
             default_cats = {
@@ -317,6 +342,7 @@ def create_asset():
         sort_order=max_order + 1,
         show_kiosk=data.get('showKiosk', True),
         has_catering=data.get('hasCatering', False),
+        cost_center_required=data.get('costCenterRequired', False),
         catering_options_json=json.dumps(data.get('cateringOptions', []))
     )
     db.session.add(new_asset)
@@ -352,6 +378,8 @@ def update_asset(id):
         asset.show_kiosk = data['showKiosk']
     if 'hasCatering' in data:
         asset.has_catering = data['hasCatering']
+    if 'costCenterRequired' in data:
+        asset.cost_center_required = data['costCenterRequired']
     if 'cateringOptions' in data:
         asset.catering_options_json = json.dumps(data['cateringOptions'])
     
@@ -387,6 +415,16 @@ def create_booking():
     if overlapping:
         return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
 
+    catering_data = data.get('catering', {})
+    cost_center = data.get('costCenter', '')
+    
+    asset = Asset.query.get(asset_id)
+    if asset and asset.cost_center_required:
+         # Check if any catering is ordered
+         has_catering = any(qty > 0 for qty in catering_data.values())
+         if has_catering and not cost_center.strip():
+             return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
+
     new_booking = Booking(
         asset_id=asset_id,
         title=data.get('title', 'Buchung'),
@@ -395,7 +433,8 @@ def create_booking():
         user_name=data.get('userName'),
         user_email=data.get('userEmail'),
         department=data.get('department', ''),
-        catering_json=json.dumps(data.get('catering', {}))
+        cost_center=cost_center,
+        catering_json=json.dumps(catering_data)
     )
     db.session.add(new_booking)
     db.session.commit()

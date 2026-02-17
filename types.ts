@@ -9,6 +9,7 @@ export interface Asset {
   sortOrder?: number;
   showKiosk?: boolean;
   hasCatering?: boolean;
+  costCenterRequired?: boolean;
   cateringOptions?: string[];
 }
 
@@ -21,6 +22,7 @@ export interface Booking {
   userName: string;
   userEmail: string;
   department?: string;
+  costCenter?: string;
   createdAt: string;
   catering?: Record<string, number>;
 }
