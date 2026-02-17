@@ -458,6 +458,9 @@ def create_booking():
         
         if new_booking.department:
             body += f"Abteilung: {new_booking.department}\n"
+        
+        if new_booking.cost_center:
+            body += f"Kostenstelle: {new_booking.cost_center}\n"
             
         catering = json.loads(new_booking.catering_json)
         if catering:

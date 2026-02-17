@@ -294,7 +294,7 @@ export const BookingFlow: React.FC = () => {
               {asset.hasCatering && asset.cateringOptions && asset.cateringOptions.length > 0 && (
                 <div className="border-t pt-4">
                   <div className="flex items-center">
-                    <label htmlFor="catering_toggle" className="mr-2 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
+                    <label htmlFor="catering_toggle" className="mr-6 block text-lg font-medium text-gray-900 dark:text-white flex items-center cursor-pointer">
                       <Coffee className="w-5 h-5 mr-2 text-indigo-500" /> Catering / Arbeitsmittel?
                     </label>
                     <input
