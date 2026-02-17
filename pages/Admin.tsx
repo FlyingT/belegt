@@ -807,6 +807,34 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
                   )}
+
+                  <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-600">
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">E-Mail Einstellungen testen</h4>
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        placeholder="Empfänger für Test-Mail"
+                        className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                        value={testRecipient}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleTestMail}
+                        disabled={testLoading}
+                        className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
+                      >
+                        {testLoading ? 'Sende...' : 'Test-Mail senden'}
+                        {!testLoading && <Mail className="ml-2 w-4 h-4" />}
+                      </button>
+                    </div>
+                    {testStatus && (
+                      <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
+                        {testStatus.message}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Opening Hours Extension */}
@@ -833,7 +861,7 @@ export const Admin: React.FC = () => {
                   {config.doorExtensionEnabled && (
                     <div className="space-y-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
                       <div className="max-w-md">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mail an</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Anfrage an</label>
                         <input
                           type="email"
                           placeholder="pforte@example.com"
@@ -918,34 +946,6 @@ export const Admin: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Test Mail Section */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-4">E-Mail Einstellungen testen</h4>
-                  <div className="flex gap-2">
-                    <input
-                      type="email"
-                      placeholder="Empfänger für Test-Mail"
-                      className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
-                      value={testRecipient}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestRecipient(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleTestMail}
-                      disabled={testLoading}
-                      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${testLoading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none`}
-                    >
-                      {testLoading ? 'Sende...' : 'Test-Mail senden'}
-                      {!testLoading && <Mail className="ml-2 w-4 h-4" />}
-                    </button>
-                  </div>
-                  {testStatus && (
-                    <div className={`mt-3 flex items-center text-sm ${testStatus.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {testStatus.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
-                      {testStatus.message}
-                    </div>
-                  )}
-                </div>
 
                 <div className="flex justify-end pt-5">
                   <button
@@ -954,7 +954,7 @@ export const Admin: React.FC = () => {
                     className={`inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Einstellungen speichern & Neuladen'}
+                    {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
                   </button>
                 </div>
 
@@ -1024,7 +1024,7 @@ export const Admin: React.FC = () => {
                     className={`inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${savingConfig ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {savingConfig ? 'Speichere...' : 'Einstellungen speichern & Neuladen'}
+                    {savingConfig ? 'Speichere...' : 'Speichern & Neuladen'}
                   </button>
                 </div>
               </form>
