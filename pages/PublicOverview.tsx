@@ -12,10 +12,9 @@ export default function PublicOverview() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [assetsData, bookingsData, configData] = await Promise.all([
+                const [assetsData, bookingsData] = await Promise.all([
                     api.api.getAssets(),
-                    api.api.getBookings(),
-                    api.api.getAppConfig()
+                    api.api.getBookings()
                 ]);
                 setAssets(assetsData);
                 setBookings(bookingsData);
@@ -26,6 +25,9 @@ export default function PublicOverview() {
             }
         };
         fetchData();
+
+        const intervalId = setInterval(fetchData, 60000);
+        return () => clearInterval(intervalId);
     }, []);
 
     const now = new Date();

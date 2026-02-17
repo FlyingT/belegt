@@ -1,11 +1,13 @@
 # Changelog
 
 ## [1.11.1] - 2026-02-17
+### Hinzugefügt
+- **Info**: Die Buchungsübersicht (`/info`) aktualisiert sich nun alle 60 Sekunden automatisch.
+
 ### Behoben
-- **Admin/Info**: Sicherstellung der Sichtbarkeit der Kostenstelle in der Buchungsübersicht (`/info`).
+- **Admin/Info**: Sichtbarkeit der Kostenstelle in der Buchungsübersicht (`/info`).
 - **E-Mail**: Kostenstelle wird nun in der Buchungsbestätigung an den Nutzer aufgeführt.
-- **UI**: Versionsnummer im Footer korrigiert und auf v1.11.1 aktualisiert.
-- **UI**: Abstand zwischen "Catering / Arbeitsmittel?" Label und Checkbox im Buchungsformular vergrößert.
+- **UI**: Abstand zwischen "Catering / Arbeitsmittel?" Label und der Auswahlbox im Buchungsformular vergrößert.
 
 
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.

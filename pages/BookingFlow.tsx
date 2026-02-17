@@ -307,7 +307,7 @@ export const BookingFlow: React.FC = () => {
                   </div>
 
                   {showCatering && (
-                    <div className="ml-6 space-y-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <div className="mt-4 ml-6 space-y-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
                       {asset.cateringOptions.map((option) => (
                         <div key={option} className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600 last:border-0">
                           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{option}</span>
