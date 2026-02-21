@@ -1,9 +1,14 @@
 import os
 import json
+import logging
 import re
 import secrets
 from datetime import datetime
 from functools import wraps
+
+# N3: Structured logging instead of print()
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logger = logging.getLogger(__name__)
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -243,15 +248,31 @@ class AppConfig(db.Model):
         return decrypt_value(self.mail_pass)
 
 # --- Email Helper ---
+
+def _sanitize_email_header(value):
+    """M1: Strip newlines from email fields to prevent header injection."""
+    if not value or not isinstance(value, str):
+        return ''
+    return value.replace('\n', '').replace('\r', '').strip()
+
 def send_email(config, recipient, subject, body):
     if not config or not config.mail_enabled:
         return False
     
+    # M1: Sanitize all header-relevant fields
+    safe_from = _sanitize_email_header(config.mail_from)
+    safe_to = _sanitize_email_header(recipient)
+    safe_subject = subject.replace('\n', ' ').replace('\r', ' ') if subject else ''
+    
+    if not safe_from or not safe_to:
+        logger.warning('send_email aborted: missing from/to address')
+        return False
+    
     try:
         msg = MIMEText(body, 'plain', 'utf-8')
-        msg['Subject'] = Header(subject, 'utf-8')
-        msg['From'] = config.mail_from
-        msg['To'] = recipient
+        msg['Subject'] = Header(safe_subject, 'utf-8')
+        msg['From'] = safe_from
+        msg['To'] = safe_to
 
         if config.mail_secure:
             server = smtplib.SMTP_SSL(config.mail_host, config.mail_port)
@@ -263,11 +284,11 @@ def send_email(config, recipient, subject, body):
         if config.mail_user and actual_password:
             server.login(config.mail_user, actual_password)
         
-        server.sendmail(config.mail_from, [recipient], msg.as_string())
+        server.sendmail(safe_from, [safe_to], msg.as_string())
         server.quit()
         return True
     except Exception as e:
-        print(f"Error sending email: {e}")
+        logger.error('Failed to send email: %s', e)
         return False
 
 # --- Helper ---
@@ -455,7 +476,7 @@ def init_db():
                 _fernet.decrypt(config.mail_pass.encode())
             except Exception:
                 # It's plaintext — encrypt it now
-                print("Migrating: Encrypting existing SMTP password")
+                logger.info('Migrating: Encrypting existing SMTP password')
                 config.mail_pass = encrypt_value(config.mail_pass)
                 db.session.commit()
 
@@ -786,48 +807,78 @@ def get_config():
 @admin_required
 def update_config():
     data = request.json
+    if not data:
+        return jsonify({'error': 'Keine Daten empfangen.'}), 400
+
     config = AppConfig.query.first()
     if not config:
         config = AppConfig()
         db.session.add(config)
     
-    config.header_text = data.get('headerText', config.header_text)
-    config.site_title = data.get('siteTitle', config.site_title)
+    # H4: Validate string lengths
+    for field, key, max_len in [
+        ('headerText', 'header_text', 100), ('siteTitle', 'site_title', 100),
+        ('placeholderTitle', 'placeholder_title', 100), ('placeholderName', 'placeholder_name', 100),
+        ('placeholderEmail', 'placeholder_email', 100), ('placeholderDepartment', 'placeholder_department', 100),
+    ]:
+        if field in data:
+            err = validate_string_length(data[field], max_len, field)
+            if err:
+                return jsonify({'error': err}), 400
+    
+    # H4: Validate color
+    if 'accentColor' in data:
+        err = validate_color(data['accentColor'])
+        if err:
+            return jsonify({'error': err}), 400
+    
+    # M1: Validate email fields (no newlines)
+    for email_field in ['mailFrom', 'mailUser', 'doorExtensionMail']:
+        if email_field in data and data[email_field]:
+            val = data[email_field]
+            if '\n' in str(val) or '\r' in str(val):
+                return jsonify({'error': f'Ungültige Zeichen in {email_field}.'}), 400
+
+    config.header_text = data.get('headerText', config.header_text)[:100]
+    config.site_title = data.get('siteTitle', config.site_title)[:100]
     config.accent_color = data.get('accentColor', config.accent_color)
     
     if 'categoryIcons' in data:
-        config.category_icons_json = json.dumps(data['categoryIcons'])
+        config.category_icons_json = json.dumps(data['categoryIcons'])[:500]
 
     if 'placeholderTitle' in data:
-        config.placeholder_title = data['placeholderTitle']
+        config.placeholder_title = data['placeholderTitle'][:100]
     if 'placeholderName' in data:
-        config.placeholder_name = data['placeholderName']
+        config.placeholder_name = data['placeholderName'][:100]
     if 'placeholderEmail' in data:
-        config.placeholder_email = data['placeholderEmail']
+        config.placeholder_email = data['placeholderEmail'][:100]
     if 'placeholderDepartment' in data:
-        config.placeholder_department = data['placeholderDepartment']
+        config.placeholder_department = data['placeholderDepartment'][:100]
     
     if 'mailEnabled' in data:
-        config.mail_enabled = data['mailEnabled']
+        config.mail_enabled = bool(data['mailEnabled'])
     if 'mailHost' in data:
-        config.mail_host = data['mailHost']
+        config.mail_host = _sanitize_email_header(data['mailHost'])[:100]
     if 'mailPort' in data:
-        config.mail_port = data['mailPort']
+        try:
+            config.mail_port = int(data['mailPort'])
+        except (ValueError, TypeError):
+            return jsonify({'error': 'Ungültiger Mail-Port.'}), 400
     if 'mailUser' in data:
-        config.mail_user = data['mailUser']
+        config.mail_user = _sanitize_email_header(data['mailUser'])[:100]
     if 'mailPass' in data:
         new_pass = data['mailPass']
         # Only update if the user actually changed the password (not the masked placeholder)
         if new_pass and new_pass != '********':
             config.mail_pass = encrypt_value(new_pass)
     if 'mailFrom' in data:
-        config.mail_from = data['mailFrom']
+        config.mail_from = _sanitize_email_header(data['mailFrom'])[:100]
     if 'mailSecure' in data:
-        config.mail_secure = data['mailSecure']
+        config.mail_secure = bool(data['mailSecure'])
     if 'doorExtensionEnabled' in data:
-        config.door_extension_enabled = data['doorExtensionEnabled']
+        config.door_extension_enabled = bool(data['doorExtensionEnabled'])
     if 'doorExtensionMail' in data:
-        config.door_extension_mail = data['doorExtensionMail']
+        config.door_extension_mail = _sanitize_email_header(data['doorExtensionMail'])[:100]
         
     db.session.commit()
     return jsonify(config.to_dict())

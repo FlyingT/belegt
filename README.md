@@ -8,6 +8,7 @@ Alles dabei:
 - **Buchungsoberfläche**: Einfaches Buchen von Ressourcen mit automatischer Zeitprüfung.
 - **Kiosk-Modus**: Schlanke Ansicht für Displays vor Räumen mit dynamischem Countdown.
 - **Admin-Dashboard**: Passwortgeschützte Verwaltung von Ressourcen (Räume, Fahrzeuge, Equipment).
+- **Serverseitige Authentifizierung**: Sichere Session-basierte Anmeldung — Credentials werden nie an den Client gesendet.
 - **Buchungsorganisation**: Kategorisierung von Buchungen (Heute, Anstehend, Vergangen) im Admin-Bereich.
 - **Kiosk-Steuerung**: Gezielte Freigabe von Ressourcen für den Kiosk-Modus.
 - **Erweiterte Buchungsdaten**: Erfassung der Abteilung bei Buchungen.
@@ -19,6 +20,7 @@ Alles dabei:
 - **Öffnungszeiten-Erweiterung**: Optionale Türöffnung außerhalb der regulären Zeiten anfragbar (mit separater E-Mail-Benachrichtigung).
 - **Automatisierte E-Mail-Bestätigung**: Professionelle Email-Bestatigung nach erfolgreicher Buchung (SMTP Konfiguration im Admin-Bereich).
 - **Dark Mode**: Automatische Anpassung an das System-Theme für Admin, Booking und Kiosk.
+- **Sicherheit**: SMTP-Passwörter verschlüsselt gespeichert, Input-Validierung, Security-Header, Non-Root Docker Container.
 
 ---
 
@@ -38,7 +40,7 @@ Einfaches Formular mit direkter Verfügbarkeitsprüfung.
 Nach der Buchung wird automatisch eine Bestätigung an den Nutzer verschickt (konfigurierbar).
 
 ### Kiosk-Modus
-Simple Anzeige unter eigenem Link für Kiosk-Anzeigen vor den Räumen.
+Simple Anzeige unter eigenem Link für Kiosk-Anzeigen vor Räumen.
 
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S10-Kiosk1.png)
 ![](https://github.com/FlyingT/belegt/blob/main/Screenshots/S11-Kiosk2.png)
@@ -70,6 +72,15 @@ Konfiguration der SMTP-Schnittstelle direkt im Admin-Panel inklusive Test-Versan
 ### Öffnungszeiten-Erweiterung
 Spezielle Räume können für eine erweiterte Türöffnung markiert werden. Bei Buchung wird eine separate E-Mail an eine konfigurierbare Adresse (z.B. Pforte/Sicherheitsdienst) gesendet.
 
+### Sicherheit
+- Serverseitige Session-Authentifizierung (Flask-Sessions)
+- Fernet-Verschlüsselung für SMTP-Passwörter
+- Input-Validierung und E-Mail-Sanitization
+- Nginx Security Headers (CSP, X-Frame-Options, etc.)
+- Race-Condition-Schutz bei Buchungen (atomare Transaktionen)
+- Non-Root Docker Container
+- Gunicorn als Production WSGI Server
+
 ---
 
 ## Deployment (Docker Compose)
@@ -77,10 +88,11 @@ Spezielle Räume können für eine erweiterte Türöffnung markiert werden. Bei 
 So bekommst du das System zum Laufen:
 
 1. **.env Konfiguration:**
-   Benenne die `sample.env` einfach in `.env` um:
+   Benenne die `sample.env` einfach in `.env` um und **ändere unbedingt das Admin-Passwort**:
 
 ```bash
 cp sample.env .env
+# Passwort in .env anpassen!
 ```
 
 2. **Starten:**
@@ -105,16 +117,20 @@ Nachfolgende Variablen werden über die `.env` gesteuert.
 | Variable | Beschreibung | Standard |
 |----------|--------------|----------|
 | `ADMIN_USER` | Benutzername | `admin` |
-| `ADMIN_PASSWORD` | Passwort | `belegt` |
+| `ADMIN_PASSWORD` | Passwort | — (muss gesetzt werden) |
+
+### Optional (Backend)
+| Variable | Beschreibung | Standard |
+|----------|--------------|----------|
+| `ALLOWED_ORIGINS` | Erlaubte CORS-Origins (kommagetrennt) | leer (nur Same-Origin) |
+| `SECRET_KEY` | Flask Session Secret | automatisch generiert |
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
-- **Backend:** Python Flask, SQLAlchemy (SQLite)
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS
+- **Backend:** Python Flask, Gunicorn, SQLAlchemy (SQLite)
 - **Container:** Docker, Nginx (Alpine)
+- **Sicherheit:** Fernet-Verschlüsselung, Session-Auth, CSP Headers
 
----
-
-**Release v1.12.0** - Opening Hours Extension & UI Refinement 🚀

@@ -1,6 +1,25 @@
 # Changelog
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.13.0] - 2026-02-21
+### Sicherheit
+- **Auth**: Serverseitige Authentifizierung mit Flask-Sessions (Login, Logout, Session-Check).
+- **Auth**: `admin_required`-Decorator schützt alle Admin-API-Endpunkte (Assets, Buchungen, Konfiguration).
+- **Auth**: Admin-Credentials werden nicht mehr an den Client ausgeliefert (`env-config.js` bereinigt, Script-Tag entfernt).
+- **SMTP**: Passwort wird mit Fernet-Verschlüsselung in der Datenbank gespeichert (automatische Migration bestehender Klartext-Passwörter).
+- **SMTP**: `GET /api/config` gibt SMTP-Passwort nur noch maskiert (`********`) zurück.
+- **CORS**: Zugriff auf konfigurierbare Origins beschränkt (`ALLOWED_ORIGINS` Env-Var, Standard: keine Cross-Origin-Requests).
+- **Race Condition**: Buchungserstellung nutzt SQLite `BEGIN EXCLUSIVE` Transaction (Overlap-Check + Insert atomar).
+- **Input-Validierung**: Pflichtfelder, E-Mail-Format, Feldlängen und Farbformat werden serverseitig geprüft (Assets, Buchungen, Konfiguration).
+- **E-Mail Header Injection**: Newline-Zeichen werden aus allen E-Mail-Feldern entfernt.
+- **Nginx**: Security-Header hinzugefügt (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, X-XSS-Protection).
+- **Docker**: Backend läuft als Non-Root User (`appuser`).
+- **Produktion**: Gunicorn als WSGI-Server statt Flask Development Server.
+- **Logging**: `print()` durch Python `logging`-Modul ersetzt.
+
+### Geändert
+- **Default-Passwort**: `sample.env` enthält nun `ADMIN_PASSWORD=aender-das-kennwort` statt `belegt`.
+
 ## [1.12.0] - 2026-02-17
 ### Hinzugefügt
 - **Admin**: Türöffnungs-Option pro Ressource.
