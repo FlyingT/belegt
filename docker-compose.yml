@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # Backend (Python Flask API)
   backend:
     image: ghcr.io/flyingt/belegt-backend:latest
     container_name: belegt-backend
@@ -10,13 +7,14 @@ services:
     environment:
       - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-belegt}
+      # - ALLOWED_ORIGINS=http://localhost:3000
+      # - SECRET_KEY=mein-geheimer-schluessel
     volumes:
-      - backend_data:/app/instance
+      - belegt-backend_data:/app/instance
     restart: unless-stopped
     networks:
       - belegt-network
 
-  # Frontend (React + Nginx)
   app:
     image: ghcr.io/flyingt/belegt-frontend:latest
     container_name: belegt-frontend
@@ -29,7 +27,7 @@ services:
       - belegt-network
 
 volumes:
-  backend_data:
+  belegt-backend_data:
 
 networks:
   belegt-network:

@@ -520,7 +520,7 @@ def get_assets():
 @admin_required
 def create_asset():
     data = request.json
-    if not data:
+    if data is None:
         return jsonify({'error': 'Keine Daten empfangen.'}), 400
     
     # H4: Input validation
@@ -618,7 +618,7 @@ def get_bookings():
 @app.route('/api/bookings', methods=['POST'])
 def create_booking():
     data = request.json
-    if not data:
+    if data is None:
         return jsonify({'error': 'Keine Daten empfangen.'}), 400
 
     # H4: Input validation
@@ -655,7 +655,7 @@ def create_booking():
         return jsonify({'error': 'Endzeit muss nach Startzeit liegen.'}), 400
 
     # H2 Fix: Use EXCLUSIVE transaction to prevent race conditions (TOCTOU)
-    with db.engine.connect() as conn:
+    with db.engine.connect().execution_options(isolation_level='AUTOCOMMIT') as conn:
         conn.execute(text('BEGIN EXCLUSIVE'))
         try:
             # Overlap Check — atomic with insert
@@ -807,7 +807,7 @@ def get_config():
 @admin_required
 def update_config():
     data = request.json
-    if not data:
+    if data is None:
         return jsonify({'error': 'Keine Daten empfangen.'}), 400
 
     config = AppConfig.query.first()
