@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import secrets
 from datetime import datetime
 from functools import wraps
@@ -14,7 +15,13 @@ from sqlalchemy import text
 from cryptography.fernet import Fernet, InvalidToken
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+
+# H1 Fix: Restrict CORS to configured origins (default: same-origin only)
+allowed_origins = os.environ.get('ALLOWED_ORIGINS', '').strip()
+if allowed_origins:
+    CORS(app, supports_credentials=True, origins=allowed_origins.split(','))
+else:
+    CORS(app, supports_credentials=True, origins=[])
 
 # Database Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -90,6 +97,41 @@ def admin_required(f):
             return jsonify({'error': 'Authentifizierung erforderlich.'}), 401
         return f(*args, **kwargs)
     return decorated_function
+
+# --- Input Validation Helpers (H4) ---
+
+_EMAIL_RE = re.compile(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$')
+
+def validate_required(data, fields):
+    """Check that all required fields are present and non-empty strings."""
+    missing = [f for f in fields if not data.get(f) or not str(data[f]).strip()]
+    if missing:
+        return f"Pflichtfelder fehlen: {', '.join(missing)}"
+    return None
+
+def validate_email(value):
+    """Validate email format. Returns error string or None."""
+    if not value or not isinstance(value, str):
+        return 'E-Mail-Adresse fehlt.'
+    if len(value) > 254:
+        return 'E-Mail-Adresse ist zu lang.'
+    if not _EMAIL_RE.match(value):
+        return 'Ungültiges E-Mail-Format.'
+    if '\n' in value or '\r' in value:
+        return 'Ungültiges E-Mail-Format.'
+    return None
+
+def validate_string_length(value, max_len, field_name):
+    """Validate string does not exceed max length."""
+    if value and isinstance(value, str) and len(value) > max_len:
+        return f"{field_name} darf maximal {max_len} Zeichen lang sein."
+    return None
+
+def validate_color(value):
+    """Validate hex color format."""
+    if value and not re.match(r'^#[0-9a-fA-F]{3,8}$', str(value)):
+        return 'Ungültiges Farbformat.'
+    return None
 
 # --- Models ---
 
@@ -457,22 +499,42 @@ def get_assets():
 @admin_required
 def create_asset():
     data = request.json
+    if not data:
+        return jsonify({'error': 'Keine Daten empfangen.'}), 400
+    
+    # H4: Input validation
+    err = validate_required(data, ['name', 'type'])
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_string_length(data.get('name'), 100, 'Name')
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_string_length(data.get('type'), 50, 'Typ')
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_string_length(data.get('description'), 255, 'Beschreibung')
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_color(data.get('color'))
+    if err:
+        return jsonify({'error': err}), 400
+
     # Assign new asset to the end of the list
     max_order = db.session.query(db.func.max(Asset.sort_order)).scalar() or 0
     
     new_asset = Asset(
-        name=data.get('name'),
-        type=data.get('type'),
-        description=data.get('description'),
-        color=data.get('color'),
-        is_maintenance=data.get('is_maintenance', False),
-        icon=data.get('icon'),
+        name=data.get('name')[:100],
+        type=data.get('type')[:50],
+        description=(data.get('description') or '')[:255],
+        color=data.get('color', '#3b82f6'),
+        is_maintenance=bool(data.get('is_maintenance', False)),
+        icon=(data.get('icon') or '')[:50],
         sort_order=max_order + 1,
-        show_kiosk=data.get('showKiosk', True),
-        has_catering=data.get('hasCatering', False),
-        cost_center_required=data.get('costCenterRequired', False),
-        catering_options_json=json.dumps(data.get('cateringOptions', [])),
-        door_extension_offered=data.get('doorExtensionOffered', False)
+        show_kiosk=bool(data.get('showKiosk', True)),
+        has_catering=bool(data.get('hasCatering', False)),
+        cost_center_required=bool(data.get('costCenterRequired', False)),
+        catering_options_json=json.dumps(data.get('cateringOptions', []))[:1000],
+        door_extension_offered=bool(data.get('doorExtensionOffered', False))
     )
     db.session.add(new_asset)
     db.session.commit()
@@ -535,43 +597,105 @@ def get_bookings():
 @app.route('/api/bookings', methods=['POST'])
 def create_booking():
     data = request.json
-    asset_id = int(data.get('assetId'))
-    start_time = parser.parse(data.get('startTime'))
-    end_time = parser.parse(data.get('endTime'))
-    
-    # Overlap Check
-    overlapping = Booking.query.filter(
-        Booking.asset_id == asset_id,
-        Booking.start_time < end_time,
-        Booking.end_time > start_time
-    ).first()
+    if not data:
+        return jsonify({'error': 'Keine Daten empfangen.'}), 400
 
-    if overlapping:
-        return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
+    # H4: Input validation
+    err = validate_required(data, ['assetId', 'startTime', 'endTime', 'userName', 'userEmail'])
+    if err:
+        return jsonify({'error': err}), 400
 
-    catering_data = data.get('catering', {})
-    cost_center = data.get('costCenter', '')
-    
-    asset = Asset.query.get(asset_id)
-    if asset and asset.cost_center_required:
-         # Check if any catering is ordered
-         has_catering = any(qty > 0 for qty in catering_data.values())
-         if has_catering and not cost_center.strip():
-             return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
+    err = validate_email(data.get('userEmail'))
+    if err:
+        return jsonify({'error': err}), 400
 
-    new_booking = Booking(
+    err = validate_string_length(data.get('userName'), 100, 'Name')
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_string_length(data.get('title'), 100, 'Titel')
+    if err:
+        return jsonify({'error': err}), 400
+    err = validate_string_length(data.get('department'), 100, 'Abteilung')
+    if err:
+        return jsonify({'error': err}), 400
+
+    try:
+        asset_id = int(data.get('assetId'))
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Ungültige Asset-ID.'}), 400
+
+    try:
+        start_time = parser.parse(data.get('startTime'))
+        end_time = parser.parse(data.get('endTime'))
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Ungültiges Datumsformat.'}), 400
+
+    if end_time <= start_time:
+        return jsonify({'error': 'Endzeit muss nach Startzeit liegen.'}), 400
+
+    # H2 Fix: Use EXCLUSIVE transaction to prevent race conditions (TOCTOU)
+    with db.engine.connect() as conn:
+        conn.execute(text('BEGIN EXCLUSIVE'))
+        try:
+            # Overlap Check — atomic with insert
+            overlapping = conn.execute(
+                text(
+                    'SELECT id FROM booking WHERE asset_id = :aid '
+                    'AND start_time < :end AND end_time > :start LIMIT 1'
+                ),
+                {'aid': asset_id, 'end': end_time.isoformat(), 'start': start_time.isoformat()}
+            ).fetchone()
+
+            if overlapping:
+                conn.rollback()
+                return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
+
+            catering_data = data.get('catering', {})
+            cost_center = (data.get('costCenter') or '')[:100]
+
+            asset_row = conn.execute(
+                text('SELECT cost_center_required FROM asset WHERE id = :aid'),
+                {'aid': asset_id}
+            ).fetchone()
+
+            if asset_row and asset_row[0]:
+                has_catering = any(qty > 0 for qty in catering_data.values()) if isinstance(catering_data, dict) else False
+                if has_catering and not cost_center.strip():
+                    conn.rollback()
+                    return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
+
+            title = (data.get('title') or 'Buchung')[:100]
+            user_name = data.get('userName', '')[:100]
+            user_email = data.get('userEmail', '')[:100]
+            department = (data.get('department') or '')[:100]
+
+            conn.execute(
+                text(
+                    'INSERT INTO booking (asset_id, title, start_time, end_time, '
+                    'user_name, user_email, department, cost_center, catering_json, created_at) '
+                    'VALUES (:aid, :title, :start, :end, :uname, :email, :dept, :cc, :cat, :now)'
+                ),
+                {
+                    'aid': asset_id, 'title': title,
+                    'start': start_time.isoformat(), 'end': end_time.isoformat(),
+                    'uname': user_name, 'email': user_email,
+                    'dept': department, 'cc': cost_center,
+                    'cat': json.dumps(catering_data)[:500],
+                    'now': datetime.utcnow().isoformat()
+                }
+            )
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
+
+    # Fetch the new booking using the ORM for the response and email
+    new_booking = Booking.query.filter_by(
         asset_id=asset_id,
-        title=data.get('title', 'Buchung'),
         start_time=start_time,
         end_time=end_time,
-        user_name=data.get('userName'),
-        user_email=data.get('userEmail'),
-        department=data.get('department', ''),
-        cost_center=cost_center,
-        catering_json=json.dumps(catering_data)
-    )
-    db.session.add(new_booking)
-    db.session.commit()
+        user_email=data.get('userEmail', '')[:100]
+    ).order_by(Booking.id.desc()).first()
     
     # Send Confirmation Email if enabled
     config = AppConfig.query.first()
@@ -744,4 +868,6 @@ def test_mail():
         return jsonify({'error': 'Fehler beim Versenden der Test-Mail. Bitte prüfen Sie die SMTP-Einstellungen.'}), 500
 
 if __name__ == '__main__':
+    # H3: In production, use gunicorn (see Dockerfile CMD).
+    # This block only runs during local development.
     app.run(host='0.0.0.0', port=5000)

@@ -12,4 +12,5 @@ RUN mkdir -p instance
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+# H3: Use gunicorn production WSGI server instead of Flask dev server
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "app:app"]
