@@ -267,7 +267,8 @@ export const Admin: React.FC = () => {
               userName: b.userName || 'Imported',
               userEmail: b.userEmail || 'imported@system',
               department: b.department || '',
-              catering: b.catering || {}
+              catering: b.catering || {},
+              costCenter: b.costCenter || ''
             });
             successCount++;
           } catch (err) {
