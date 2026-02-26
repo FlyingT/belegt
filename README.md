@@ -102,6 +102,8 @@ cp sample.env .env
 docker-compose up -d --build
 ```
 
+> **Hinweis zur Sicherheit:** Standardmäßig bindet `docker-compose.yml` den Frontend-Port direkt auf den Host (Port 8080). Für den produktiven Einsatz empfiehlt es sich, einen Reverse Proxy wie [Nginx Proxy Manager](https://nginxproxymanager.com/) vorzuschalten und die `ports:`-Einträge in der `docker-compose.yml` durch `expose:` zu ersetzen und die direkte Port-Freigabe auszukommentieren. So kommunizieren die Container nur noch innerhalb des Docker-Netzwerks, und der Proxy übernimmt TLS-Terminierung und Zugangssteuerung.
+
 ---
 
 ## Konfiguration

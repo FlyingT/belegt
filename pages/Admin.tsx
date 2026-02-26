@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Asset, Booking, AppConfig } from '../types';
 import { api } from '../services/api';
-import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee, Layout, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { Trash2, Power, LogOut, Save, Settings, Plus, Edit2, X, RefreshCw, ArrowUp, ArrowDown, RotateCcw, Download, Upload, Coffee, Layout, Mail, CheckCircle, AlertCircle, ShieldAlert } from 'lucide-react';
 import { DynamicIcon, ICON_MAP } from '../utils/iconMap';
 
 export const Admin: React.FC = () => {
@@ -10,6 +10,7 @@ export const Admin: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [defaultPassword, setDefaultPassword] = useState(false);
 
   // Data State
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -33,9 +34,10 @@ export const Admin: React.FC = () => {
 
   // Check for existing session on mount
   useEffect(() => {
-    api.checkAuth().then(authenticated => {
-      if (authenticated) {
+    api.checkAuth().then(result => {
+      if (result.authenticated) {
         setIsAuthenticated(true);
+        if (result.defaultPassword) setDefaultPassword(true);
         loadData();
       }
       setAuthChecking(false);
@@ -48,6 +50,9 @@ export const Admin: React.FC = () => {
     try {
       await api.login(username, password);
       setIsAuthenticated(true);
+      // Check default password status after login
+      const status = await api.checkAuth();
+      if (status.defaultPassword) setDefaultPassword(true);
       loadData();
     } catch (err: any) {
       setLoginError(err.message || 'Falsche Zugangsdaten');
@@ -354,6 +359,19 @@ export const Admin: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 relative">
+      {/* F3: Default password warning banner */}
+      {defaultPassword && (
+        <div className="mb-6 bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg p-4 flex items-start">
+          <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400 mr-3 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-amber-800 dark:text-amber-200">Sicherheitswarnung: Standard-Passwort aktiv</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              Das Admin-Passwort ist noch auf den Standardwert gesetzt. Bitte ändern Sie <code className="bg-amber-100 dark:bg-amber-800/50 px-1 rounded">ADMIN_PASSWORD</code> in Ihrer <code className="bg-amber-100 dark:bg-amber-800/50 px-1 rounded">.env</code>-Datei und starten Sie den Container neu.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verwaltung</h1>
         <button

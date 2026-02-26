@@ -12,6 +12,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
 from dateutil import parser
 import smtplib
@@ -28,6 +30,14 @@ if allowed_origins:
     CORS(app, supports_credentials=True, origins=allowed_origins.split(','))
 else:
     CORS(app, supports_credentials=True, origins=[])
+
+# F1: Rate-Limiter to prevent brute-force attacks on login
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://"
+)
 
 # Database Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -69,6 +79,11 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 # Admin Credentials from environment
 ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'belegt')
+
+# F3: Warn if default credentials are still active
+if ADMIN_PASSWORD == 'belegt':
+    logger.warning('⚠️  SICHERHEITSWARNUNG: Standard-Admin-Passwort ist aktiv! '
+                   'Bitte ADMIN_PASSWORD in der .env-Datei ändern.')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_path, "app.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -490,6 +505,7 @@ init_db()
 # --- Auth Routes ---
 
 @app.route('/api/auth/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     data = request.json
     username = data.get('username', '')
@@ -509,7 +525,7 @@ def logout():
 @app.route('/api/auth/check', methods=['GET'])
 def check_auth():
     if session.get('is_admin'):
-        return jsonify({'authenticated': True}), 200
+        return jsonify({'authenticated': True, 'defaultPassword': ADMIN_PASSWORD == 'belegt'}), 200
     return jsonify({'authenticated': False}), 200
 
 # --- Routes ---
@@ -585,11 +601,32 @@ def reorder_assets():
 def update_asset(id):
     asset = Asset.query.get_or_404(id)
     data = request.json
-    asset.name = data.get('name', asset.name)
-    asset.type = data.get('type', asset.type)
-    asset.description = data.get('description', asset.description)
+    if data is None:
+        return jsonify({'error': 'Keine Daten empfangen.'}), 400
+
+    # F11: Input validation (parity with create_asset)
+    if 'name' in data:
+        err = validate_string_length(data['name'], 100, 'Name')
+        if err:
+            return jsonify({'error': err}), 400
+    if 'type' in data:
+        err = validate_string_length(data['type'], 50, 'Typ')
+        if err:
+            return jsonify({'error': err}), 400
+    if 'description' in data:
+        err = validate_string_length(data.get('description'), 255, 'Beschreibung')
+        if err:
+            return jsonify({'error': err}), 400
+    if 'color' in data:
+        err = validate_color(data['color'])
+        if err:
+            return jsonify({'error': err}), 400
+
+    asset.name = data.get('name', asset.name)[:100] if 'name' in data else asset.name
+    asset.type = data.get('type', asset.type)[:50] if 'type' in data else asset.type
+    asset.description = (data.get('description') or '')[:255] if 'description' in data else asset.description
     asset.color = data.get('color', asset.color)
-    asset.icon = data.get('icon', asset.icon)
+    asset.icon = (data.get('icon') or '')[:50] if 'icon' in data else asset.icon
     if 'is_maintenance' in data:
         asset.is_maintenance = data['is_maintenance']
     if 'showKiosk' in data:
@@ -599,7 +636,7 @@ def update_asset(id):
     if 'costCenterRequired' in data:
         asset.cost_center_required = data['costCenterRequired']
     if 'cateringOptions' in data:
-        asset.catering_options_json = json.dumps(data['cateringOptions'])
+        asset.catering_options_json = json.dumps(data['cateringOptions'])[:1000]
     if 'doorExtensionOffered' in data:
         asset.door_extension_offered = data['doorExtensionOffered']
     
@@ -671,6 +708,14 @@ def create_booking():
             return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
 
         catering_data = data.get('catering', {})
+
+        # F12: Validate catering JSON structure (dict with str keys and numeric values)
+        if catering_data:
+            if not isinstance(catering_data, dict):
+                return jsonify({'error': 'Ungültiges Catering-Format.'}), 400
+            if not all(isinstance(k, str) and isinstance(v, (int, float)) for k, v in catering_data.items()):
+                return jsonify({'error': 'Ungültiges Catering-Format: Nur Text-Schlüssel und numerische Werte erlaubt.'}), 400
+
         cost_center = (data.get('costCenter') or '')[:100]
 
         asset = Asset.query.get(asset_id)

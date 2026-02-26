@@ -22,14 +22,14 @@ export const api = {
     });
   },
 
-  checkAuth: async (): Promise<boolean> => {
+  checkAuth: async (): Promise<{ authenticated: boolean; defaultPassword?: boolean }> => {
     try {
       const res = await fetch('/api/auth/check', { credentials: 'include' });
-      if (!res.ok) return false;
+      if (!res.ok) return { authenticated: false };
       const data = await res.json();
-      return data.authenticated === true;
+      return { authenticated: data.authenticated === true, defaultPassword: data.defaultPassword };
     } catch {
-      return false;
+      return { authenticated: false };
     }
   },
 

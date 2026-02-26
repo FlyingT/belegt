@@ -1,6 +1,17 @@
 # Changelog
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.13.1] - 2026-02-26
+### Sicherheit
+- **Auth**: Brute-Force-Schutz am Login-Endpunkt mit Rate-Limiting (max. 5 Versuche pro Minute pro IP via `flask-limiter`).
+- **Auth**: Warnung im Container-Log beim Start, wenn das Standard-Admin-Passwort noch aktiv ist.
+- **Auth**: Sicherheitswarnung als Banner im Admin-Dashboard bei aktivem Standard-Passwort.
+- **Validierung**: Input-Validierung in `update_asset` auf Parität mit `create_asset` gebracht (Längen, Farbformat).
+- **Validierung**: Catering-JSON-Struktur wird bei Buchungserstellung geprüft (nur String-Schlüssel und numerische Werte).
+
+### Geändert
+- **README**: Sicherheitshinweis zu Reverse-Proxy-Konfiguration und Port-Freigabe im Deployment-Abschnitt ergänzt.
+
 ## [1.13.0] - 2026-02-21
 ### Sicherheit
 - **Auth**: Serverseitige Authentifizierung mit Flask-Sessions (Login, Logout, Session-Check).

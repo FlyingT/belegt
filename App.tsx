@@ -17,7 +17,7 @@ const Layout = () => (
     </main>
     <footer className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-400 text-xs text-right py-1 px-4 border-t border-gray-300 dark:border-gray-700">
       <a href="https://github.com/FlyingT/belegt/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" className="hover:underline">
-        v1.13.0 von TK
+        v1.13.1 von TK
       </a>
     </footer>
   </div>
