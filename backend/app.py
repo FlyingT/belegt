@@ -15,6 +15,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 from dateutil import parser
 import smtplib
 from email.mime.text import MIMEText
@@ -23,6 +24,9 @@ from sqlalchemy import text
 from cryptography.fernet import Fernet, InvalidToken
 
 app = Flask(__name__)
+
+# F8: Trust X-Forwarded-For from one proxy (NPM) so rate-limiter sees real client IPs
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 # H1 Fix: Restrict CORS to configured origins (default: same-origin only)
 allowed_origins = os.environ.get('ALLOWED_ORIGINS', '').strip()
@@ -695,6 +699,11 @@ def create_booking():
     if end_time <= start_time:
         return jsonify({'error': 'Endzeit muss nach Startzeit liegen.'}), 400
 
+    # F4: Verify asset exists before creating a booking
+    asset = Asset.query.get(asset_id)
+    if not asset:
+        return jsonify({'error': 'Ressource nicht gefunden.'}), 404
+
     # H2 Fix: Thread lock ensures atomic overlap-check + insert
     with _booking_lock:
         # Overlap Check
@@ -718,8 +727,8 @@ def create_booking():
 
         cost_center = (data.get('costCenter') or '')[:100]
 
-        asset = Asset.query.get(asset_id)
-        if asset and asset.cost_center_required:
+        # asset already fetched above (F4)
+        if asset.cost_center_required:
             has_catering = any(qty > 0 for qty in catering_data.values()) if isinstance(catering_data, dict) else False
             if has_catering and not cost_center.strip():
                 return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
@@ -863,8 +872,17 @@ def update_config():
     config.site_title = data.get('siteTitle', config.site_title)[:100]
     config.accent_color = data.get('accentColor', config.accent_color)
     
+    # F3: Validate categoryIcons structure
     if 'categoryIcons' in data:
-        config.category_icons_json = json.dumps(data['categoryIcons'])[:500]
+        icons = data['categoryIcons']
+        if not isinstance(icons, dict):
+            return jsonify({'error': 'Ungültiges categoryIcons-Format.'}), 400
+        if len(icons) > 20:
+            return jsonify({'error': 'Zu viele Kategorie-Icons.'}), 400
+        for k, v in icons.items():
+            if not isinstance(k, str) or len(k) > 50 or not isinstance(v, str) or len(v) > 50:
+                return jsonify({'error': 'Ungültige Kategorie-Icon-Werte.'}), 400
+        config.category_icons_json = json.dumps(icons)[:500]
 
     if 'placeholderTitle' in data:
         config.placeholder_title = data['placeholderTitle'][:100]
@@ -930,6 +948,10 @@ def test_mail():
     recipient = data.get('testRecipient')
     if not recipient:
         return jsonify({'error': 'Empfänger-Email fehlt.'}), 400
+    # F2: Validate recipient email format
+    err = validate_email(recipient)
+    if err:
+        return jsonify({'error': err}), 400
         
     success = send_email(temp_config, recipient, "Test-Mail vom Buchungssystem", "Dies ist eine Test-Mail, um Ihre SMTP-Einstellungen zu verifizieren.")
     

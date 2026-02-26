@@ -104,6 +104,8 @@ docker-compose up -d --build
 
 > **Hinweis zur Sicherheit:** Standardmäßig bindet `docker-compose.yml` den Frontend-Port direkt auf den Host (Port 8080). Für den produktiven Einsatz empfiehlt es sich, einen Reverse Proxy wie [Nginx Proxy Manager](https://nginxproxymanager.com/) vorzuschalten und die `ports:`-Einträge in der `docker-compose.yml` durch `expose:` zu ersetzen und die direkte Port-Freigabe auszukommentieren. So kommunizieren die Container nur noch innerhalb des Docker-Netzwerks, und der Proxy übernimmt TLS-Terminierung und Zugangssteuerung.
 
+> **Hinweis für Proxy-Konfiguration:** Der Frontend-Container lauscht intern auf Port **8080** (nicht 80), da er als Non-Root-User läuft. Bei Verwendung eines Reverse Proxy muss dieser auf Port `8080` des Frontend-Containers zeigen.
+
 ---
 
 ## Konfiguration
@@ -133,6 +135,6 @@ Nachfolgende Variablen werden über die `.env` gesteuert.
 
 - **Frontend:** React 19, TypeScript, Vite, Tailwind CSS
 - **Backend:** Python Flask, Gunicorn, SQLAlchemy (SQLite)
-- **Container:** Docker, Nginx (Alpine)
-- **Sicherheit:** Fernet-Verschlüsselung, Session-Auth, CSP Headers
+- **Container:** Docker, Nginx Unprivileged (Alpine, Non-Root)
+- **Sicherheit:** Fernet-Verschlüsselung, Session-Auth, CSP Headers, Pinned Dependencies
 

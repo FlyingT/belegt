@@ -1,6 +1,16 @@
 # Changelog
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.13.2] - 2026-02-26
+### Sicherheit
+- **Nginx**: Security-Headers (CSP, X-Frame-Options etc.) werden nun auch für statische Assets (JS, CSS, Bilder) gesendet (Nginx-Vererbungs-Bug behoben).
+- **API**: E-Mail-Format-Validierung für Test-Mail-Empfänger hinzugefügt.
+- **API**: `categoryIcons`-Konfiguration wird nun auf Struktur und Länge validiert.
+- **API**: Buchungen können nur noch für existierende Ressourcen erstellt werden (404 bei ungültiger Asset-ID).
+- **API**: `ProxyFix`-Middleware hinzugefügt, damit der Rate-Limiter hinter dem Reverse Proxy die echte Client-IP sieht.
+- **Docker**: Frontend-Container läuft nun als Non-Root (`nginxinc/nginx-unprivileged`).
+- **Dependencies**: Alle Frontend-Abhängigkeiten auf exakte Versionen gepinnt (`package.json` und `index.html` importmap).
+
 ## [1.13.1] - 2026-02-26
 ### Sicherheit
 - **Auth**: Brute-Force-Schutz am Login-Endpunkt mit Rate-Limiting (max. 5 Versuche pro Minute pro IP via `flask-limiter`).
