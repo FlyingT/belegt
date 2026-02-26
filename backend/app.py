@@ -3,6 +3,7 @@ import json
 import logging
 import re
 import secrets
+import threading
 from datetime import datetime
 from functools import wraps
 
@@ -137,6 +138,9 @@ def validate_color(value):
     if value and not re.match(r'^#[0-9a-fA-F]{3,8}$', str(value)):
         return 'Ungültiges Farbformat.'
     return None
+
+# H2: Thread lock for atomic booking creation (1 gunicorn worker + SQLite)
+_booking_lock = threading.Lock()
 
 # --- Models ---
 
@@ -654,69 +658,40 @@ def create_booking():
     if end_time <= start_time:
         return jsonify({'error': 'Endzeit muss nach Startzeit liegen.'}), 400
 
-    # H2 Fix: Use EXCLUSIVE transaction to prevent race conditions (TOCTOU)
-    with db.engine.connect().execution_options(isolation_level='AUTOCOMMIT') as conn:
-        conn.execute(text('BEGIN EXCLUSIVE'))
-        try:
-            # Overlap Check — atomic with insert
-            overlapping = conn.execute(
-                text(
-                    'SELECT id FROM booking WHERE asset_id = :aid '
-                    'AND start_time < :end AND end_time > :start LIMIT 1'
-                ),
-                {'aid': asset_id, 'end': end_time.isoformat(), 'start': start_time.isoformat()}
-            ).fetchone()
+    # H2 Fix: Thread lock ensures atomic overlap-check + insert
+    with _booking_lock:
+        # Overlap Check
+        overlapping = Booking.query.filter(
+            Booking.asset_id == asset_id,
+            Booking.start_time < end_time,
+            Booking.end_time > start_time
+        ).first()
 
-            if overlapping:
-                conn.rollback()
-                return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
+        if overlapping:
+            return jsonify({'error': 'Dieser Zeitraum ist bereits belegt.'}), 409
 
-            catering_data = data.get('catering', {})
-            cost_center = (data.get('costCenter') or '')[:100]
+        catering_data = data.get('catering', {})
+        cost_center = (data.get('costCenter') or '')[:100]
 
-            asset_row = conn.execute(
-                text('SELECT cost_center_required FROM asset WHERE id = :aid'),
-                {'aid': asset_id}
-            ).fetchone()
+        asset = Asset.query.get(asset_id)
+        if asset and asset.cost_center_required:
+            has_catering = any(qty > 0 for qty in catering_data.values()) if isinstance(catering_data, dict) else False
+            if has_catering and not cost_center.strip():
+                return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
 
-            if asset_row and asset_row[0]:
-                has_catering = any(qty > 0 for qty in catering_data.values()) if isinstance(catering_data, dict) else False
-                if has_catering and not cost_center.strip():
-                    conn.rollback()
-                    return jsonify({'error': 'Bitte geben Sie eine Kostenstelle an.'}), 400
-
-            title = (data.get('title') or 'Buchung')[:100]
-            user_name = data.get('userName', '')[:100]
-            user_email = data.get('userEmail', '')[:100]
-            department = (data.get('department') or '')[:100]
-
-            conn.execute(
-                text(
-                    'INSERT INTO booking (asset_id, title, start_time, end_time, '
-                    'user_name, user_email, department, cost_center, catering_json, created_at) '
-                    'VALUES (:aid, :title, :start, :end, :uname, :email, :dept, :cc, :cat, :now)'
-                ),
-                {
-                    'aid': asset_id, 'title': title,
-                    'start': start_time.isoformat(), 'end': end_time.isoformat(),
-                    'uname': user_name, 'email': user_email,
-                    'dept': department, 'cc': cost_center,
-                    'cat': json.dumps(catering_data)[:500],
-                    'now': datetime.utcnow().isoformat()
-                }
-            )
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            raise e
-
-    # Fetch the new booking using the ORM for the response and email
-    new_booking = Booking.query.filter_by(
-        asset_id=asset_id,
-        start_time=start_time,
-        end_time=end_time,
-        user_email=data.get('userEmail', '')[:100]
-    ).order_by(Booking.id.desc()).first()
+        new_booking = Booking(
+            asset_id=asset_id,
+            title=(data.get('title') or 'Buchung')[:100],
+            start_time=start_time,
+            end_time=end_time,
+            user_name=data.get('userName', '')[:100],
+            user_email=data.get('userEmail', '')[:100],
+            department=(data.get('department') or '')[:100],
+            cost_center=cost_center,
+            catering_json=json.dumps(catering_data)[:500]
+        )
+        db.session.add(new_booking)
+        db.session.commit()
     
     # Send Confirmation Email if enabled
     config = AppConfig.query.first()
