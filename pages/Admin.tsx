@@ -812,6 +812,17 @@ export const Admin: React.FC = () => {
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailPass: e.target.value })}
                             />
                           </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Absender</label>
+                            <input
+                              type="text"
+                              placeholder="Buchungssystem <benutzer@example.com>"
+                              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md border p-2"
+                              value={config.mailFrom || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, mailFrom: e.target.value })}
+                            />
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Leer = SMTP Benutzer wird verwendet</p>
+                          </div>
                         </div>
 
                         <div className="flex items-center">

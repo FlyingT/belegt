@@ -264,7 +264,7 @@ def send_email(config, recipient, subject, body):
         return False
     
     # M1: Sanitize all header-relevant fields
-    safe_from = _sanitize_email_header(config.mail_from)
+    safe_from = _sanitize_email_header(config.mail_from) or _sanitize_email_header(config.mail_user)
     safe_to = _sanitize_email_header(recipient)
     safe_subject = subject.replace('\n', ' ').replace('\r', ' ') if subject else ''
     
