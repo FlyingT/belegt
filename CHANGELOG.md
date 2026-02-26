@@ -28,9 +28,6 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 - **Produktion**: Gunicorn als WSGI-Server statt Flask Development Server.
 - **Logging**: `print()` durch Python `logging`-Modul ersetzt.
 
-### Geändert
-- **Default-Passwort**: `sample.env` enthält nun `ADMIN_PASSWORD=aender-das-kennwort` statt `belegt`.
-
 ## [1.12.0] - 2026-02-17
 ### Hinzugefügt
 - **Admin**: Türöffnungs-Option pro Ressource.
