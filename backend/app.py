@@ -4,6 +4,7 @@ import logging
 import re
 import secrets
 import threading
+import hmac
 from datetime import datetime
 from functools import wraps
 
@@ -79,6 +80,7 @@ _fernet = Fernet(_encryption_key if isinstance(_encryption_key, bytes) else _enc
 # Session cookie config
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True
 
 # Admin Credentials from environment
 ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
@@ -206,7 +208,7 @@ class Booking(db.Model):
     department = db.Column(db.String(100), nullable=False, default="")
     cost_center = db.Column(db.String(100), default='')
     catering_json = db.Column(db.String(500), default='{}')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     def to_dict(self):
         return {
@@ -515,7 +517,7 @@ def login():
     username = data.get('username', '')
     password = data.get('password', '')
 
-    if username == ADMIN_USER and password == ADMIN_PASSWORD:
+    if hmac.compare_digest(username, ADMIN_USER) and hmac.compare_digest(password, ADMIN_PASSWORD):
         session['is_admin'] = True
         return jsonify({'message': 'Anmeldung erfolgreich.'}), 200
     
@@ -590,6 +592,8 @@ def create_asset():
 def reorder_assets():
     # Expects list of objects: [{id: 1, sortOrder: 0}, {id: 2, sortOrder: 1}]
     data = request.json
+    if not data or not isinstance(data, list):
+        return jsonify({'error': 'Ungültige Daten.'}), 400
     for item in data:
         asset_id = item.get('id')
         sort_order = item.get('sortOrder')
@@ -899,7 +903,10 @@ def update_config():
         config.mail_host = _sanitize_email_header(data['mailHost'])[:100]
     if 'mailPort' in data:
         try:
-            config.mail_port = int(data['mailPort'])
+            port = int(data['mailPort'])
+            if not (1 <= port <= 65535):
+                return jsonify({'error': 'Mail-Port muss zwischen 1 und 65535 liegen.'}), 400
+            config.mail_port = port
         except (ValueError, TypeError):
             return jsonify({'error': 'Ungültiger Mail-Port.'}), 400
     if 'mailUser' in data:
@@ -932,12 +939,23 @@ def test_mail():
         stored_config = AppConfig.query.first()
         if stored_config:
             test_password = stored_config.get_decrypted_password()
+            
+    mail_host = data.get('mailHost', '')
+    if mail_host and not re.match(r'^[a-zA-Z0-9.\-]+$', str(mail_host)):
+        return jsonify({'error': 'Ungültiger Mail-Host.'}), 400
+        
+    try:
+        mail_port = int(data.get('mailPort', 587))
+        if not (1 <= mail_port <= 65535):
+            return jsonify({'error': 'Mail-Port muss zwischen 1 und 65535 liegen.'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Ungültiger Mail-Port.'}), 400
     
     # Create a temporary config object from the provided data to test without saving
     temp_config = AppConfig(
         mail_enabled=True,
-        mail_host=data.get('mailHost'),
-        mail_port=data.get('mailPort'),
+        mail_host=mail_host,
+        mail_port=mail_port,
         mail_user=data.get('mailUser'),
         mail_pass=encrypt_value(test_password),
         mail_from=data.get('mailFrom'),

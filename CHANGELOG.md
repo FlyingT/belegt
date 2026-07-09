@@ -1,6 +1,21 @@
 # Changelog
 Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [1.13.3] - 2026-07-09
+### Sicherheit
+- **Auth**: Passwortvergleich im Login auf timing-safe Methode umgestellt (`hmac.compare_digest`).
+- **Session**: `SESSION_COOKIE_SECURE` Flag aktiviert für verbesserte Cookie-Sicherheit.
+- **Konfiguration**: Validierung für den Mail-Port (1-65535) und Mail-Host (SSRF-Schutz) hinzugefügt.
+- **Nginx**: `unsafe-inline` für Scripts aus Content-Security-Policy (CSP) entfernt.
+- **Nginx**: `Strict-Transport-Security` (HSTS) Header für verbesserten HTTPS-Schutz ergänzt.
+- **Abhängigkeiten**: `cryptography` auf Version 44.0.0 aktualisiert, um bekannte Schwachstellen zu schließen.
+
+### Behoben
+- **Buchungen**: Router-State in der Bestätigungsansicht wird nun validiert, mit Fallback auf die Startseite.
+- **Admin**: Fehler bei leerer Payload im `reorder_assets` Endpunkt behoben (leerer Body führt nicht mehr zum Crash).
+- **System**: Erstellung von Datenbankeinträgen verwendet nun die lokale Zeitzone des Containers (`datetime.now`) statt UTC.
+- **Docker**: Zeitzone in `docker-compose.yml` explizit auf `Europe/Berlin` gesetzt.
+
 ## [1.13.2] - 2026-02-26
 ### Sicherheit
 - **Nginx**: Security-Headers (CSP, X-Frame-Options etc.) werden nun auch für statische Assets (JS, CSS, Bilder) gesendet (Nginx-Vererbungs-Bug behoben).

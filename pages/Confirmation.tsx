@@ -14,7 +14,7 @@ export const Confirmation: React.FC = () => {
     api.getAppConfig().then(setConfig).catch(console.error);
   }, []);
 
-  if (!state) {
+  if (!state || !state.booking || !state.assetName) {
     return <Navigate to="/" />;
   }
 
