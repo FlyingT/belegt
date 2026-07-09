@@ -14,7 +14,7 @@ Alle Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 - **Buchungen**: Router-State in der Bestätigungsansicht wird nun validiert, mit Fallback auf die Startseite.
 - **Admin**: Fehler bei leerer Payload im `reorder_assets` Endpunkt behoben (leerer Body führt nicht mehr zum Crash).
 - **System**: Erstellung von Datenbankeinträgen verwendet nun die lokale Zeitzone des Containers (`datetime.now`) statt UTC.
-- **Docker**: Zeitzone in `docker-compose.yml` explizit auf `Europe/Berlin` gesetzt.
+- **Docker**: Zeitzone in `docker-compose.yml` explizit auf `Europe/Berlin` gesetzt (für Backend- und Frontend-Container).
 
 ## [1.13.2] - 2026-02-26
 ### Sicherheit
